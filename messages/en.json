@@ -129,8 +129,10 @@
     "shifts": "Shifts",
     "post": "Post",
     "activity": "Offers",
+    "alerts": "Alerts",
     "profile": "Profile",
-    "admin": "Admin"
+    "admin": "Admin",
+    "alertsUnread": "{count, plural, one {Alerts, # new} other {Alerts, # new}}"
   },
   "Options": {
     "grade": {
@@ -450,5 +452,38 @@
       "Ratings must be honest and respectful. Admins may remove abusive comments.",
       "Report any problem from the booking screen. The Shiftna team reviews every report."
     ]
+  },
+  "Notifications": {
+    "title": "Alerts",
+    "empty": "No alerts yet. You will see new offers, bookings and messages here.",
+    "unread": "New",
+    "kinds": {
+      "new_offer": "{doctor} sent an offer for your shift at {hospital} on {when}.",
+      "offer_accepted": "Your offer was accepted: {hospital}, {when}. Open the booking to chat.",
+      "offer_refused": "Your offer for {hospital} on {when} was not accepted.",
+      "instant_booked": "Your shift at {hospital} was booked instantly.",
+      "booking_cancelled": "The booking at {hospital} on {when} was cancelled.",
+      "new_message": "New message from {sender} about {hospital}, {when}.",
+      "account_approved": "Your account is approved. Welcome to Shiftna!",
+      "shift_alert": "New shift matching your alert: {hospital}, {when}.",
+      "urgent_shift": "Urgent shift needs cover: {hospital}, {when}.",
+      "shift_invite": "You were invited to cover a shift at {hospital}, {when}.",
+      "document_expiring": "Your {document} expires on {date}. Upload a new one before then."
+    },
+    "alertsTitle": "Shift alerts",
+    "alertsIntro": "Get an alert here when a new shift matching these choices is posted.",
+    "newAlert": "New alert",
+    "city": "City",
+    "anyCity": "Any city",
+    "type": "Type",
+    "subspecialty": "Subspecialty",
+    "minPay": "Minimum pay (EGP, optional)",
+    "minPayShort": "{amount}+ EGP",
+    "paidOnDay": "Paid on the day",
+    "urgentOnly": "Urgent only",
+    "saveAlert": "Save alert",
+    "alertSaved": "Alert saved.",
+    "deleteAlert": "Delete",
+    "tooManyAlerts": "You can keep up to {max} alerts. Delete one to add another."
   }
 }

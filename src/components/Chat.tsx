@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { subscribeAsUser } from "@/lib/supabase/realtime";
 import { buttonClass, inputClass, Notice } from "./ui";
 
 type Message = { id: string; sender_id: string; body: string; created_at: string };
@@ -32,34 +33,16 @@ export default function Chat({
   const bottom = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    let cancelled = false;
-
-    (async () => {
-      // Realtime must join as the signed-in doctor, otherwise Row Level
-      // Security treats the connection as anonymous and sends no messages.
-      const { data } = await supabase.auth.getSession();
-      if (cancelled) return;
-      if (data.session) await supabase.realtime.setAuth(data.session.access_token);
-      if (cancelled) return;
-      channel = supabase
-        .channel(`booking-${bookingId}`)
-        .on(
-          "postgres_changes",
-          { event: "INSERT", schema: "public", table: "messages", filter: `booking_id=eq.${bookingId}` },
-          (payload) => {
-            const m = payload.new as Message;
-            setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
-          },
-        )
-        .subscribe();
-    })();
-
-    return () => {
-      cancelled = true;
-      if (channel) supabase.removeChannel(channel);
-    };
+    return subscribeAsUser(createClient(), (supabase) =>
+      supabase.channel(`booking-${bookingId}`).on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages", filter: `booking_id=eq.${bookingId}` },
+        (payload) => {
+          const m = payload.new as Message;
+          setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+        },
+      ),
+    );
   }, [bookingId]);
 
   useEffect(() => {

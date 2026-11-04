@@ -129,8 +129,10 @@
     "shifts": "النبطشيات",
     "post": "انشر",
     "activity": "العروض",
+    "alerts": "التنبيهات",
     "profile": "حسابي",
-    "admin": "الإدارة"
+    "admin": "الإدارة",
+    "alertsUnread": "{count, plural, one {التنبيهات، # جديد} other {التنبيهات، # جديدة}}"
   },
   "Options": {
     "grade": {
@@ -450,5 +452,38 @@
       "يجب أن تكون التقييمات صادقة ومحترمة. يمكن للإدارة حذف التعليقات المسيئة.",
       "أبلغ عن أي مشكلة من صفحة الحجز. فريق شفتنا يراجع كل بلاغ."
     ]
+  },
+  "Notifications": {
+    "title": "التنبيهات",
+    "empty": "لا توجد تنبيهات بعد. ستظهر هنا العروض والحجوزات والرسائل الجديدة.",
+    "unread": "جديد",
+    "kinds": {
+      "new_offer": "{doctor} أرسل عرضاً على نبطشيتك في {hospital} يوم {when}.",
+      "offer_accepted": "تم قبول عرضك: {hospital}، {when}. افتح الحجز للتواصل.",
+      "offer_refused": "لم يتم قبول عرضك على {hospital} يوم {when}.",
+      "instant_booked": "تم حجز نبطشيتك في {hospital} فوراً.",
+      "booking_cancelled": "تم إلغاء الحجز في {hospital} يوم {when}.",
+      "new_message": "رسالة جديدة من {sender} بخصوص {hospital}، {when}.",
+      "account_approved": "تم قبول حسابك. أهلاً بك في شفتنا!",
+      "shift_alert": "نبطشية جديدة تطابق تنبيهك: {hospital}، {when}.",
+      "urgent_shift": "نبطشية عاجلة تحتاج تغطية: {hospital}، {when}.",
+      "shift_invite": "تمت دعوتك لتغطية نبطشية في {hospital}، {when}.",
+      "document_expiring": "تنتهي صلاحية {document} يوم {date}. ارفع نسخة جديدة قبل ذلك."
+    },
+    "alertsTitle": "تنبيهات النبطشيات",
+    "alertsIntro": "يصلك تنبيه هنا عند نشر نبطشية جديدة تطابق اختياراتك.",
+    "newAlert": "تنبيه جديد",
+    "city": "المحافظة",
+    "anyCity": "أي محافظة",
+    "type": "النوع",
+    "subspecialty": "التخصص الدقيق",
+    "minPay": "أقل أجر (جنيه، اختياري)",
+    "minPayShort": "{amount}+ جنيه",
+    "paidOnDay": "الدفع في نفس اليوم",
+    "urgentOnly": "العاجل فقط",
+    "saveAlert": "حفظ التنبيه",
+    "alertSaved": "تم حفظ التنبيه.",
+    "deleteAlert": "حذف",
+    "tooManyAlerts": "يمكنك الاحتفاظ بـ {max} تنبيهات كحد أقصى. احذف واحداً لإضافة آخر."
   }
 }

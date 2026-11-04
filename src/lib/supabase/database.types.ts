@@ -790,6 +790,7 @@ export type Database = {
           id: string
           kind: string
           payload: Json
+          read_at: string | null
           status: string
           user_id: string
         }
@@ -799,6 +800,7 @@ export type Database = {
           id?: string
           kind: string
           payload?: Json
+          read_at?: string | null
           status?: string
           user_id: string
         }
@@ -808,6 +810,7 @@ export type Database = {
           id?: string
           kind?: string
           payload?: Json
+          read_at?: string | null
           status?: string
           user_id?: string
         }

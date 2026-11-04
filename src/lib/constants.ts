@@ -59,3 +59,6 @@ export type Grade = (typeof GRADES)[number];
 export type DocType = (typeof REQUIRED_DOCS)[number];
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+/** Most saved shift alerts one doctor can keep. */
+export const MAX_ALERTS = 10;
