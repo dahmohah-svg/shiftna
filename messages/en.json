@@ -323,7 +323,7 @@
     "youCompleted": "You marked it completed.",
     "waitingOther": "Waiting for the other doctor to mark it completed.",
     "bothCompleted": "Both sides marked the shift completed.",
-    "payment": "Payment",
+    "payment": "Payment status",
     "gotPaid": "Did you get paid?",
     "markPaid": "Yes, I got paid",
     "markUnpaid": "Not yet",
