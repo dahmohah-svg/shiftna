@@ -1,0 +1,23 @@
+{
+  "Metadata": {
+    "title": "Shiftna",
+    "description": "A trusted way for anesthesiologists in Egypt to post and cover shifts."
+  },
+  "Home": {
+    "appName": "Shiftna",
+    "tagline": "Anesthesia shifts, with trust.",
+    "intro": "Post your shift or cover a colleague's in minutes. Every doctor is verified with their Syndicate card and practice license.",
+    "featureVerifiedTitle": "Verified doctors only",
+    "featureVerifiedBody": "Our team reviews every account before it can see any shift.",
+    "featureClearTitle": "Clear details",
+    "featureClearBody": "Pay in EGP, payment timing, on-call room, food and workload.",
+    "featureRatingsTitle": "Fair ratings",
+    "featureRatingsBody": "Ratings appear only after both sides have rated each other.",
+    "comingSoon": "Coming soon: sign-up and shift posting.",
+    "footer": "Built for anesthesiologists in Egypt"
+  },
+  "LanguageSwitcher": {
+    "label": "Language",
+    "switchTo": "العربية"
+  }
+}
