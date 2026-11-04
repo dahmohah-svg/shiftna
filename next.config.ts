@@ -2,14 +2,19 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
   turbopack: {
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },
+    },
+  },
+  experimental: {
+    serverActions: {
+      // Document photos and PDFs go straight to Supabase Storage from the
+      // browser, so server actions only carry small form data.
+      bodySizeLimit: "1mb",
     },
   },
 };

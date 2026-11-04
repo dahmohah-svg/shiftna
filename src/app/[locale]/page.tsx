@@ -1,7 +1,9 @@
-import { use } from "react";
-import { useTranslations } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link, redirect } from "@/i18n/navigation";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import Logo from "@/components/Logo";
+import { buttonClass } from "@/components/ui";
+import { getViewer } from "@/lib/viewer";
 import type { Locale } from "@/i18n/routing";
 
 const features = [
@@ -10,32 +12,47 @@ const features = [
   { key: "Ratings", icon: "★" },
 ] as const;
 
-export default function HomePage({ params }: PageProps<"/[locale]">) {
-  const { locale } = use(params);
+export default async function HomePage({ params }: PageProps<"/[locale]">) {
+  const { locale } = await params;
   setRequestLocale(locale as Locale);
-  const t = useTranslations("Home");
+
+  // Signed-in doctors skip the welcome page.
+  const viewer = await getViewer();
+  if (viewer) {
+    redirect({
+      href: viewer.profile.status === "approved" ? "/shifts" : "/status",
+      locale: locale as Locale,
+    });
+  }
+
+  const t = await getTranslations("Home");
+  const c = await getTranslations("Common");
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <header className="flex items-center justify-between py-2">
-        <span className="text-xl font-bold text-brand-700">{t("appName")}</span>
+        <Logo size="sm" />
         <LanguageSwitcher />
       </header>
 
       <main className="flex flex-1 flex-col gap-8 pt-10">
         <section className="flex flex-col gap-4">
-          <div
-            aria-hidden
-            className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-600 text-3xl font-bold text-white shadow-lg shadow-brand-600/30"
-          >
-            {locale === "ar" ? "ش" : "S"}
-          </div>
+          <Logo size="lg" />
           <h1 className="text-4xl leading-tight font-extrabold text-ink">
-            {t("appName")}
+            {c("appName")}
           </h1>
           <p className="text-xl font-semibold text-brand-700">{t("tagline")}</p>
           <p className="text-base leading-relaxed text-ink-muted">{t("intro")}</p>
         </section>
+
+        <div className="flex flex-col gap-3">
+          <Link href="/sign-up" className={buttonClass.primary}>
+            {t("signUp")}
+          </Link>
+          <Link href="/sign-in" className={buttonClass.secondary}>
+            {t("signIn")}
+          </Link>
+        </div>
 
         <ul className="flex flex-col gap-3">
           {features.map(({ key, icon }) => (
@@ -58,14 +75,14 @@ export default function HomePage({ params }: PageProps<"/[locale]">) {
             </li>
           ))}
         </ul>
-
-        <p className="rounded-2xl bg-brand-50 px-4 py-3 text-center text-sm font-medium text-brand-800">
-          {t("comingSoon")}
-        </p>
       </main>
 
-      <footer className="pt-8 text-center text-xs text-ink-muted">
-        {t("footer")}
+      <footer className="flex flex-col items-center gap-2 pt-8 text-xs text-ink-muted">
+        <p>{t("footer")}</p>
+        <p className="flex gap-4">
+          <Link href="/privacy" className="underline">{t("privacy")}</Link>
+          <Link href="/terms" className="underline">{t("terms")}</Link>
+        </p>
       </footer>
     </div>
   );
