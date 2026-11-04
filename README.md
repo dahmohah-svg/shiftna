@@ -50,7 +50,58 @@ npm run build      # full production build
 | `src/i18n/` | Language settings (Arabic is the default). |
 | `src/proxy.ts` | Sends visitors to `/ar` or `/en`. |
 | `src/components/` | Reusable pieces such as the language switch. |
-| `supabase/migrations/` | Database SQL files (coming in the next step). |
+| `src/app/[locale]/(app)/` | Screens for approved doctors: shifts, post, offers, bookings, profile, admin. |
+| `src/app/actions/` | Server code for every button and form (checks every input). |
+| `src/lib/supabase/` | Supabase connection and database types. |
+| `supabase/` | Database SQL files and the order they were run. |
+
+## What works (version 1, the pilot app)
+
+- Sign up, confirm email, add details (grade, city, phone), upload the
+  Syndicate card, license, specialty certificate and a selfie.
+- "Under review" screen until an admin approves; reasons shown if rejected.
+- Shifts feed with filters (city, type, subspecialty, paid on the day,
+  urgent) and the 24-hour strip; shift details with hospital ratings.
+- Post a shift; doctors below the minimum grade see a disabled Offer button.
+- Offers: send, withdraw, accept (books the doctor, declines the rest),
+  decline. Overlapping shifts are blocked; fatigue warning shown.
+- Booking: live chat, "Mark completed", "Did you get paid?", "Doctor did not
+  show up", cancel (late cancellations recorded, shift reopens as urgent),
+  ratings hidden until both sides submit, report a problem, add to calendar.
+- Profile: reliability numbers, rank (yours always; others only for Premium),
+  New / Silver / Gold badge, document expiry dates.
+- Admin (`/admin`): review doctors with 5-minute private links and expiry
+  dates, add and verify hospitals, handle reports, Premium on/off, pause
+  accounts. Every action is written to the audit log.
+
+Not built yet (later steps in the guide): private groups, usage insights,
+notifications/WhatsApp, disputes screen, arrival selfie, instant booking,
+share links, logbook, rotas, pay ranges, offline mode.
+
+## Put it online (Vercel)
+
+1. On vercel.com: **Add New → Project → Import** the `shiftna` GitHub repo.
+2. Under **Environment Variables** add `NEXT_PUBLIC_SUPABASE_URL` and
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (same values as `.env.local`). Deploy.
+3. In Supabase: **Authentication → URL Configuration**. Set **Site URL** to
+   your Vercel address (for example `https://shiftna.vercel.app`) and add
+   `https://shiftna.vercel.app/**` and `http://localhost:3000/**` under
+   **Redirect URLs**. Without this, the confirmation email link will not work.
+4. Supabase's built-in email only reaches your own team's addresses. For real
+   doctors add an email provider under **Authentication → Emails → SMTP**
+   (for example Resend). For testing with fake accounts you can switch off
+   **Confirm email** under **Authentication → Sign In / Providers → Email**.
+
+## Make yourself the admin
+
+Sign up in the app, then in Supabase open **SQL Editor** and run (with your email):
+
+```sql
+update profiles set is_admin = true, status = 'approved', grade = 'consultant', city = 'cairo'
+where id = (select id from auth.users where email = 'you@example.com');
+```
+
+Then add your hospitals in **Profile → Admin panel → Hospitals**.
 
 ## Rules
 
