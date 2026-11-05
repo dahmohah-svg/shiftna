@@ -37,6 +37,25 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
   ]);
 
   const items = (rows ?? []).filter((n) => isKnownKind(n.kind));
+
+  // Some older alerts only store the shift id; look up hospital and time for those.
+  const missing = [
+    ...new Set(
+      items
+        .map(readPayload)
+        .filter((p) => p.shift_id && (!p.hospital || !p.start_at))
+        .map((p) => p.shift_id!),
+    ),
+  ];
+  const shiftInfo = new Map<string, { hospital?: string; start_at: string }>();
+  if (missing.length > 0) {
+    const { data: shifts } = await supabase
+      .from("shifts")
+      .select("id, start_at, hospital:hospitals!shifts_hospital_id_fkey(name)")
+      .in("id", missing);
+    for (const sh of shifts ?? []) shiftInfo.set(sh.id, { hospital: sh.hospital?.name, start_at: sh.start_at });
+  }
+
   const hasUnread = items.some((n) => !n.read_at);
 
   const docName = (type?: string) =>
@@ -53,7 +72,9 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
         ) : (
           items.map((n) => {
             if (!isKnownKind(n.kind)) return null;
-            const p = readPayload(n);
+            const raw = readPayload(n);
+            const extra = raw.shift_id ? shiftInfo.get(raw.shift_id) : undefined;
+            const p = { ...raw, hospital: raw.hospital ?? extra?.hospital, start_at: raw.start_at ?? extra?.start_at };
             const text = t(`kinds.${n.kind}`, {
               hospital: p.hospital ?? c("dash"),
               when: p.start_at ? formatDateTime(p.start_at, locale) : c("dash"),

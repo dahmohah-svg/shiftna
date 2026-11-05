@@ -59,7 +59,13 @@ export default function AlertForm() {
       </Field>
       <Checkbox name="immediateOnly" label={t("paidOnDay")} />
       <Checkbox name="urgentOnly" label={t("urgentOnly")} />
-      {state?.message === "tooManyAlerts" ? <Notice tone="danger">{t("tooManyAlerts", { max: MAX_ALERTS })}</Notice> : <FormMessage state={state} success={t("alertSaved")} />}
+      {state?.message === "tooManyAlerts" ? (
+        <Notice tone="danger">{t("tooManyAlerts", { max: MAX_ALERTS })}</Notice>
+      ) : state?.message === "duplicateAlert" ? (
+        <Notice tone="warn">{t("duplicateAlert")}</Notice>
+      ) : (
+        <FormMessage state={state} success={t("alertSaved")} />
+      )}
       <SubmitButton>{t("saveAlert")}</SubmitButton>
     </form>
   );

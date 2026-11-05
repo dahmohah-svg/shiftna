@@ -484,6 +484,7 @@
     "saveAlert": "Save alert",
     "alertSaved": "Alert saved.",
     "deleteAlert": "Delete",
-    "tooManyAlerts": "You can keep up to {max} alerts. Delete one to add another."
+    "tooManyAlerts": "You can keep up to {max} alerts. Delete one to add another.",
+    "duplicateAlert": "You already have this alert."
   }
 }

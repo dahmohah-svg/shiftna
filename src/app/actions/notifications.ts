@@ -60,21 +60,26 @@ export async function createAlert(
   } = await supabase.auth.getUser();
   if (!user) return { error: "notAllowed" };
 
-  const { count } = await supabase
-    .from("saved_alerts")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", user.id);
-  if ((count ?? 0) >= MAX_ALERTS) return { error: "invalid", message: "tooManyAlerts" };
-
-  const { error } = await supabase.from("saved_alerts").insert({
-    user_id: user.id,
+  const row = {
     city: v.city,
     shift_type: v.type,
     subspecialty: v.subspecialty,
     min_pay_egp: v.minPay,
     immediate_only: v.immediateOnly,
     urgent_only: v.urgentOnly,
-  });
+  };
+
+  const { data: existing } = await supabase
+    .from("saved_alerts")
+    .select("city, shift_type, subspecialty, min_pay_egp, immediate_only, urgent_only")
+    .eq("user_id", user.id);
+  const mine = existing ?? [];
+  if (mine.length >= MAX_ALERTS) return { error: "invalid", message: "tooManyAlerts" };
+  const same = (a: Record<keyof typeof row, unknown>) =>
+    (Object.keys(row) as (keyof typeof row)[]).every((k) => a[k] === row[k]);
+  if (mine.some(same)) return { error: "invalid", message: "duplicateAlert" };
+
+  const { error } = await supabase.from("saved_alerts").insert({ user_id: user.id, ...row });
   if (error) return { error: toErrorKey(error) };
 
   revalidatePath("/[locale]/notifications", "page");

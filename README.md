@@ -74,8 +74,12 @@ npm run build      # full production build
   dates, add and verify hospitals, handle reports, Premium on/off, pause
   accounts. Every action is written to the audit log.
 
+- Alerts tab: live in-app notifications for offers, bookings, cancellations,
+  messages, approval, urgent shifts and document expiry; saved shift alerts
+  that notify you when a matching shift is posted.
+
 Not built yet (later steps in the guide): private groups, usage insights,
-notifications/WhatsApp, disputes screen, arrival selfie, instant booking,
+email/WhatsApp/phone push notifications, disputes screen, arrival selfie, instant booking,
 share links, logbook, rotas, pay ranges, offline mode.
 
 ## Put it online (Vercel)

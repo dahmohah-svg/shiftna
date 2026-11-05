@@ -13,6 +13,8 @@ have been applied there, in this order:
 | `005_elite.sql` | Instant booking, invites, badges, logbook, rotas (Part 3e) |
 | `006_lock_down_function_access.sql` | Only signed-in users can call app functions |
 | `007_app_support.sql` | `refuse_offer` function and live chat (Realtime on `messages`) |
+| `008_notifications.sql` | In-app notifications: read tracking, triggers that create them, shift-alert matching, Realtime |
+| `009_urgent_alert_fix.sql` | Urgent "needs cover" alerts skip the doctor who cancelled and include hospital and time |
 
 Files 001 to 005 are exactly as printed in the build guide; copy them from
 there if you need to set up a second project (for example staging).
