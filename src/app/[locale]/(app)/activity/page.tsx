@@ -1,9 +1,11 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import JobOfferList from "@/components/JobOfferList";
 import ShiftCard from "@/components/ShiftCard";
 import { Badge, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
-import { requireApproved } from "@/lib/viewer";
+import { isHr, requireApproved } from "@/lib/viewer";
+import { getMyJobOffers } from "@/lib/jobs";
 import { SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
 import { formatDateTime, formatNumber, nowMs } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
@@ -18,8 +20,10 @@ export default async function ActivityPage({ params }: PageProps<"/[locale]/acti
   const b = await getTranslations("Booking");
   const supabase = await createClient();
   const me = viewer.userId;
+  const hr = isHr(viewer.profile);
+  const j = await getTranslations("Jobs");
 
-  const [{ data: myShifts }, { data: myOffers }, { data: bookings }] = await Promise.all([
+  const [{ data: myShifts }, { data: myOffers }, { data: bookings }, jobOffers] = await Promise.all([
     supabase
       .from("shifts")
       .select(`${SHIFT_WITH_HOSPITAL}, offers(id, status)`)
@@ -40,6 +44,7 @@ export default async function ActivityPage({ params }: PageProps<"/[locale]/acti
       .or(`doctor_id.eq.${me},poster_id.eq.${me}`)
       .order("created_at", { ascending: false })
       .limit(100),
+    getMyJobOffers(supabase, me),
   ]);
 
   const now = nowMs();
@@ -79,6 +84,14 @@ export default async function ActivityPage({ params }: PageProps<"/[locale]/acti
         {upcoming.length === 0 ? <EmptyState>{t("noBookings")}</EmptyState> : upcoming.map(bookingRow)}
       </section>
 
+      {/* Doctors only see this once a hospital has sent them an offer. */}
+      {hr || jobOffers.length > 0 ? (
+        <section className="flex flex-col gap-3">
+          <SectionTitle>{j("sectionTitle")}</SectionTitle>
+          <JobOfferList offers={jobOffers} me={me} />
+        </section>
+      ) : null}
+
       <section className="flex flex-col gap-3">
         <SectionTitle>{t("myShifts")}</SectionTitle>
         {(myShifts ?? []).length === 0 ? (
@@ -96,16 +109,18 @@ export default async function ActivityPage({ params }: PageProps<"/[locale]/acti
         )}
       </section>
 
-      <section className="flex flex-col gap-3">
-        <SectionTitle>{t("myOffers")}</SectionTitle>
-        {(myOffers ?? []).length === 0 ? (
-          <EmptyState>{t("noOffers")}</EmptyState>
-        ) : (
-          (myOffers ?? []).map((x) =>
-            x.shift ? <ShiftCard key={x.id} shift={x.shift as unknown as ShiftWithHospital} /> : null,
-          )
-        )}
-      </section>
+      {!hr ? (
+        <section className="flex flex-col gap-3">
+          <SectionTitle>{t("myOffers")}</SectionTitle>
+          {(myOffers ?? []).length === 0 ? (
+            <EmptyState>{t("noOffers")}</EmptyState>
+          ) : (
+            (myOffers ?? []).map((x) =>
+              x.shift ? <ShiftCard key={x.id} shift={x.shift as unknown as ShiftWithHospital} /> : null,
+            )
+          )}
+        </section>
+      ) : null}
 
       {past.length > 0 ? (
         <section className="flex flex-col gap-3">

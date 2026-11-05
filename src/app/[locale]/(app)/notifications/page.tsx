@@ -6,7 +6,7 @@ import MarkNotificationsRead from "@/components/MarkNotificationsRead";
 import { Card, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { deleteAlert } from "@/app/actions/notifications";
 import { createClient } from "@/lib/supabase/server";
-import { requireApproved } from "@/lib/viewer";
+import { isHr, requireApproved } from "@/lib/viewer";
 import { DOC_TYPES, MAX_ALERTS, type City, type DocType, type Specialty } from "@/lib/constants";
 import { isKnownKind, notificationHref, readPayload } from "@/lib/notifications";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/time";
@@ -84,6 +84,7 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
               date: p.expires_on ? formatDate(p.expires_on, locale) : c("dash"),
               team: p.team ?? c("dash"),
               reason: p.reason ?? c("dash"),
+              title: p.title ?? c("dash"),
             });
             const unread = !n.read_at;
             return (
@@ -111,6 +112,8 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
         )}
       </section>
 
+      {/* Shift alerts are for doctors; hospital HR search doctors instead. */}
+      {!isHr(viewer.profile) ? (
       <Card className="flex flex-col gap-4">
         <div>
           <SectionTitle>{t("alertsTitle")}</SectionTitle>
@@ -145,6 +148,7 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
           <p className="text-sm text-ink-muted">{t("tooManyAlerts", { max: MAX_ALERTS })}</p>
         )}
       </Card>
+      ) : null}
     </div>
   );
 }

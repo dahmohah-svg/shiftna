@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/time";
-import { Bell, ClipboardList, Handshake, SquarePlus, UserRound } from "lucide-react";
+import { Bell, ClipboardList, Handshake, SquarePlus, UserRound, UserSearch } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { subscribeAsUser } from "@/lib/supabase/realtime";
 
-const tabs = [
+const doctorTabs = [
   { href: "/shifts", key: "shifts", Icon: ClipboardList },
   { href: "/post", key: "post", Icon: SquarePlus },
   { href: "/activity", key: "activity", Icon: Handshake },
@@ -16,11 +16,26 @@ const tabs = [
   { href: "/profile", key: "profile", Icon: UserRound },
 ] as const;
 
+/** Hospital HR find doctors instead of browsing shifts. */
+const hrTabs = [
+  { href: "/hr", key: "doctors", Icon: UserSearch },
+  ...doctorTabs.slice(1),
+] as const;
+
 /** Sent by the notifications page once it has marked everything read. */
 export const NOTIFICATIONS_READ_EVENT = "shiftna:notifications-read";
 
-/** Bottom tab bar: Shifts, Post, Offers, Alerts, Profile. */
-export default function TabBar({ userId, initialUnread }: { userId: string; initialUnread: number }) {
+/** Bottom tab bar: Shifts (or Doctors for HR), Post, Offers, Alerts, Profile. */
+export default function TabBar({
+  userId,
+  initialUnread,
+  hr = false,
+}: {
+  userId: string;
+  initialUnread: number;
+  hr?: boolean;
+}) {
+  const tabs = hr ? hrTabs : doctorTabs;
   const t = useTranslations("Nav");
   const locale = useLocale();
   const pathname = usePathname();
@@ -69,8 +84,9 @@ export default function TabBar({ userId, initialUnread }: { userId: string; init
           const active =
             pathname === tab.href ||
             pathname.startsWith(tab.href + "/") ||
-            (tab.href === "/activity" && pathname.startsWith("/bookings")) ||
-            (tab.href === "/profile" && ["/doctors", "/admin", "/teams"].some((p) => pathname.startsWith(p)));
+            (tab.href === "/activity" && (pathname.startsWith("/bookings") || pathname.startsWith("/jobs"))) ||
+            (tab.href === "/hr" && pathname.startsWith("/doctors")) ||
+            (tab.href === "/profile" && [...(hr ? [] : ["/doctors"]), "/admin", "/teams"].some((p) => pathname.startsWith(p)));
           const badge = tab.key === "alerts" && unread > 0 ? unread : 0;
           return (
             <li key={tab.href}>

@@ -10,6 +10,8 @@ import { requiredDocsFor } from "@/lib/constants";
 import {
   docsToUpload,
   getMyLatestDocs,
+  homePath,
+  isHr,
   profileComplete,
   requireUser,
 } from "@/lib/viewer";
@@ -22,12 +24,12 @@ export default async function OnboardingPage({
   setRequestLocale(locale as Locale);
   const viewer = await requireUser(locale);
   if (viewer.profile.status === "approved") {
-    redirect({ href: "/shifts", locale: locale as Locale });
+    redirect({ href: homePath(viewer.profile), locale: locale as Locale });
   }
 
   const t = await getTranslations("Onboarding");
   const docs = await getMyLatestDocs(viewer.userId);
-  const ready = profileComplete(viewer.profile) && docsToUpload(docs, viewer.profile.grade).length === 0;
+  const ready = profileComplete(viewer.profile) && docsToUpload(docs, viewer.profile).length === 0;
   const p = viewer.profile;
   const myPhone = (await getContactPhones(await createClient(), [viewer.userId])).get(viewer.userId) ?? "";
 
@@ -47,14 +49,17 @@ export default async function OnboardingPage({
             grade: p.grade ?? "",
             specialty: p.specialty ?? "",
             city: p.city ?? "",
+            accountType: p.account_type,
+            jobTitle: p.job_title ?? "",
+            hrHospital: p.hr_hospital_name ?? "",
           }}
         />
       </Card>
 
       <section className="flex flex-col gap-3">
         <SectionTitle>{t("step2")}</SectionTitle>
-        <p className="text-sm leading-relaxed text-ink-muted">{t("docsIntro")}</p>
-        {requiredDocsFor(p.grade).map((type) => (
+        <p className="text-sm leading-relaxed text-ink-muted">{isHr(p) ? t("hrDocsIntro") : t("docsIntro")}</p>
+        {requiredDocsFor(p.grade, p.account_type).map((type) => (
           <DocUploader
             key={type}
             userId={viewer.userId}

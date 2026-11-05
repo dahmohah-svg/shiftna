@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
-import { addHospital, approveDoctor, mergeHospitals, rejectDoctor, setDoctorRole } from "@/app/actions/admin";
+import { addHospital, approveDoctor, approveHr, mergeHospitals, rejectDoctor, setDoctorRole } from "@/app/actions/admin";
 import { CITIES, GRADES, requiredDocsFor, SPECIALTIES } from "@/lib/constants";
 import { Checkbox, Field, Input, Select, Textarea } from "./ui";
 import { FormMessage, SubmitButton } from "./forms";
@@ -33,7 +33,49 @@ export function ApproveDoctorForm({ userId, minDate, grade }: { userId: string; 
   );
 }
 
-export function RejectDoctorForm({ userId, grade }: { userId: string; grade: string | null }) {
+/**
+ * Admin: approve a hospital HR account and link it to one hospital (an
+ * existing one, or the name they typed added as a new verified hospital).
+ */
+export function ApproveHrForm({
+  userId,
+  askedName,
+  hospitals,
+}: {
+  userId: string;
+  askedName: string;
+  /** Hospitals to choose from, likely matches first; taken ones are left out. */
+  hospitals: { id: string; label: string }[];
+}) {
+  const t = useTranslations("Admin");
+  const [state, action] = useActionState(approveHr, undefined);
+  return (
+    <form action={action} className="flex flex-col gap-3">
+      <input type="hidden" name="userId" value={userId} />
+      <Field label={t("hrLinkHospital")} hint={t("hrLinkHint")} htmlFor={`hh-${userId}`}>
+        <Select id={`hh-${userId}`} name="hospitalId" required defaultValue="">
+          <option value="" disabled>{t("hrChooseHospital")}</option>
+          <option value="new">{t("hrNewHospital", { name: askedName })}</option>
+          {hospitals.map((h) => (
+            <option key={h.id} value={h.id}>{h.label}</option>
+          ))}
+        </Select>
+      </Field>
+      <FormMessage state={state} success={t("hrApproved")} />
+      <SubmitButton>{t("approveHr")}</SubmitButton>
+    </form>
+  );
+}
+
+export function RejectDoctorForm({
+  userId,
+  grade,
+  accountType = "doctor",
+}: {
+  userId: string;
+  grade: string | null;
+  accountType?: string;
+}) {
   const t = useTranslations("Admin");
   const d = useTranslations("Docs");
   const [state, action] = useActionState(rejectDoctor, undefined);
@@ -42,7 +84,7 @@ export function RejectDoctorForm({ userId, grade }: { userId: string; grade: str
       <input type="hidden" name="userId" value={userId} />
       <fieldset className="flex flex-col gap-2">
         <legend className="pb-1 text-sm font-semibold">{t("rejectDoc")}</legend>
-        {requiredDocsFor(grade).map((k) => (
+        {requiredDocsFor(grade, accountType).map((k) => (
           <Checkbox key={k} name="types" value={k} label={d(k)} />
         ))}
       </fieldset>

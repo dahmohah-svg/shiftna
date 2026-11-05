@@ -47,7 +47,13 @@
     "tooManyTeams": "You have reached the number of teams your plan allows.",
     "invalidCode": "This invite code is not valid. Check it with the team manager.",
     "tooManyHospitals": "You can add up to 5 hospitals a day. Try again tomorrow, or ask the Shiftna team.",
-    "hospitalExists": "This hospital is already listed in that city."
+    "hospitalExists": "This hospital is already listed in that city.",
+    "notTakingOffers": "This doctor isn't taking job offers right now.",
+    "jobOfferLimit": "You've reached today's limit of job offers. Try again tomorrow.",
+    "jobOfferPending": "You already sent this doctor an offer that's still waiting for a reply.",
+    "hospitalHasHr": "This hospital already has an HR account.",
+    "alreadyAnswered": "This offer was already answered.",
+    "chooseYourShift": "Choose an open shift at your hospital."
   },
   "Home": {
     "tagline": "Medical shifts, with trust.",
@@ -62,7 +68,10 @@
     "signIn": "I already have an account",
     "footer": "Built for doctors in Egypt",
     "privacy": "Privacy",
-    "terms": "Terms"
+    "terms": "Terms",
+    "hrTitle": "Hospital HR or recruitment?",
+    "hrBody": "Join to find verified doctors, send job offers and post your hospital's shifts.",
+    "hrCta": "Create a hospital HR account"
   },
   "LanguageSwitcher": {
     "label": "Language",
@@ -71,7 +80,7 @@
   "Auth": {
     "signInTitle": "Sign in",
     "signUpTitle": "Create your account",
-    "signUpIntro": "Only verified doctors can use Shiftna, from interns to consultants. After you sign up you will upload your documents for review.",
+    "signUpIntro": "For verified doctors, from interns to consultants, and for hospital HR. After you sign up you will upload your documents for review.",
     "fullName": "Full name",
     "email": "Email",
     "password": "Password",
@@ -111,20 +120,31 @@
     "finishHint": "Upload all four documents to send your account for review.",
     "specialty": "Specialty",
     "gradeHint": "Interns upload an internship letter instead of a practice license and certificate.",
-    "lockedNote": "Checked when your account was approved. To change it, contact the Shiftna team."
+    "lockedNote": "Checked when your account was approved. To change it, contact the Shiftna team.",
+    "accountType": "I am",
+    "account_doctor": "A doctor",
+    "account_hr": "Hospital HR / recruitment",
+    "jobTitle": "Your job title",
+    "jobTitleHint": "For example: HR manager, Medical director's office.",
+    "hrHospital": "Hospital you recruit for",
+    "hrHospitalHint": "Write the full name. We check it before approving your account.",
+    "hrCity": "Hospital city",
+    "hrDocsIntro": "Upload a letter on the hospital's paper naming you as its HR or recruitment contact, or your hospital staff card. It's private: only you and the Shiftna review team can open it.",
+    "hrLetterHint": "A signed letter on hospital paper, or a staff card showing your name and the hospital."
   },
   "Docs": {
     "syndicate_card": "Syndicate card",
     "license": "Practice license",
     "certificate": "Specialty certificate",
     "selfie": "Selfie with Syndicate card",
-    "internship_letter": "Internship letter"
+    "internship_letter": "Internship letter",
+    "hr_letter": "Hospital letter or staff card"
   },
   "Status": {
     "pendingTitle": "Under review",
     "pendingBody": "Thank you. Our team is checking your documents. This usually takes one working day. You can close the app; you will see your shifts here once approved.",
     "incompleteTitle": "Finish your sign-up",
-    "incompleteBody": "Add your details and upload all four documents so we can review your account.",
+    "incompleteBody": "Add your details and upload your documents so we can review your account.",
     "continue": "Continue",
     "rejectedTitle": "Some documents need attention",
     "rejectedBody": "Please upload these documents again:",
@@ -141,7 +161,8 @@
     "alerts": "Alerts",
     "profile": "Profile",
     "admin": "Admin",
-    "alertsUnread": "{count, plural, one {Alerts, {n} new} other {Alerts, {n} new}}"
+    "alertsUnread": "{count, plural, one {Alerts, {n} new} other {Alerts, {n} new}}",
+    "doctors": "Doctors"
   },
   "Options": {
     "grade": {
@@ -273,6 +294,22 @@
       "clinical_pathology": "Clinical Pathology (Lab)",
       "tropical_medicine": "Tropical Medicine & Fevers",
       "family_medicine": "Family Medicine / GP"
+    },
+    "jobKind": {
+      "shift": "One shift",
+      "part_time": "Part time",
+      "full_time": "Full time"
+    },
+    "payPeriod": {
+      "shift": "per shift",
+      "hour": "per hour",
+      "month": "per month"
+    },
+    "jobStatus": {
+      "pending": "Waiting for reply",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "withdrawn": "Withdrawn"
     }
   },
   "Shifts": {
@@ -295,7 +332,8 @@
     "teamOnly": "Team: {team}",
     "teamShiftsOnly": "My teams' shifts only",
     "specialty": "Specialty",
-    "allSpecialties": "All specialties"
+    "allSpecialties": "All specialties",
+    "byHospital": "From the hospital"
   },
   "Shift": {
     "when": "When",
@@ -516,7 +554,15 @@
     "changeRoleNote": "Check the new documents first, for example a specialty certificate when a resident becomes a specialist.",
     "saveRole": "Save",
     "specialty": "Specialty",
-    "grade": "Grade"
+    "grade": "Grade",
+    "hrBadge": "Hospital HR",
+    "hrChecklist": "Check that the letter or staff card names this person and the hospital, then link the account to that hospital.",
+    "hrLinkHospital": "Hospital",
+    "hrLinkHint": "Approving also marks this hospital Verified. Each hospital has one HR account.",
+    "hrChooseHospital": "Choose the hospital",
+    "hrNewHospital": "Not in the list: add “{name}”",
+    "approveHr": "Approve HR account",
+    "hrApproved": "HR account approved."
   },
   "Legal": {
     "privacyTitle": "Privacy policy",
@@ -566,7 +612,12 @@
       "team_created": "{doctor} created a new team: {team}. Check and verify it when you can.",
       "team_verified": "Your team {team} is now Verified.",
       "team_paused": "Your team {team} was paused: {reason}",
-      "team_resumed": "Your team {team} is active again."
+      "team_resumed": "Your team {team} is active again.",
+      "job_offer": "{hospital} sent you a job offer: {title}.",
+      "job_offer_accepted": "{doctor} accepted your job offer: {title}.",
+      "job_offer_declined": "{doctor} declined your job offer: {title}.",
+      "job_offer_withdrawn": "{hospital} withdrew a job offer: {title}.",
+      "job_message": "New message from {sender} about “{title}”."
     },
     "alertsTitle": "Shift alerts",
     "alertsIntro": "Get an alert here when a new shift matching these choices is posted.",
@@ -797,7 +848,13 @@
     "rejoinAllowed": "They can ask to join again.",
     "alertSaved": "Alert saved.",
     "alertDeleted": "Alert deleted.",
-    "privacyUpdated": "Privacy setting saved."
+    "privacyUpdated": "Privacy setting saved.",
+    "jobOffersUpdated": "Job offer settings saved.",
+    "jobOfferSent": "Job offer sent.",
+    "jobOfferAccepted": "Offer accepted.",
+    "jobOfferDeclined": "Offer declined.",
+    "jobOfferWithdrawn": "Offer withdrawn.",
+    "hrApproved": "HR account approved and linked to the hospital."
   },
   "Welcome": {
     "previewTitle": "How Shiftna looks",
@@ -863,5 +920,73 @@
     },
     "footnote": "Weeks start on Monday (Cairo time). 'Active' counts doctors who opened Shiftna or posted, offered or messaged that week; app opens are counted from today onwards.",
     "unavailable": "The growth numbers are not available yet. Run the latest database update (020) in Supabase."
+  },
+  "Hr": {
+    "title": "Find doctors",
+    "intro": "Verified doctors who are open to job offers from hospitals.",
+    "recruitFor": "You recruit for",
+    "postShift": "Post a shift",
+    "noHospital": "Your account isn't linked to a hospital yet. Contact the Shiftna team.",
+    "noHospitalShort": "No hospital linked yet",
+    "specialty": "Specialty",
+    "anySpecialty": "Any specialty",
+    "city": "City",
+    "anyCity": "Any city",
+    "minGrade": "Grade",
+    "anyGrade": "Any grade",
+    "gradeOrAbove": "{grade} or above",
+    "search": "Search",
+    "results": "{count, plural, =0 {No doctors found} one {{n} doctor} other {{n} doctors}}",
+    "empty": "No doctors match yet. Try another specialty, grade or city.",
+    "shiftsDone": "{n} shifts done",
+    "showUp": "{n}% show-up",
+    "sendOffer": "Job offer"
+  },
+  "Jobs": {
+    "sectionTitle": "Job offers",
+    "none": "No job offers yet.",
+    "notFound": "This job offer doesn't exist or isn't yours.",
+    "to": "To {doctor}",
+    "from": "From {hospital}",
+    "doctor": "Doctor",
+    "sentBy": "Sent by",
+    "sentAt": "Sent",
+    "newTitle": "Send a job offer",
+    "kind": "Type of work",
+    "shift": "Shift",
+    "shiftHint": "Your hospital's open shifts this doctor's grade allows.",
+    "chooseShift": "Choose a shift",
+    "noOpenShifts": "You have no open shifts this doctor can take. Post one first, or choose part time or full time.",
+    "jobTitle": "Title",
+    "jobTitleHint": "For example: Full-time OB/GYN specialist.",
+    "details": "Details (optional)",
+    "detailsHint": "Hours, days, requirements, benefits, how to apply.",
+    "pay": "Pay (EGP, optional)",
+    "payPeriod": "Paid",
+    "send": "Send offer",
+    "limitNote": "The doctor gets an alert and can reply in the chat. You can send up to {n} job offers a day.",
+    "notTaking": "This doctor isn't taking job offers right now.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "declineConfirm": "Decline this job offer?",
+    "withdraw": "Withdraw offer",
+    "withdrawConfirm": "Withdraw this job offer?",
+    "acceptShiftNote": "Accepting books this shift for you straight away.",
+    "openBooking": "Open the booking",
+    "chatTitle": "Messages",
+    "chatNote": "Ask and answer questions here. Phone numbers are shared after the doctor accepts, if they allow it.",
+    "chatClosed": "This offer is closed, so the chat is read-only.",
+    "phone": "Phone",
+    "hrBadge": "Hospital HR",
+    "sendOffer": "Send a job offer",
+    "findForShift": "Find a doctor for this shift",
+    "settingTitle": "Job offers from hospitals",
+    "settingOn": "Hospital HR can find you and send you job offers.",
+    "settingOff": "Hospital HR can't find you or send you job offers.",
+    "turnOn": "Turn on",
+    "turnOff": "Turn off",
+    "noteLabel": "What are you looking for? (optional)",
+    "noteHint": "Shown to hospital HR. For example: part-time evenings in Giza.",
+    "saveNote": "Save"
   }
 }

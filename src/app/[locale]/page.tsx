@@ -1,4 +1,4 @@
-import { ClipboardList, ShieldCheck, Star } from "lucide-react";
+import { Building2, ClipboardList, ShieldCheck, Star } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
 import InstallApp from "@/components/InstallApp";
@@ -6,7 +6,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import WelcomePreview from "@/components/WelcomePreview";
 import Logo from "@/components/Logo";
 import { buttonClass } from "@/components/ui";
-import { getViewer } from "@/lib/viewer";
+import { getViewer, homePath } from "@/lib/viewer";
 import type { Locale } from "@/i18n/routing";
 
 const features = [
@@ -23,7 +23,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const viewer = await getViewer();
   if (viewer) {
     redirect({
-      href: viewer.profile.status === "approved" ? "/shifts" : "/status",
+      href: viewer.profile.status === "approved" ? homePath(viewer.profile) : "/status",
       locale: locale as Locale,
     });
   }
@@ -81,6 +81,20 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </li>
           ))}
         </ul>
+
+        {/* Hospital HR join too: they find doctors and post their hospital's shifts. */}
+        <section className="flex flex-col gap-3 rounded-2xl border border-brand-200 bg-brand-50 p-4">
+          <div className="flex items-start gap-3">
+            <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface text-brand-700">
+              <Building2 className="h-5 w-5" strokeWidth={2.25} />
+            </span>
+            <div className="flex flex-col gap-0.5">
+              <h2 className="font-bold text-ink">{t("hrTitle")}</h2>
+              <p className="text-sm leading-relaxed text-ink-muted">{t("hrBody")}</p>
+            </div>
+          </div>
+          <Link href="/sign-up" className={buttonClass.secondary}>{t("hrCta")}</Link>
+        </section>
       </main>
 
       <footer className="flex flex-col items-center gap-2 pt-8 text-xs text-ink-muted">

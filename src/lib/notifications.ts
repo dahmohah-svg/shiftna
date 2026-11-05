@@ -25,6 +25,11 @@ export const NOTIFICATION_KINDS = [
   "team_verified",
   "team_paused",
   "team_resumed",
+  "job_offer",
+  "job_offer_accepted",
+  "job_offer_declined",
+  "job_offer_withdrawn",
+  "job_message",
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -40,6 +45,8 @@ type Payload = {
   team_id?: string;
   team?: string;
   reason?: string;
+  job_id?: string;
+  title?: string;
 };
 
 export function readPayload(n: NotificationRow): Payload {
@@ -56,8 +63,9 @@ export function isKnownKind(kind: string): kind is NotificationKind {
 
 /** Where tapping a notification takes the doctor. */
 export function notificationHref(kind: NotificationKind, p: Payload): string {
+  if (p.job_id) return `/jobs/${p.job_id}`;
   if (p.booking_id) return `/bookings/${p.booking_id}`;
-  if (kind === "account_approved") return "/shifts";
+  if (kind === "account_approved") return "/";
   if (kind === "document_expiring") return "/profile";
   if (kind === "team_rejected") return "/teams";
   if (kind === "hospital_added") return "/admin?tab=hospitals";

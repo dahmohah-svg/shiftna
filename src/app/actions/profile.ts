@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
-import { CITIES, DOC_TYPES, GRADES, SPECIALTIES } from "@/lib/constants";
+import { ACCOUNT_TYPES, CITIES, DOC_TYPES, GRADES, SPECIALTIES } from "@/lib/constants";
 
 const detailsSchema = z.object({
   fullName: z.string().trim().min(3).max(120),
@@ -14,10 +14,14 @@ const detailsSchema = z.object({
     .trim()
     .regex(/^\+?[0-9 ]{8,16}$/)
     .or(z.literal("")),
-  // Grade and specialty are locked once approved (the database keeps them).
+  // Account type, grade and specialty are locked once approved (the database keeps them).
+  accountType: z.enum(ACCOUNT_TYPES).optional(),
   grade: z.enum(GRADES).optional(),
   specialty: z.enum(SPECIALTIES).optional(),
-  city: z.enum(CITIES),
+  // Approved HR take the city of their hospital, so the form leaves it out.
+  city: z.enum(CITIES).optional(),
+  jobTitle: z.string().trim().min(2).max(120).optional(),
+  hrHospital: z.string().trim().min(2).max(160).optional(),
 });
 
 export async function saveDetails(
@@ -33,14 +37,18 @@ export async function saveDetails(
   } = await supabase.auth.getUser();
   if (!user) return { error: "notAllowed" };
 
+  const v = parsed.data;
   const { error } = await supabase
     .from("profiles")
     .update({
-      full_name: parsed.data.fullName,
-      phone: parsed.data.phone.replace(/\s/g, "") || null,
-      ...(parsed.data.grade ? { grade: parsed.data.grade } : {}),
-      ...(parsed.data.specialty ? { specialty: parsed.data.specialty } : {}),
-      city: parsed.data.city,
+      full_name: v.fullName,
+      phone: v.phone.replace(/\s/g, "") || null,
+      ...(v.accountType ? { account_type: v.accountType } : {}),
+      ...(v.accountType !== "hr" && v.grade ? { grade: v.grade } : {}),
+      ...(v.accountType !== "hr" && v.specialty ? { specialty: v.specialty } : {}),
+      ...(v.city ? { city: v.city } : {}),
+      ...(v.jobTitle ? { job_title: v.jobTitle } : {}),
+      ...(v.hrHospital ? { hr_hospital_name: v.hrHospital } : {}),
     })
     .eq("id", user.id);
   if (error) return { error: toErrorKey(error) };
@@ -103,6 +111,36 @@ export async function setShowPhone(
   const { error } = await supabase.from("profiles").update({ show_phone: show }).eq("id", user.id);
   if (error) return { error: toErrorKey(error) };
   await flash("privacyUpdated");
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+const offersSchema = z.object({
+  open: z.enum(["0", "1"]).optional(),
+  note: z.string().trim().max(200).optional(),
+});
+
+/** Doctors: whether hospital HR can find them and send job offers, and what they look for. */
+export async function setJobOffers(
+  _prev: ActionState | undefined,
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = offersSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "invalid" };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "notAllowed" };
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      ...(parsed.data.open ? { open_to_offers: parsed.data.open === "1" } : {}),
+      ...(parsed.data.note !== undefined ? { offer_note: parsed.data.note || null } : {}),
+    })
+    .eq("id", user.id);
+  if (error) return { error: toErrorKey(error) };
+  await flash("jobOffersUpdated");
   revalidatePath("/", "layout");
   return { ok: true };
 }

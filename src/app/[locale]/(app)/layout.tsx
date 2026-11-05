@@ -2,9 +2,9 @@ import InstallApp from "@/components/InstallApp";
 import TabBar from "@/components/TabBar";
 import TrackOpen from "@/components/TrackOpen";
 import { createClient } from "@/lib/supabase/server";
-import { requireApproved } from "@/lib/viewer";
+import { isHr, requireApproved } from "@/lib/viewer";
 
-// Everything inside (app) is only for approved doctors.
+// Everything inside (app) is only for approved doctors and hospital HR.
 export default async function AppLayout({
   children,
   params,
@@ -25,7 +25,7 @@ export default async function AppLayout({
         <InstallApp variant="banner" />
         {children}
       </main>
-      <TabBar userId={viewer.userId} initialUnread={count ?? 0} />
+      <TabBar userId={viewer.userId} initialUnread={count ?? 0} hr={isHr(viewer.profile)} />
       <TrackOpen />
     </>
   );

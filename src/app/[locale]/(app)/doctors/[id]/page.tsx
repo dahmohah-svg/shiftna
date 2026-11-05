@@ -2,17 +2,18 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import StatsGrid from "@/components/StatsGrid";
 import TrustBadge from "@/components/TrustBadge";
 import VerifiedBadge from "@/components/VerifiedBadge";
-import { ScanFace } from "lucide-react";
-import { Badge, Card, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
+import { Send, ScanFace } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { Badge, buttonClass, Card, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
-import { requireApproved } from "@/lib/viewer";
+import { isHr, requireApproved } from "@/lib/viewer";
 import { EVERYTHING_FREE, type Specialty } from "@/lib/constants";
 import type { Locale } from "@/i18n/routing";
 
 export default async function DoctorPage({ params }: PageProps<"/[locale]/doctors/[id]">) {
   const { locale, id } = await params;
   setRequestLocale(locale as Locale);
-  await requireApproved(locale);
+  const viewer = await requireApproved(locale);
   const t = await getTranslations("Profile");
   const o = await getTranslations("Options");
   const c = await getTranslations("Common");
@@ -20,10 +21,13 @@ export default async function DoctorPage({ params }: PageProps<"/[locale]/doctor
 
   const { data: doctor } = await supabase
     .from("profiles")
-    .select("id, full_name, grade, city, specialty")
+    .select("id, full_name, grade, city, specialty, account_type, job_title, open_to_offers, offer_note")
     .eq("id", id)
     .maybeSingle();
   if (!doctor) return <EmptyState>{c("none")}</EmptyState>;
+  const j = await getTranslations("Jobs");
+  // Hospital HR viewing a doctor can send a job offer.
+  const canOffer = isHr(viewer.profile) && doctor.account_type === "doctor" && doctor.open_to_offers;
 
   const [{ data: stats }, { data: trust }, { data: ratings }] = await Promise.all([
     supabase.rpc("doctor_stats", { p_doctor: id }),
@@ -45,10 +49,25 @@ export default async function DoctorPage({ params }: PageProps<"/[locale]/doctor
       <Card className="flex flex-col gap-2">
         <span className="text-xl font-extrabold">{doctor.full_name}</span>
         <span className="text-sm text-ink-muted">
-          {o(`specialty.${doctor.specialty as Specialty}`)}
-          {doctor.grade ? ` · ${o(`grade.${doctor.grade as "resident"}`)}` : null}
+          {doctor.account_type === "hr" ? (
+            <>
+              <Badge tone="brand">{j("hrBadge")}</Badge> {doctor.job_title}
+            </>
+          ) : (
+            <>
+              {o(`specialty.${doctor.specialty as Specialty}`)}
+              {doctor.grade ? ` · ${o(`grade.${doctor.grade as "resident"}`)}` : null}
+            </>
+          )}
           {doctor.city ? ` · ${o(`city.${doctor.city as "cairo"}`)}` : null}
         </span>
+        {canOffer && doctor.offer_note ? <p className="rounded-lg bg-page p-2 text-sm text-ink">{doctor.offer_note}</p> : null}
+        {canOffer ? (
+          <Link href={`/jobs/new?doctor=${doctor.id}`} className={buttonClass.primary}>
+            <Send className="h-4 w-4" aria-hidden />
+            {j("sendOffer")}
+          </Link>
+        ) : null}
         <div className="flex flex-wrap gap-1.5">
           <TrustBadge badge={tr?.badge} />
           {tr?.docs_verified ? <VerifiedBadge /> : null}

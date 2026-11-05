@@ -9,20 +9,26 @@ import { buttonClass, inputClass, Notice } from "./ui";
 type Message = { id: string; sender_id: string; body: string; created_at: string };
 
 /**
- * Booking chat. Messages arrive live through Supabase Realtime; Row Level
- * Security means only the two doctors in this booking can read or send.
+ * Chat for a booking, or for a hospital's job offer. Messages arrive live
+ * through Supabase Realtime; Row Level Security means only the two people
+ * in that booking or job offer can read or send.
  */
 export default function Chat({
   bookingId,
+  jobOfferId,
   me,
   initial,
   disabled,
 }: {
-  bookingId: string;
+  bookingId?: string;
+  jobOfferId?: string;
   me: string;
   initial: Message[];
   disabled?: boolean;
 }) {
+  const thread = jobOfferId
+    ? ({ table: "job_messages", column: "job_offer_id", id: jobOfferId } as const)
+    : ({ table: "messages", column: "booking_id", id: bookingId! } as const);
   const t = useTranslations("Booking");
   const e = useTranslations("Errors");
   const locale = useLocale();
@@ -34,16 +40,16 @@ export default function Chat({
 
   useEffect(() => {
     return subscribeAsUser(createClient(), (supabase) =>
-      supabase.channel(`booking-${bookingId}`).on(
+      supabase.channel(`${thread.table}-${thread.id}`).on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages", filter: `booking_id=eq.${bookingId}` },
+        { event: "INSERT", schema: "public", table: thread.table, filter: `${thread.column}=eq.${thread.id}` },
         (payload) => {
           const m = payload.new as Message;
           setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
         },
       ),
     );
-  }, [bookingId]);
+  }, [thread.table, thread.column, thread.id]);
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "nearest" });
@@ -56,11 +62,18 @@ export default function Chat({
     setSending(true);
     setError(false);
     const supabase = createClient();
-    const { data, error: err } = await supabase
-      .from("messages")
-      .insert({ booking_id: bookingId, sender_id: me, body })
-      .select("id, sender_id, body, created_at")
-      .single();
+    const { data, error: err } =
+      thread.table === "job_messages"
+        ? await supabase
+            .from("job_messages")
+            .insert({ job_offer_id: thread.id, sender_id: me, body })
+            .select("id, sender_id, body, created_at")
+            .single()
+        : await supabase
+            .from("messages")
+            .insert({ booking_id: thread.id, sender_id: me, body })
+            .select("id, sender_id, body, created_at")
+            .single();
     setSending(false);
     if (err || !data) {
       setError(true);

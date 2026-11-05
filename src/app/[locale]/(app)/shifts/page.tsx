@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import ShiftCard from "@/components/ShiftCard";
 import { buttonClass, Checkbox, EmptyState, PageTitle, Select } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
-import { requireApproved } from "@/lib/viewer";
+import { requireDoctor } from "@/lib/viewer";
 import { CITIES, SHIFT_TYPES, SPECIALTIES, SUBSPECIALTIES, subspecialtiesFor, type Specialty } from "@/lib/constants";
 import { SHIFT_WITH_HOSPITAL, SHIFT_WITH_HOSPITAL_INNER, type ShiftWithHospital } from "@/lib/shifts";
 import { getHospitalTrust } from "@/lib/hospitals";
@@ -19,7 +19,7 @@ export default async function ShiftsPage({
 }: PageProps<"/[locale]/shifts">) {
   const { locale } = await params;
   setRequestLocale(locale as Locale);
-  const viewer = await requireApproved(locale);
+  const viewer = await requireDoctor(locale);
   const sp = await searchParams;
   const city = pick(CITIES, sp.city);
   const type = pick(SHIFT_TYPES, sp.type);

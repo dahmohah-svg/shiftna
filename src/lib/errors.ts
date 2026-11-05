@@ -26,7 +26,13 @@ export type ErrorKey =
   | "tooManyTeams"
   | "invalidCode"
   | "tooManyHospitals"
-  | "hospitalExists";
+  | "hospitalExists"
+  | "notTakingOffers"
+  | "jobOfferLimit"
+  | "jobOfferPending"
+  | "hospitalHasHr"
+  | "alreadyAnswered"
+  | "chooseYourShift";
 
 /** Result returned by every server action. */
 export type ActionState = {
@@ -50,7 +56,13 @@ const DB_MESSAGES: [RegExp, ErrorKey][] = [
   [/too many hospitals/i, "tooManyHospitals"],
   [/hospital name must be/i, "invalid"],
   [/choose two different hospitals|hospital not found/i, "invalid"],
-  [/choose two different hospitals|hospital not found/i, "invalid"],
+  [/not taking job offers/i, "notTakingOffers"],
+  [/job offer limit/i, "jobOfferLimit"],
+  [/still waiting/i, "jobOfferPending"],
+  [/already has an hr account/i, "hospitalHasHr"],
+  [/already answered/i, "alreadyAnswered"],
+  [/shift at your hospital/i, "chooseYourShift"],
+  [/only hospital hr/i, "notAllowed"],
   [/not allowed/i, "notAllowed"],
 ];
 

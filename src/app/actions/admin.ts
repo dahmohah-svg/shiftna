@@ -117,6 +117,57 @@ export async function approveDoctor(
   return done();
 }
 
+const approveHrSchema = z.object({
+  userId: uuid,
+  // An existing hospital, or "new" to add the hospital name the HR person typed.
+  hospitalId: uuid.or(z.literal("new")),
+});
+
+/** Approves a hospital HR account: checks its letter, links it to one hospital and verifies that hospital. */
+export async function approveHr(
+  _prev: ActionState | undefined,
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = approveHrSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "invalid" };
+  const ctx = await adminClient();
+  if (!ctx) return { error: "notAllowed" };
+  const v = parsed.data;
+
+  const { data: hr } = await ctx.supabase
+    .from("profiles")
+    .select("account_type, city, hr_hospital_name")
+    .eq("id", v.userId)
+    .single();
+  if (!hr || hr.account_type !== "hr") return { error: "invalid" };
+
+  const latest = await latestDocs(ctx, v.userId);
+  const letter = latest.get("hr_letter");
+  if (!letter || letter.status === "rejected") return { error: "invalid" };
+
+  let hospitalId = v.hospitalId;
+  if (hospitalId === "new") {
+    if (!hr.hr_hospital_name || !hr.city) return { error: "invalid" };
+    const { data: added, error } = await ctx.supabase
+      .from("hospitals")
+      .insert({ name: hr.hr_hospital_name, city: hr.city, verified: true, added_by: ctx.adminId })
+      .select("id")
+      .single();
+    if (error || !added) return { error: toErrorKey(error) };
+    hospitalId = added.id;
+  }
+
+  if (letter.status !== "approved") {
+    const { error } = await ctx.supabase.rpc("admin_review_document", { p_doc: letter.id, p_approve: true, p_reason: "" });
+    if (error) return { error: toErrorKey(error) };
+  }
+  const { error } = await ctx.supabase.rpc("admin_approve_hr", { p_user: v.userId, p_hospital: hospitalId });
+  if (error) return { error: toErrorKey(error) };
+  await audit(ctx, "hr_approved", "profiles", v.userId, hospitalId);
+  await flash("hrApproved");
+  return done();
+}
+
 const rejectSchema = z.object({
   userId: uuid,
   reason: z.string().trim().min(3).max(500),

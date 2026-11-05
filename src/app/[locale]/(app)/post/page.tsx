@@ -3,7 +3,8 @@ import AddHospitalInline from "@/components/AddHospitalInline";
 import PostShiftForm from "@/components/PostShiftForm";
 import { Card, Notice, PageTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
-import { requireApproved } from "@/lib/viewer";
+import { isHr, requireApproved } from "@/lib/viewer";
+import { getMyHospital } from "@/lib/jobs";
 import type { Locale } from "@/i18n/routing";
 
 export default async function PostPage({ params, searchParams }: PageProps<"/[locale]/post">) {
@@ -15,16 +16,21 @@ export default async function PostPage({ params, searchParams }: PageProps<"/[lo
   const o = await getTranslations("Options");
 
   const supabase = await createClient();
-  const { data: hospitals } = await supabase
-    .from("hospitals")
-    .select("id, name, city, verified")
-    .order("name");
+  const hr = isHr(viewer.profile);
+  // Hospital HR post only for their own hospital.
+  const mine = hr ? await getMyHospital(supabase, viewer.userId) : null;
+  const { data: allHospitals } = hr
+    ? { data: mine ? [{ ...mine, verified: true }] : [] }
+    : await supabase.from("hospitals").select("id, name, city, verified").order("name");
+  const hospitals = allHospitals;
 
-  const { data: memberships } = await supabase
-    .from("group_members")
-    .select("group:groups!group_members_group_id_fkey(id, name, status)")
-    .eq("user_id", viewer.userId)
-    .eq("status", "active");
+  const { data: memberships } = hr
+    ? { data: [] }
+    : await supabase
+        .from("group_members")
+        .select("group:groups!group_members_group_id_fkey(id, name, status)")
+        .eq("user_id", viewer.userId)
+        .eq("status", "active");
   const teams = (memberships ?? [])
     .map((m) => m.group)
     .filter((g): g is NonNullable<typeof g> => Boolean(g && g.status === "approved"))
@@ -32,7 +38,7 @@ export default async function PostPage({ params, searchParams }: PageProps<"/[lo
     .sort((a, b) => a.name.localeCompare(b.name));
   const defaultTeam = teams.some((g) => g.id === sp.team) ? (sp.team as string) : "";
   const h = await getTranslations("Hospitals");
-  const defaultHospital = (hospitals ?? []).some((x) => x.id === sp.hospital) ? (sp.hospital as string) : "";
+  const defaultHospital = hr && mine ? mine.id : (hospitals ?? []).some((x) => x.id === sp.hospital) ? (sp.hospital as string) : "";
 
   // Earliest allowed start, as a Cairo local time for the date picker.
   const minStart = new Intl.DateTimeFormat("sv-SE", {
@@ -50,7 +56,7 @@ export default async function PostPage({ params, searchParams }: PageProps<"/[lo
     <>
       <PageTitle>{t("title")}</PageTitle>
       <div className="flex flex-col gap-4">
-        {defaultHospital ? <Notice tone="success">{sp.existing === "1" ? h("existing") : h("added")}</Notice> : null}
+        {defaultHospital && !hr ? <Notice tone="success">{sp.existing === "1" ? h("existing") : h("added")}</Notice> : null}
         {hospitals && hospitals.length > 0 ? (
           <Card>
             <PostShiftForm
@@ -69,7 +75,7 @@ export default async function PostPage({ params, searchParams }: PageProps<"/[lo
         ) : (
           <Notice>{t("noHospitals")}</Notice>
         )}
-        <AddHospitalInline defaultCity={viewer.profile.city ?? undefined} open={!hospitals || hospitals.length === 0} />
+        {!hr ? <AddHospitalInline defaultCity={viewer.profile.city ?? undefined} open={!hospitals || hospitals.length === 0} /> : null}
       </div>
     </>
   );

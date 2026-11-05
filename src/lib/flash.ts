@@ -37,6 +37,12 @@ export const FLASH_KEYS = [
   "alertSaved",
   "alertDeleted",
   "privacyUpdated",
+  "jobOffersUpdated",
+  "jobOfferSent",
+  "jobOfferAccepted",
+  "jobOfferDeclined",
+  "jobOfferWithdrawn",
+  "hrApproved",
 ] as const;
 export type FlashKey = (typeof FLASH_KEYS)[number];
 

@@ -101,6 +101,7 @@ export default function DocUploader({
         {badge}
       </div>
       {isSelfie ? <p className="text-xs text-ink-muted">{t("selfieHint")}</p> : null}
+      {type === "hr_letter" ? <p className="text-xs text-ink-muted">{t("hrLetterHint")}</p> : null}
       {canUpload ? (
         <>
           <input

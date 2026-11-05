@@ -14,7 +14,7 @@ export type Profile = Omit<Database["public"]["Tables"]["profiles"]["Row"], "pho
 
 /** Every profile column doctors may read (all except phone). */
 export const PROFILE_COLUMNS =
-  "id, full_name, city, grade, specialty, photo_url, status, is_premium, is_admin, created_at, max_groups, suspended_reason, show_phone" as const;
+  "id, full_name, city, grade, specialty, photo_url, status, is_premium, is_admin, created_at, max_groups, suspended_reason, show_phone, account_type, job_title, hr_hospital_name, open_to_offers, offer_note" as const;
 export type DocumentRow = Database["public"]["Tables"]["documents"]["Row"];
 
 export type Viewer = {
@@ -62,12 +62,36 @@ export async function requireUser(locale: string): Promise<Viewer> {
   return viewer!;
 }
 
-/** Must be an approved doctor, otherwise go to the account status page. */
+/** Hospital HR accounts (migration 022) rather than doctors. */
+export function isHr(profile: Pick<Profile, "account_type">): boolean {
+  return profile.account_type === "hr";
+}
+
+/** Where an approved user starts: doctors on the shifts feed, HR on doctor search. */
+export function homePath(profile: Pick<Profile, "account_type">): "/hr" | "/shifts" {
+  return isHr(profile) ? "/hr" : "/shifts";
+}
+
+/** Must be an approved doctor or HR account, otherwise go to the account status page. */
 export async function requireApproved(locale: string): Promise<Viewer> {
   const viewer = await requireUser(locale);
   if (viewer.profile.status !== "approved") {
     redirect({ href: "/status", locale: locale as Locale });
   }
+  return viewer;
+}
+
+/** Must be an approved doctor (not HR); HR go to their own start page. */
+export async function requireDoctor(locale: string): Promise<Viewer> {
+  const viewer = await requireApproved(locale);
+  if (isHr(viewer.profile)) redirect({ href: "/hr", locale: locale as Locale });
+  return viewer;
+}
+
+/** Must be an approved hospital HR account; doctors go to the shifts feed. */
+export async function requireHr(locale: string): Promise<Viewer> {
+  const viewer = await requireApproved(locale);
+  if (!isHr(viewer.profile)) redirect({ href: "/shifts", locale: locale as Locale });
   return viewer;
 }
 
@@ -98,15 +122,18 @@ export async function getMyLatestDocs(
 }
 
 export function profileComplete(profile: Profile): boolean {
+  if (isHr(profile)) {
+    return Boolean(profile.full_name?.trim() && profile.city && profile.job_title?.trim() && profile.hr_hospital_name?.trim());
+  }
   return Boolean(profile.full_name?.trim() && profile.grade && profile.city && profile.specialty);
 }
 
 /** Document types that still need an upload (missing or rejected). */
 export function docsToUpload(
   latest: Partial<Record<DocType, DocumentRow>>,
-  grade: string | null | undefined,
+  profile: Pick<Profile, "grade" | "account_type">,
 ): DocType[] {
-  return requiredDocsFor(grade).filter(
+  return requiredDocsFor(profile.grade, profile.account_type).filter(
     (t) => !latest[t] || latest[t]!.status === "rejected",
   );
 }

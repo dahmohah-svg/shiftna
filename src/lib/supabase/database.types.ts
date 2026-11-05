@@ -652,6 +652,118 @@ export type Database = {
           },
         ]
       }
+      job_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          job_offer_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          job_offer_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          job_offer_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_messages_job_offer_id_fkey"
+            columns: ["job_offer_id"]
+            isOneToOne: false
+            referencedRelation: "job_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_offers: {
+        Row: {
+          booking_id: string | null
+          created_at: string
+          details: string | null
+          doctor_id: string
+          hospital_id: string
+          hr_id: string
+          id: string
+          kind: string
+          pay_egp: number | null
+          pay_period: string | null
+          responded_at: string | null
+          shift_id: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string
+          details?: string | null
+          doctor_id: string
+          hospital_id: string
+          hr_id: string
+          id?: string
+          kind: string
+          pay_egp?: number | null
+          pay_period?: string | null
+          responded_at?: string | null
+          shift_id?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string
+          details?: string | null
+          doctor_id?: string
+          hospital_id?: string
+          hr_id?: string
+          id?: string
+          kind?: string
+          pay_egp?: number | null
+          pay_period?: string | null
+          responded_at?: string | null
+          shift_id?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_offers_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_offers_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_offers_hr_id_fkey"
+            columns: ["hr_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_offers_shift_id_fkey"
+            columns: ["shift_id"]
+            isOneToOne: false
+            referencedRelation: "shifts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       logbook_entries: {
         Row: {
           booking_id: string | null
@@ -882,6 +994,11 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_type: string
+          hr_hospital_name: string | null
+          job_title: string | null
+          offer_note: string | null
+          open_to_offers: boolean
           city: string | null
           created_at: string
           full_name: string
@@ -898,6 +1015,11 @@ export type Database = {
           suspended_reason: string | null
         }
         Insert: {
+          account_type?: string
+          hr_hospital_name?: string | null
+          job_title?: string | null
+          offer_note?: string | null
+          open_to_offers?: boolean
           city?: string | null
           created_at?: string
           full_name: string
@@ -914,6 +1036,11 @@ export type Database = {
           suspended_reason?: string | null
         }
         Update: {
+          account_type?: string
+          hr_hospital_name?: string | null
+          job_title?: string | null
+          offer_note?: string | null
+          open_to_offers?: boolean
           city?: string | null
           created_at?: string
           full_name?: string
@@ -1283,6 +1410,7 @@ export type Database = {
       }
       shifts: {
         Row: {
+          by_hospital: boolean
           created_at: string
           deal_kind: string
           duration_hours: number
@@ -1313,6 +1441,7 @@ export type Database = {
           workload: Database["public"]["Enums"]["workload"]
         }
         Insert: {
+          by_hospital?: boolean
           created_at?: string
           deal_kind?: string
           duration_hours: number
@@ -1343,6 +1472,7 @@ export type Database = {
           workload?: Database["public"]["Enums"]["workload"]
         }
         Update: {
+          by_hospital?: boolean
           created_at?: string
           deal_kind?: string
           duration_hours?: number
@@ -1493,6 +1623,38 @@ export type Database = {
       }
     }
     Functions: {
+      admin_approve_hr: { Args: { p_hospital: string; p_user: string }; Returns: undefined }
+      is_hr: { Args: never; Returns: boolean }
+      respond_job_offer: { Args: { p_accept: boolean; p_offer: string }; Returns: string | null }
+      search_doctors: {
+        Args: { p_city?: string; p_limit?: number; p_min_grade?: string; p_specialty?: string }
+        Returns: {
+          avg_rating: number | null
+          city: string | null
+          doctor_id: string
+          full_name: string
+          grade: string | null
+          offer_note: string | null
+          photo_url: string | null
+          show_up_pct: number | null
+          shifts_done: number
+          specialty: string
+          verified: boolean
+        }[]
+      }
+      send_job_offer: {
+        Args: {
+          p_details: string | null
+          p_doctor: string
+          p_kind: string
+          p_pay_egp: number | null
+          p_pay_period: string | null
+          p_shift: string | null
+          p_title: string
+        }
+        Returns: string
+      }
+      withdraw_job_offer: { Args: { p_offer: string }; Returns: undefined }
       accept_offer: { Args: { p_offer: string }; Returns: string }
       admin_resolve_dispute: {
         Args: {
@@ -1759,7 +1921,7 @@ export type Database = {
     Enums: {
       dispute_kind: "unpaid" | "no_show" | "rating" | "conduct" | "other"
       dispute_status: "open" | "resolved" | "dismissed"
-      doc_type: "syndicate_card" | "license" | "certificate" | "selfie" | "internship_letter"
+      doc_type: "syndicate_card" | "license" | "certificate" | "selfie" | "internship_letter" | "hr_letter"
       group_status: "pending" | "approved" | "rejected" | "suspended"
       member_role: "owner" | "moderator" | "member"
       member_status: "pending" | "active" | "removed"
@@ -1936,7 +2098,7 @@ export const Constants = {
     Enums: {
       dispute_kind: ["unpaid", "no_show", "rating", "conduct", "other"],
       dispute_status: ["open", "resolved", "dismissed"],
-      doc_type: ["syndicate_card", "license", "certificate", "selfie", "internship_letter"],
+      doc_type: ["syndicate_card", "license", "certificate", "selfie", "internship_letter", "hr_letter"],
       group_status: ["pending", "approved", "rejected", "suspended"],
       member_role: ["owner", "moderator", "member"],
       member_status: ["pending", "active", "removed"],

@@ -7,6 +7,7 @@ import { requiredDocsFor } from "@/lib/constants";
 import {
   docsToUpload,
   getMyLatestDocs,
+  homePath,
   profileComplete,
   requireUser,
 } from "@/lib/viewer";
@@ -18,15 +19,15 @@ export default async function StatusPage({ params }: PageProps<"/[locale]/status
   const viewer = await requireUser(locale);
   const { profile } = viewer;
   if (profile.status === "approved") {
-    redirect({ href: "/shifts", locale: locale as Locale });
+    redirect({ href: homePath(profile), locale: locale as Locale });
   }
 
   const t = await getTranslations("Status");
   const d = await getTranslations("Docs");
   const c = await getTranslations("Common");
   const docs = await getMyLatestDocs(viewer.userId);
-  const missing = docsToUpload(docs, profile.grade);
-  const rejected = requiredDocsFor(profile.grade).filter((k) => docs[k]?.status === "rejected");
+  const missing = docsToUpload(docs, profile);
+  const rejected = requiredDocsFor(profile.grade, profile.account_type).filter((k) => docs[k]?.status === "rejected");
 
   let body;
   if (profile.status === "suspended") {

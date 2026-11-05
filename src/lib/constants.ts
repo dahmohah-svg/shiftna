@@ -141,15 +141,34 @@ export const SUBSPECIALTIES = [
   "hepatology",
 ] as const;
 
-/** Every document type a doctor can upload. */
-export const DOC_TYPES = ["syndicate_card", "license", "certificate", "internship_letter", "selfie"] as const;
+/** Every document type a user can upload. */
+export const DOC_TYPES = ["syndicate_card", "license", "certificate", "internship_letter", "selfie", "hr_letter"] as const;
 
-/** Documents a doctor uploads before review: interns have no license or certificate yet. */
-export function requiredDocsFor(grade: string | null | undefined): readonly DocType[] {
+/** Doctors, or a hospital's HR person (migration 022). */
+export const ACCOUNT_TYPES = ["doctor", "hr"] as const;
+export type AccountType = (typeof ACCOUNT_TYPES)[number];
+
+/**
+ * Documents uploaded before review: interns have no license or certificate
+ * yet, and hospital HR send a letter or staff card from the hospital.
+ */
+export function requiredDocsFor(
+  grade: string | null | undefined,
+  accountType: string | null | undefined = "doctor",
+): readonly DocType[] {
+  if (accountType === "hr") return ["hr_letter"] as const;
   return grade === "intern"
     ? (["syndicate_card", "internship_letter", "selfie"] as const)
     : (["syndicate_card", "license", "certificate", "selfie"] as const);
 }
+
+/** Job offers from hospital HR (labels under "Options.jobKind" / "Options.payPeriod"). */
+export const JOB_KINDS = ["shift", "part_time", "full_time"] as const;
+export const PAY_PERIODS = ["shift", "hour", "month"] as const;
+export type JobKind = (typeof JOB_KINDS)[number];
+
+/** Most job offers one HR account can send in a day (the database checks too). */
+export const MAX_JOB_OFFERS_PER_DAY = 30;
 
 export type City = (typeof CITIES)[number];
 export type Grade = (typeof GRADES)[number];

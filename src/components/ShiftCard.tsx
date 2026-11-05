@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Building2 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { formatDateTime, formatNumber } from "@/lib/time";
@@ -75,6 +76,11 @@ export default async function ShiftCard({
       <div className="flex flex-wrap gap-1.5">
         {shift.urgent ? <Badge tone="danger">{t("urgent")}</Badge> : null}
         {trust ? <HospitalTrustBadge level={trust} /> : null}
+        {shift.by_hospital ? (
+          <Badge tone="success">
+            <Building2 className="h-3.5 w-3.5" aria-hidden /> {t("byHospital")}
+          </Badge>
+        ) : null}
         {teamName ? <Badge tone="brand">{t("teamOnly", { team: teamName })}</Badge> : null}
         {mine ? <Badge tone="brand">{t("yourShift")}</Badge> : null}
         <Badge>{o(`shiftType.${shift.type}`)}</Badge>

@@ -4,17 +4,19 @@ import ActionButton from "@/components/ActionButton";
 import { setShowPhone } from "@/app/actions/profile";
 import { Link } from "@/i18n/navigation";
 import DetailsForm from "@/components/DetailsForm";
+import JobOffersSetting from "@/components/JobOffersSetting";
 import InstallApp from "@/components/InstallApp";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import StatsGrid from "@/components/StatsGrid";
 import TrustBadge from "@/components/TrustBadge";
 import VerifiedBadge from "@/components/VerifiedBadge";
-import { ScanFace } from "lucide-react";
+import { Building2, ScanFace } from "lucide-react";
 import { Badge, buttonClass, Card, DetailRow, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { signOut } from "@/app/actions/auth";
 import { createClient } from "@/lib/supabase/server";
-import { getMyLatestDocs, requireApproved } from "@/lib/viewer";
+import { getMyLatestDocs, isHr, requireApproved } from "@/lib/viewer";
+import { getMyHospital } from "@/lib/jobs";
 import { requiredDocsFor, EVERYTHING_FREE, type Specialty } from "@/lib/constants";
 import { formatDate } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
@@ -33,10 +35,15 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
   const supabase = await createClient();
   const myPhone = (await getContactPhones(supabase, [viewer.userId])).get(viewer.userId) ?? "";
 
-  const [{ data: stats }, { data: trust }, docs] = await Promise.all([
-    supabase.rpc("doctor_stats", { p_doctor: viewer.userId }),
-    supabase.rpc("doctor_trust", { p_doctor: viewer.userId }),
+  const hr = isHr(profile);
+  const j = await getTranslations("Jobs");
+  const hrT = await getTranslations("Hr");
+
+  const [{ data: stats }, { data: trust }, docs, hospital] = await Promise.all([
+    hr ? Promise.resolve({ data: null }) : supabase.rpc("doctor_stats", { p_doctor: viewer.userId }),
+    hr ? Promise.resolve({ data: null }) : supabase.rpc("doctor_trust", { p_doctor: viewer.userId }),
     getMyLatestDocs(viewer.userId),
+    hr ? getMyHospital(supabase, viewer.userId) : Promise.resolve(null),
   ]);
   const tr = trust?.[0];
 
@@ -44,6 +51,19 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
     <div className="flex flex-col gap-4">
       <PageTitle>{t("title")}</PageTitle>
 
+      {hr ? (
+        <Card className="flex items-start gap-3">
+          <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+            <Building2 className="h-6 w-6" strokeWidth={2.25} />
+          </span>
+          <div className="flex min-w-0 flex-col">
+            <span className="text-xl font-extrabold">{profile.full_name}</span>
+            <span className="text-sm text-ink-muted">{profile.job_title}</span>
+            <span className="text-sm font-semibold text-ink">{hospital?.name ?? hrT("noHospitalShort")}</span>
+            <span className="pt-1"><Badge tone="brand">{j("hrBadge")}</Badge></span>
+          </div>
+        </Card>
+      ) : (
       <Card className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-col">
@@ -72,7 +92,15 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
           <p className="pt-1">{t("badgeExplain")}</p>
         </details>
       </Card>
+      )}
 
+      {!hr ? (
+        <Card>
+          <JobOffersSetting open={profile.open_to_offers} note={profile.offer_note ?? ""} />
+        </Card>
+      ) : null}
+
+      {!hr ? (
       <Link
         href="/teams"
         className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4"
@@ -83,16 +111,19 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
         </span>
         <span aria-hidden className="text-xl text-brand-700 rtl:rotate-180">›</span>
       </Link>
+      ) : null}
 
-      <Card>
-        <SectionTitle>{t("stats")}</SectionTitle>
-        <StatsGrid stats={stats?.[0] ?? null} showRankRow />
-      </Card>
+      {!hr ? (
+        <Card>
+          <SectionTitle>{t("stats")}</SectionTitle>
+          <StatsGrid stats={stats?.[0] ?? null} showRankRow />
+        </Card>
+      ) : null}
 
       <Card>
         <SectionTitle>{t("documents")}</SectionTitle>
         <dl>
-          {requiredDocsFor(profile.grade).map((k) => {
+          {requiredDocsFor(profile.grade, profile.account_type).map((k) => {
             const doc = docs[k];
             return (
               <DetailRow key={k} label={d(k)}>
@@ -137,6 +168,9 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
                 grade: profile.grade ?? "",
                 specialty: profile.specialty ?? "",
                 city: profile.city ?? "",
+                accountType: profile.account_type,
+                jobTitle: profile.job_title ?? "",
+                hrHospital: profile.hr_hospital_name ?? "",
               }}
             />
           </div>

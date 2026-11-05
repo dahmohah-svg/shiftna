@@ -19,7 +19,7 @@ import {
 } from "@/components/ui";
 import { acceptOffer, cancelShift, refuseOffer, withdrawOffer } from "@/app/actions/shifts";
 import { createClient } from "@/lib/supabase/server";
-import { requireApproved } from "@/lib/viewer";
+import { isHr, requireApproved } from "@/lib/viewer";
 import { gradeAllows, payPerHour, SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
 import { getHospitalTrust } from "@/lib/hospitals";
 import { getVerifiedDoctors } from "@/lib/doctors";
@@ -163,6 +163,9 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
           ) : null}
         </Card>
       );
+    } else if (shift.status === "open" && isHr(viewer.profile)) {
+      // Hospital HR accounts don't take shifts themselves.
+      actionArea = null;
     } else if (shift.status === "open") {
       const myGrade = viewer.profile.grade;
       if (!gradeAllows(myGrade, shift.min_grade)) {
@@ -194,6 +197,19 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
         );
       }
     }
+  }
+
+  // Hospital HR can look for a doctor and offer them this shift directly.
+  if (isPoster && isHr(viewer.profile) && shift.status === "open") {
+    const jt = await getTranslations("Jobs");
+    actionArea = (
+      <>
+        {actionArea}
+        <Link href={`/hr?spec=${shift.specialty}&shift=${shift.id}`} className={buttonClass.secondary}>
+          {jt("findForShift")}
+        </Link>
+      </>
+    );
   }
 
   const hr = hospitalRatings;

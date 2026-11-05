@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
-import { AddHospitalForm, ApproveDoctorForm, DoctorRoleForm, MergeHospitalForm, RejectDoctorForm } from "@/components/AdminForms";
+import { AddHospitalForm, ApproveDoctorForm, ApproveHrForm, DoctorRoleForm, MergeHospitalForm, RejectDoctorForm } from "@/components/AdminForms";
 import { PauseTeamForm } from "@/components/TeamForms";
 import GrowthDashboard, { GROWTH_RANGES } from "@/components/GrowthDashboard";
 import TeamStatusBadge from "@/components/TeamStatusBadge";
@@ -57,7 +57,7 @@ export default async function AdminPage({
   if (tab === "doctors") {
     const { data: pending } = await supabase
       .from("profiles")
-      .select("id, full_name, grade, city, specialty, created_at")
+      .select("id, full_name, grade, city, specialty, created_at, account_type, job_title, hr_hospital_name")
       .eq("status", "pending")
       .order("created_at", { ascending: true })
       .limit(50);
@@ -78,6 +78,17 @@ export default async function AdminPage({
       if (!m.has(doc.type)) m.set(doc.type, { ...doc });
       byUser.set(doc.user_id, m);
     }
+    // Hospitals an HR account can be linked to: those without an HR account yet.
+    let hrHospitals: { id: string; name: string; city: string }[] = [];
+    if ((pending ?? []).some((p) => p.account_type === "hr")) {
+      const [{ data: hs }, { data: staff }] = await Promise.all([
+        supabase.from("hospitals").select("id, name, city").order("name"),
+        supabase.from("hospital_staff").select("hospital_id"),
+      ]);
+      const taken = new Set((staff ?? []).map((x) => x.hospital_id));
+      hrHospitals = (hs ?? []).filter((x) => !taken.has(x.id));
+    }
+
     const all = [...byUser.values()].flatMap((m) => [...m.values()]);
     if (all.length) {
       const { data: signed } = await supabase.storage
@@ -95,14 +106,27 @@ export default async function AdminPage({
         {(pending ?? []).length === 0 ? <EmptyState>{t("noPending")}</EmptyState> : null}
         {(pending ?? []).map((p) => {
           const m = byUser.get(p.id);
-          const required = requiredDocsFor(p.grade);
+          const hr = p.account_type === "hr";
+          const required = requiredDocsFor(p.grade, p.account_type);
           const complete = required.every((k) => m?.get(k) && m.get(k)!.status !== "rejected");
+          // Hospitals in the HR person's city first, then the rest.
+          const hrOptions = hr
+            ? [...hrHospitals]
+                .sort((a, b) => Number(b.city === p.city) - Number(a.city === p.city))
+                .map((x) => ({ id: x.id, label: `${x.name} · ${o(`city.${x.city as "cairo"}`)}` }))
+            : [];
           return (
             <Card key={p.id} className="flex flex-col gap-3">
               <div className="flex flex-col">
-                <span className="text-lg font-bold">{p.full_name || "—"}</span>
+                <span className="flex items-center gap-2 text-lg font-bold">
+                  {p.full_name || "—"}
+                  {hr ? <Badge tone="brand">{t("hrBadge")}</Badge> : null}
+                </span>
                 <span className="text-sm text-ink-muted">
-                  {o(`specialty.${p.specialty as Specialty}`)} · {p.grade ? o(`grade.${p.grade as "resident"}`) : "—"} · {p.city ? o(`city.${p.city as "cairo"}`) : "—"}
+                  {hr
+                    ? `${p.job_title || "—"} · ${p.hr_hospital_name || "—"}`
+                    : `${o(`specialty.${p.specialty as Specialty}`)} · ${p.grade ? o(`grade.${p.grade as "resident"}`) : "—"}`}
+                  {" · "}{p.city ? o(`city.${p.city as "cairo"}`) : "—"}
                   {phones.get(p.id) ? <> · <span dir="ltr">{phones.get(p.id)}</span></> : null}
                 </span>
                 <span className="text-xs text-ink-muted">{formatDateTime(p.created_at, locale)}</span>
@@ -135,13 +159,17 @@ export default async function AdminPage({
                   })}
                 </ul>
               )}
-              <p className="text-xs text-ink-muted">{t("checklist")}</p>
-              {complete ? <ApproveDoctorForm userId={p.id} minDate={cairoToday()} grade={p.grade} /> : null}
+              <p className="text-xs text-ink-muted">{hr ? t("hrChecklist") : t("checklist")}</p>
+              {complete && hr ? (
+                <ApproveHrForm userId={p.id} askedName={p.hr_hospital_name ?? ""} hospitals={hrOptions} />
+              ) : complete ? (
+                <ApproveDoctorForm userId={p.id} minDate={cairoToday()} grade={p.grade} />
+              ) : null}
               {m ? (
                 <details>
                   <summary className="cursor-pointer text-sm font-semibold text-red-700">{t("reject")}</summary>
                   <div className="pt-3">
-                    <RejectDoctorForm userId={p.id} grade={p.grade} />
+                    <RejectDoctorForm userId={p.id} grade={p.grade} accountType={p.account_type} />
                   </div>
                 </details>
               ) : null}
@@ -362,7 +390,7 @@ export default async function AdminPage({
   if (tab === "members") {
     const { data: members } = await supabase
       .from("profiles")
-      .select("id, full_name, grade, city, specialty, is_premium, is_admin, created_at")
+      .select("id, full_name, grade, city, specialty, is_premium, is_admin, created_at, account_type, job_title")
       .eq("status", "approved")
       .order("created_at", { ascending: false })
       .limit(200);
@@ -376,7 +404,10 @@ export default async function AdminPage({
               <Link href={`/doctors/${m.id}`} className="flex flex-col">
                 <span className="font-bold text-brand-700 underline">{m.full_name}</span>
                 <span className="text-sm text-ink-muted">
-                  {o(`specialty.${m.specialty as Specialty}`)} · {m.grade ? o(`grade.${m.grade as "resident"}`) : "—"} · {m.city ? o(`city.${m.city as "cairo"}`) : "—"}
+                  {m.account_type === "hr"
+                    ? `${t("hrBadge")} · ${m.job_title || "—"}`
+                    : `${o(`specialty.${m.specialty as Specialty}`)} · ${m.grade ? o(`grade.${m.grade as "resident"}`) : "—"}`}
+                  {" · "}{m.city ? o(`city.${m.city as "cairo"}`) : "—"}
                 </span>
                 <span className="text-xs text-ink-muted">{formatDate(m.created_at, locale)}</span>
               </Link>
@@ -385,7 +416,7 @@ export default async function AdminPage({
                 {!EVERYTHING_FREE && m.is_premium ? <Badge tone="gold">{p("premium")}</Badge> : null}
               </div>
             </div>
-            <DoctorRoleForm id={m.id} grade={m.grade ?? "resident"} specialty={m.specialty} />
+            {m.account_type !== "hr" ? <DoctorRoleForm id={m.id} grade={m.grade ?? "resident"} specialty={m.specialty} /> : null}
             <div className="grid grid-cols-2 gap-2">
               {/* Premium is switched on for everyone during the pilot. */}
               {!EVERYTHING_FREE ? (
