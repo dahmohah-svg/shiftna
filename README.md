@@ -81,7 +81,8 @@ npm run build      # full production build
 - Hospitals: any approved doctor can add one while posting; the admin
   verifies later. Each hospital shows a credibility level (Verified,
   Trusted, Active, New) based on shifts from different doctors and
-  completed shifts.
+  completed shifts. The admin can merge duplicate hospitals; similar names
+  in the same city are suggested automatically.
 - Teams (private groups): create a team (Premium, checked by admin), invite
   doctors with a code, accept requests, and post shifts only the team sees.
 

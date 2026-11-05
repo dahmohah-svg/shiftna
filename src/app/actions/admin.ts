@@ -189,6 +189,26 @@ export async function setHospitalVerified(
   return done();
 }
 
+const mergeSchema = z.object({ keepId: uuid, removeId: uuid });
+
+/** Moves everything from one hospital onto another, then deletes it. */
+export async function mergeHospitals(
+  _prev: ActionState | undefined,
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = mergeSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success || parsed.data.keepId === parsed.data.removeId) return { error: "invalid" };
+  const ctx = await adminClient();
+  if (!ctx) return { error: "notAllowed" };
+  // The database function checks is_admin and writes the audit log entry.
+  const { error } = await ctx.supabase.rpc("merge_hospitals", {
+    p_keep: parsed.data.keepId,
+    p_remove: parsed.data.removeId,
+  });
+  if (error) return { error: toErrorKey(error) };
+  return done();
+}
+
 export async function decideReport(
   _prev: ActionState | undefined,
   formData: FormData,

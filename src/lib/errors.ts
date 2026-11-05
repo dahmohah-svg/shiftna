@@ -49,6 +49,8 @@ const DB_MESSAGES: [RegExp, ErrorKey][] = [
   [/invalid code/i, "invalidCode"],
   [/too many hospitals/i, "tooManyHospitals"],
   [/hospital name must be/i, "invalid"],
+  [/choose two different hospitals|hospital not found/i, "invalid"],
+  [/choose two different hospitals|hospital not found/i, "invalid"],
   [/not allowed/i, "notAllowed"],
 ];
 

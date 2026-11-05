@@ -1597,6 +1597,21 @@ export type Database = {
           shifts_posted: number
         }[]
       }
+      merge_hospitals: {
+        Args: { p_keep: string; p_remove: string }
+        Returns: undefined
+      }
+      possible_duplicate_hospitals: {
+        Args: never
+        Returns: {
+          a_id: string
+          a_name: string
+          b_id: string
+          b_name: string
+          city: string
+          score: number
+        }[]
+      }
       instant_book: { Args: { p_shift: string }; Returns: string }
       invite_doctor: {
         Args: { p_doctor: string; p_shift: string }

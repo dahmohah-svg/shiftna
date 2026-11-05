@@ -615,6 +615,14 @@
     "added": "Hospital added and selected.",
     "existing": "This hospital was already listed, so we selected it.",
     "addedBy": "Added by {name}",
-    "unverifiedFirst": "Not verified yet"
+    "unverifiedFirst": "Not verified yet",
+    "duplicatesTitle": "{count, plural, one {# possible duplicate} other {# possible duplicates}}",
+    "duplicatesIntro": "These hospitals are in the same city and have similar names. If they are the same place, choose the one to keep: its shifts, ratings, teams and logbook entries will include both.",
+    "keepThis": "Keep \"{name}\" and merge the other into it",
+    "mergeInto": "Merge into another hospital…",
+    "mergeKeep": "Hospital to keep",
+    "mergeExplain": "Everything at \"{name}\" (shifts, ratings, teams, logbook) moves to the hospital you keep, then \"{name}\" is deleted. If either was verified, the kept one stays verified.",
+    "mergeButton": "Merge",
+    "mergeConfirm": "Merge \"{remove}\" into \"{keep}\"? \"{remove}\" will be deleted. This cannot be undone."
   }
 }

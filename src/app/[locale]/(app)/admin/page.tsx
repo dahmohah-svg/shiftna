@@ -1,12 +1,12 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
-import { AddHospitalForm, ApproveDoctorForm, RejectDoctorForm } from "@/components/AdminForms";
+import { AddHospitalForm, ApproveDoctorForm, MergeHospitalForm, RejectDoctorForm } from "@/components/AdminForms";
 import { RejectTeamForm } from "@/components/TeamForms";
 import HospitalTrustBadge from "@/components/HospitalTrustBadge";
 import { getHospitalTrust } from "@/lib/hospitals";
 import { Badge, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
-import { decideReport, setHospitalVerified, setPremium, suspendDoctor } from "@/app/actions/admin";
+import { decideReport, mergeHospitals, setHospitalVerified, setPremium, suspendDoctor } from "@/app/actions/admin";
 import { reviewTeam } from "@/app/actions/teams";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/viewer";
@@ -148,8 +148,45 @@ export default async function AdminPage({
       .order("created_at", { ascending: false });
     const trust = await getHospitalTrust(supabase, (hospitals ?? []).map((h) => h.id));
     const ht = await getTranslations("Hospitals");
+    const { data: dupes } = await supabase.rpc("possible_duplicate_hospitals");
+    const activity = (id: string) => {
+      const x = trust.get(id);
+      return x ? ht("activity", { shifts: x.shiftsPosted, posters: x.posters, completed: x.completed }) : "";
+    };
     content = (
       <section className="flex flex-col gap-4">
+        {(dupes ?? []).length > 0 ? (
+          <Card className="flex flex-col gap-3">
+            <SectionTitle>{ht("duplicatesTitle", { count: dupes!.length })}</SectionTitle>
+            <p className="text-sm text-ink-muted">{ht("duplicatesIntro")}</p>
+            {dupes!.map((d) => (
+              <div key={`${d.a_id}-${d.b_id}`} className="flex flex-col gap-2 rounded-xl bg-page p-3">
+                <span className="text-xs text-ink-muted">{o(`city.${d.city as "cairo"}`)}</span>
+                {(
+                  [
+                    [d.a_id, d.a_name, d.b_id, d.b_name],
+                    [d.b_id, d.b_name, d.a_id, d.a_name],
+                  ] as const
+                ).map(([keepId, keepName, removeId, removeName]) => (
+                  <div key={keepId} className="flex flex-col gap-1">
+                    <span className="text-sm">
+                      <span className="font-semibold">{keepName}</span>
+                      <span className="text-xs text-ink-muted"> · {activity(keepId)}</span>
+                    </span>
+                    <ActionButton
+                      action={mergeHospitals}
+                      fields={{ keepId, removeId }}
+                      variant="secondary"
+                      confirm={ht("mergeConfirm", { remove: removeName, keep: keepName })}
+                    >
+                      {ht("keepThis", { name: keepName })}
+                    </ActionButton>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </Card>
+        ) : null}
         <Card>
           <SectionTitle>{t("addHospital")}</SectionTitle>
           <AddHospitalForm />
@@ -190,6 +227,12 @@ export default async function AdminPage({
             >
               {h.verified ? t("unverify") : t("verify")}
             </ActionButton>
+            <MergeHospitalForm
+              hospital={{ id: h.id, name: h.name }}
+              others={(hospitals ?? [])
+                .filter((x) => x.city === h.city && x.id !== h.id)
+                .map((x) => ({ id: x.id, name: x.name }))}
+            />
           </Card>
         ))}
       </section>

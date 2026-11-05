@@ -18,6 +18,7 @@ have been applied there, in this order:
 | `010_team_notifications.sql` | Alerts for Teams (the app's name for private groups): approved/rejected, join requests, accepted, new team shift |
 | `011_team_manager_tools.sql` | Renew invite code, re-add removed doctors, let leavers rejoin; accepting only works on pending requests |
 | `012_open_hospitals.sql` | Any approved doctor adds hospitals (5 a day, no duplicates); `hospital_trust()` credibility levels; admin alert |
+| `013_merge_hospitals.sql` | Admin merges duplicate hospitals (moves shifts, ratings, teams, logbook); similar-name suggestions (pg_trgm) |
 
 Files 001 to 005 are exactly as printed in the build guide; copy them from
 there if you need to set up a second project (for example staging).
