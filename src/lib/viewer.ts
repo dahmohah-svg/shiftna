@@ -18,16 +18,30 @@ export type Viewer = {
 /** The signed-in user and their profile, or null. Cached per request. */
 export const getViewer = cache(async (): Promise<Viewer | null> => {
   const supabase = await createClient();
+  // The session cookie says who is probably signed in, so the profile can be
+  // loaded at the same time as getUser() checks the sign-in with Supabase.
+  // The profile is only used if getUser() confirms the same user.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const guessedId = session?.user.id;
+  const [
+    {
+      data: { user },
+    },
+    early,
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    guessedId
+      ? supabase.from("profiles").select("*").eq("id", guessedId).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
   if (!user) return null;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  let profile = early.data && early.data.id === user.id ? early.data : null;
+  if (!profile) {
+    ({ data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single());
+  }
   if (!profile) return null;
 
   return { userId: user.id, email: user.email ?? null, profile };

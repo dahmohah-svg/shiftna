@@ -26,7 +26,9 @@ export default async function proxy(request: NextRequest) {
       },
     },
   );
-  await supabase.auth.getUser();
+  // Refreshes the session cookie only when it has expired, without asking
+  // Supabase on every request. Pages still check the user with getUser().
+  await supabase.auth.getSession();
 
   return response;
 }

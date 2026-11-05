@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
     },
   },
   experimental: {
+    // Keep recently opened screens for 30 seconds, so switching tabs back and
+    // forth is instant. Saving anything (server actions) refreshes them at once.
+    staleTimes: {
+      dynamic: 30,
+    },
     serverActions: {
       // Document photos and PDFs go straight to Supabase Storage from the
       // browser, so server actions only carry small form data.
