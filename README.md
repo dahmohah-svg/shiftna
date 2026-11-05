@@ -1,7 +1,8 @@
 # Shiftna | شفتنا
 
-A mobile-first web app (installable PWA) where verified anesthesiologists in
-Egypt post and cover shifts. Arabic (right-to-left) is the default language,
+A mobile-first web app (installable PWA) where verified doctors in Egypt
+(anesthesia, internal medicine, emergency, surgery, ICU and pediatrics, from
+interns to consultants) post and cover shifts. Arabic (right-to-left) is the default language,
 with English available from a toggle.
 
 **Stack:** Next.js (App Router) + TypeScript + Tailwind CSS, next-intl for

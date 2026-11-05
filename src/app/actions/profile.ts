@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
-import { CITIES, GRADES, REQUIRED_DOCS } from "@/lib/constants";
+import { CITIES, DOC_TYPES, GRADES, SPECIALTIES } from "@/lib/constants";
 
 const detailsSchema = z.object({
   fullName: z.string().trim().min(3).max(120),
@@ -14,7 +14,9 @@ const detailsSchema = z.object({
     .trim()
     .regex(/^\+?[0-9 ]{8,16}$/)
     .or(z.literal("")),
-  grade: z.enum(GRADES),
+  // Grade and specialty are locked once approved (the database keeps them).
+  grade: z.enum(GRADES).optional(),
+  specialty: z.enum(SPECIALTIES).optional(),
   city: z.enum(CITIES),
 });
 
@@ -36,7 +38,8 @@ export async function saveDetails(
     .update({
       full_name: parsed.data.fullName,
       phone: parsed.data.phone.replace(/\s/g, "") || null,
-      grade: parsed.data.grade,
+      ...(parsed.data.grade ? { grade: parsed.data.grade } : {}),
+      ...(parsed.data.specialty ? { specialty: parsed.data.specialty } : {}),
       city: parsed.data.city,
     })
     .eq("id", user.id);
@@ -48,7 +51,7 @@ export async function saveDetails(
 }
 
 const docSchema = z.object({
-  type: z.enum(REQUIRED_DOCS),
+  type: z.enum(DOC_TYPES),
   path: z.string().min(10).max(300),
 });
 

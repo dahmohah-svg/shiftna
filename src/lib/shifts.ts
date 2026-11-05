@@ -15,6 +15,7 @@ export const SHIFT_WITH_HOSPITAL_INNER =
   "*, hospital:hospitals!shifts_hospital_id_fkey!inner(id, name, city, area, verified)" as const;
 
 const GRADE_RANK: Record<string, number> = {
+  intern: 0,
   resident: 1,
   specialist: 2,
   consultant: 3,
@@ -22,7 +23,7 @@ const GRADE_RANK: Record<string, number> = {
 
 /** Same rule as the database's grade_rank(): is my grade high enough? */
 export function gradeAllows(myGrade: string | null, minGrade: string): boolean {
-  return (GRADE_RANK[myGrade ?? ""] ?? 0) >= (GRADE_RANK[minGrade] ?? 0);
+  return (GRADE_RANK[myGrade ?? ""] ?? -1) >= (GRADE_RANK[minGrade] ?? 0);
 }
 
 export function payPerHour(payEgp: number, hours: number): number {

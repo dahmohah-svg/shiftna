@@ -1,7 +1,7 @@
 {
   "Metadata": {
     "title": "Shiftna",
-    "description": "A trusted way for anesthesiologists in Egypt to post and cover shifts."
+    "description": "A trusted way for doctors in Egypt to post and cover shifts: anesthesia, internal medicine, emergency, surgery, ICU and pediatrics."
   },
   "Common": {
     "appName": "Shiftna",
@@ -50,7 +50,7 @@
     "hospitalExists": "This hospital is already listed in that city."
   },
   "Home": {
-    "tagline": "Anesthesia shifts, with trust.",
+    "tagline": "Medical shifts, with trust.",
     "intro": "Post your shift or cover a colleague's in minutes. Every doctor is verified with their Syndicate card and practice license.",
     "featureVerifiedTitle": "Verified doctors only",
     "featureVerifiedBody": "Our team reviews every account before it can see any shift.",
@@ -60,7 +60,7 @@
     "featureRatingsBody": "Ratings appear only after both sides have rated each other.",
     "signUp": "Create an account",
     "signIn": "I already have an account",
-    "footer": "Built for anesthesiologists in Egypt",
+    "footer": "Built for doctors in Egypt",
     "privacy": "Privacy",
     "terms": "Terms"
   },
@@ -71,7 +71,7 @@
   "Auth": {
     "signInTitle": "Sign in",
     "signUpTitle": "Create your account",
-    "signUpIntro": "Only verified anesthesia doctors can use Shiftna. After you sign up you will upload your documents for review.",
+    "signUpIntro": "Only verified doctors can use Shiftna, from interns to consultants. After you sign up you will upload your documents for review.",
     "fullName": "Full name",
     "email": "Email",
     "password": "Password",
@@ -108,13 +108,17 @@
     "notUploaded": "Not uploaded yet",
     "selfieHint": "Take a selfie holding your Syndicate card so your face and the card are both clear.",
     "finish": "Send for review",
-    "finishHint": "Upload all four documents to send your account for review."
+    "finishHint": "Upload all four documents to send your account for review.",
+    "specialty": "Specialty",
+    "gradeHint": "Interns upload an internship letter instead of a practice license and certificate.",
+    "lockedNote": "Checked when your account was approved. To change it, contact the Shiftna team."
   },
   "Docs": {
     "syndicate_card": "Syndicate card",
     "license": "Practice license",
     "certificate": "Specialty certificate",
-    "selfie": "Selfie with Syndicate card"
+    "selfie": "Selfie with Syndicate card",
+    "internship_letter": "Internship letter"
   },
   "Status": {
     "pendingTitle": "Under review",
@@ -141,6 +145,7 @@
   },
   "Options": {
     "grade": {
+      "intern": "Intern",
       "resident": "Resident",
       "specialist": "Specialist",
       "consultant": "Consultant"
@@ -167,7 +172,23 @@
       "icu": "ICU",
       "regional": "Regional",
       "neuro": "Neuro",
-      "other": "Other"
+      "other": "Other",
+      "cardiology": "Cardiology",
+      "gastroenterology": "Gastroenterology",
+      "chest": "Chest",
+      "nephrology": "Nephrology",
+      "endocrinology": "Endocrinology",
+      "hematology": "Hematology",
+      "rheumatology": "Rheumatology",
+      "trauma": "Trauma",
+      "orthopedics": "Orthopedics",
+      "urology": "Urology",
+      "neurosurgery": "Neurosurgery",
+      "cardiothoracic": "Cardiothoracic",
+      "vascular": "Vascular",
+      "plastic": "Plastic",
+      "ent": "ENT",
+      "neonatal": "Neonatal"
     },
     "city": {
       "cairo": "Cairo",
@@ -214,6 +235,14 @@
       "pending": "Not paid yet",
       "paid": "Paid",
       "disputed": "Disputed"
+    },
+    "specialty": {
+      "anesthesia": "Anesthesia",
+      "internal_medicine": "Internal Medicine",
+      "emergency": "Emergency Medicine",
+      "surgery": "Surgery",
+      "icu": "ICU / Critical Care",
+      "pediatrics": "Pediatrics"
     }
   },
   "Shifts": {
@@ -234,7 +263,9 @@
     "yourShift": "Your shift",
     "offersCount": "{count, plural, =0 {No offers yet} one {# offer} other {# offers}}",
     "teamOnly": "Team: {team}",
-    "teamShiftsOnly": "My teams' shifts only"
+    "teamShiftsOnly": "My teams' shifts only",
+    "specialty": "Specialty",
+    "allSpecialties": "All specialties"
   },
   "Shift": {
     "when": "When",
@@ -276,7 +307,8 @@
     "cancelShiftConfirm": "Cancel this open shift? Pending offers will stay unanswered.",
     "booking": "Open booking",
     "notFound": "This shift does not exist or you cannot see it.",
-    "status": "Status"
+    "status": "Status",
+    "specialty": "Specialty"
   },
   "Post": {
     "title": "Post a shift",
@@ -303,7 +335,8 @@
     "visibility": "Who can see this shift",
     "visibilityHint": "Choose a team to keep the shift private to its members.",
     "visibilityAll": "All verified doctors",
-    "visibilityTeam": "Only {team}"
+    "visibilityTeam": "Only {team}",
+    "specialty": "Specialty"
   },
   "Activity": {
     "title": "Offers and bookings",
@@ -447,7 +480,13 @@
     "removePremium": "Remove Premium",
     "suspend": "Pause account",
     "noMembers": "No approved doctors yet.",
-    "tabGrowth": "Growth"
+    "tabGrowth": "Growth",
+    "internshipEnds": "Internship ends on",
+    "changeRole": "Change grade or specialty",
+    "changeRoleNote": "Check the new documents first, for example a specialty certificate when a resident becomes a specialist.",
+    "saveRole": "Save",
+    "specialty": "Specialty",
+    "grade": "Grade"
   },
   "Legal": {
     "privacyTitle": "Privacy policy",
@@ -514,12 +553,14 @@
     "alertSaved": "Alert saved.",
     "deleteAlert": "Delete",
     "tooManyAlerts": "You can keep up to {max} alerts. Delete one to add another.",
-    "duplicateAlert": "You already have this alert."
+    "duplicateAlert": "You already have this alert.",
+    "specialty": "Specialty",
+    "anySpecialty": "Any specialty"
   },
   "Teams": {
     "title": "Teams",
     "tab": "Teams",
-    "intro": "A team is a private circle, for example a hospital's anesthesia department. Shifts posted to a team are only seen by its members.",
+    "intro": "A team is a private circle, for example a hospital department. Shifts posted to a team are only seen by its members.",
     "profileLink": "Private shifts for your department or circle",
     "myTeams": "My teams",
     "noTeams": "You are not in a team yet. Ask a team manager for an invite code.",
@@ -541,7 +582,7 @@
     "createButton": "Create a team",
     "createNeedsPremium": "Creating a team needs Premium. Contact the Shiftna team to switch it on. Anyone can join a team with an invite code.",
     "name": "Team name",
-    "nameHint": "For example: Kasr Al Ainy Anesthesia Team",
+    "nameHint": "For example: Kasr Al Ainy Internal Medicine Team",
     "institution": "Institution",
     "institutionHint": "Hospital, university or department the team belongs to",
     "hospital": "Main hospital (optional)",
@@ -680,7 +721,7 @@
     "shareIntro": "Send this link to your department's WhatsApp group, or show the code on a screen or poster.",
     "share": "Share",
     "shareTitle": "Install Shiftna",
-    "shareText": "Shiftna: anesthesia shifts, with verified doctors. Install it here:"
+    "shareText": "Shiftna: medical shifts with verified doctors. Install it here:"
   },
   "Theme": {
     "label": "Appearance",

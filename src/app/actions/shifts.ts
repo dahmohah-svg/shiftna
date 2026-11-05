@@ -11,7 +11,9 @@ import {
   GRADES,
   PAYMENT_TYPES,
   SHIFT_TYPES,
+  SPECIALTIES,
   SUBSPECIALTIES,
+  subspecialtiesFor,
   WORKLOADS,
 } from "@/lib/constants";
 import { cairoLocalToISO, nowMs } from "@/lib/time";
@@ -41,12 +43,16 @@ const postSchema = z
     supportStaff: z.string().trim().max(200).optional(),
     notes: z.string().trim().max(1000).optional(),
     urgent: bool,
+    specialty: z.enum(SPECIALTIES),
     subspecialty: z.enum(SUBSPECIALTIES),
     minGrade: z.enum(GRADES),
     groupId: uuid.or(z.literal("")).optional(),
   })
   .refine((v) => v.payment === "immediate" || Boolean(v.paymentDate), {
     path: ["paymentDate"],
+  })
+  .refine((v) => (subspecialtiesFor(v.specialty) as readonly string[]).includes(v.subspecialty), {
+    path: ["subspecialty"],
   });
 
 export async function postShift(
@@ -87,6 +93,7 @@ export async function postShift(
       support_staff: v.supportStaff || null,
       notes: v.notes || null,
       urgent: v.urgent,
+      specialty: v.specialty,
       subspecialty: v.subspecialty,
       min_grade: v.minGrade,
       // Team-only shift; the database checks the poster is an active member.

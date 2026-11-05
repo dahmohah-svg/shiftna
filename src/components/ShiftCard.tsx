@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { formatDateTime, formatNumber } from "@/lib/time";
 import { payPerHour, type ShiftWithHospital } from "@/lib/shifts";
 import type { TrustLevel } from "@/lib/hospitals";
+import type { Specialty } from "@/lib/constants";
 import HospitalTrustBadge from "./HospitalTrustBadge";
 import ShiftStrip from "./ShiftStrip";
 import { SubspecialtyIcon } from "./icons";
@@ -20,6 +21,7 @@ export default async function ShiftCard({
   teamName,
   trust,
   preview = false,
+  showSpecialty = false,
 }: {
   shift: ShiftWithHospital;
   mine?: boolean;
@@ -29,6 +31,8 @@ export default async function ShiftCard({
   trust?: TrustLevel;
   /** Sample card on the welcome page: not a link. */
   preview?: boolean;
+  /** Show the specialty too (when it isn't the viewer's own). */
+  showSpecialty?: boolean;
 }) {
   const locale = await getLocale();
   const t = await getTranslations("Shifts");
@@ -76,6 +80,7 @@ export default async function ShiftCard({
         <Badge>{o(`shiftType.${shift.type}`)}</Badge>
         <Badge tone="brand">
           <SubspecialtyIcon value={shift.subspecialty} />
+          {showSpecialty ? `${o(`specialty.${shift.specialty as Specialty}`)} · ` : null}
           {o(`subspecialty.${shift.subspecialty}`)}
         </Badge>
         {shift.min_grade !== "resident" ? (

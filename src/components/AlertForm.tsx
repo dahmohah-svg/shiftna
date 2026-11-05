@@ -1,19 +1,20 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { createAlert } from "@/app/actions/notifications";
-import { CITIES, MAX_ALERTS, SHIFT_TYPES, SUBSPECIALTIES } from "@/lib/constants";
+import { CITIES, MAX_ALERTS, SHIFT_TYPES, SPECIALTIES, subspecialtiesFor } from "@/lib/constants";
 import { Checkbox, Field, Input, Notice, Select } from "./ui";
 import { FormMessage, SubmitButton } from "./forms";
 
 /** Save a shift alert: get notified when a matching shift is posted. */
-export default function AlertForm() {
+export default function AlertForm({ defaultSpecialty }: { defaultSpecialty: string }) {
   const t = useTranslations("Notifications");
   const o = useTranslations("Options");
   const c = useTranslations("Common");
   const [state, action] = useActionState(createAlert, undefined);
   const form = useRef<HTMLFormElement>(null);
+  const [specialty, setSpecialty] = useState(defaultSpecialty);
 
   useEffect(() => {
     if (state?.ok) form.current?.reset();
@@ -22,6 +23,16 @@ export default function AlertForm() {
   return (
     <form ref={form} action={action} className="flex flex-col gap-3 border-t border-line pt-4">
       <p className="font-semibold">{t("newAlert")}</p>
+      <Field label={t("specialty")} htmlFor="alert-spec">
+        <Select id="alert-spec" name="specialty" value={specialty} onChange={(e) => setSpecialty(e.target.value)}>
+          <option value="">{t("anySpecialty")}</option>
+          {SPECIALTIES.map((x) => (
+            <option key={x} value={x}>
+              {o(`specialty.${x}`)}
+            </option>
+          ))}
+        </Select>
+      </Field>
       <Field label={t("city")} htmlFor="alert-city">
         <Select id="alert-city" name="city" defaultValue="">
           <option value="">{t("anyCity")}</option>
@@ -44,9 +55,9 @@ export default function AlertForm() {
           </Select>
         </Field>
         <Field label={t("subspecialty")} htmlFor="alert-sub">
-          <Select id="alert-sub" name="subspecialty" defaultValue="">
+          <Select key={specialty} id="alert-sub" name="subspecialty" defaultValue="">
             <option value="">{c("all")}</option>
-            {SUBSPECIALTIES.map((x) => (
+            {subspecialtiesFor(specialty || null).map((x) => (
               <option key={x} value={x}>
                 {o(`subspecialty.${x}`)}
               </option>

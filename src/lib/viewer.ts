@@ -3,7 +3,7 @@ import { cache } from "react";
 import { redirect } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
-import { REQUIRED_DOCS, type DocType } from "@/lib/constants";
+import { DOC_TYPES, requiredDocsFor, type DocType } from "@/lib/constants";
 import type { Database } from "@/lib/supabase/database.types";
 
 /**
@@ -14,7 +14,7 @@ export type Profile = Omit<Database["public"]["Tables"]["profiles"]["Row"], "pho
 
 /** Every profile column doctors may read (all except phone). */
 export const PROFILE_COLUMNS =
-  "id, full_name, city, grade, photo_url, status, is_premium, is_admin, created_at, max_groups, suspended_reason, show_phone" as const;
+  "id, full_name, city, grade, specialty, photo_url, status, is_premium, is_admin, created_at, max_groups, suspended_reason, show_phone" as const;
 export type DocumentRow = Database["public"]["Tables"]["documents"]["Row"];
 
 export type Viewer = {
@@ -92,20 +92,21 @@ export async function getMyLatestDocs(
   const latest: Partial<Record<DocType, DocumentRow>> = {};
   for (const doc of data ?? []) {
     const type = doc.type as DocType;
-    if (REQUIRED_DOCS.includes(type) && !latest[type]) latest[type] = doc;
+    if ((DOC_TYPES as readonly string[]).includes(type) && !latest[type]) latest[type] = doc;
   }
   return latest;
 }
 
 export function profileComplete(profile: Profile): boolean {
-  return Boolean(profile.full_name?.trim() && profile.grade && profile.city);
+  return Boolean(profile.full_name?.trim() && profile.grade && profile.city && profile.specialty);
 }
 
 /** Document types that still need an upload (missing or rejected). */
 export function docsToUpload(
   latest: Partial<Record<DocType, DocumentRow>>,
+  grade: string | null | undefined,
 ): DocType[] {
-  return REQUIRED_DOCS.filter(
+  return requiredDocsFor(grade).filter(
     (t) => !latest[t] || latest[t]!.status === "rejected",
   );
 }

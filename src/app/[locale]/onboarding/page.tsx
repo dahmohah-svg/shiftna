@@ -6,7 +6,7 @@ import AuthShell from "@/components/AuthShell";
 import DetailsForm from "@/components/DetailsForm";
 import DocUploader from "@/components/DocUploader";
 import { buttonClass, Card, SectionTitle } from "@/components/ui";
-import { REQUIRED_DOCS } from "@/lib/constants";
+import { requiredDocsFor } from "@/lib/constants";
 import {
   docsToUpload,
   getMyLatestDocs,
@@ -27,7 +27,7 @@ export default async function OnboardingPage({
 
   const t = await getTranslations("Onboarding");
   const docs = await getMyLatestDocs(viewer.userId);
-  const ready = profileComplete(viewer.profile) && docsToUpload(docs).length === 0;
+  const ready = profileComplete(viewer.profile) && docsToUpload(docs, viewer.profile.grade).length === 0;
   const p = viewer.profile;
   const myPhone = (await getContactPhones(await createClient(), [viewer.userId])).get(viewer.userId) ?? "";
 
@@ -45,6 +45,7 @@ export default async function OnboardingPage({
             fullName: p.full_name ?? "",
             phone: myPhone,
             grade: p.grade ?? "",
+            specialty: p.specialty ?? "",
             city: p.city ?? "",
           }}
         />
@@ -53,7 +54,7 @@ export default async function OnboardingPage({
       <section className="flex flex-col gap-3">
         <SectionTitle>{t("step2")}</SectionTitle>
         <p className="text-sm leading-relaxed text-ink-muted">{t("docsIntro")}</p>
-        {REQUIRED_DOCS.map((type) => (
+        {requiredDocsFor(p.grade).map((type) => (
           <DocUploader
             key={type}
             userId={viewer.userId}

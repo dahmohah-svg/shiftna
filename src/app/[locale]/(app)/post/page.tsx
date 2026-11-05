@@ -58,6 +58,7 @@ export default async function PostPage({ params, searchParams }: PageProps<"/[lo
               teams={teams}
               defaultTeam={defaultTeam}
               defaultHospital={defaultHospital}
+              defaultSpecialty={viewer.profile.specialty}
               hospitals={hospitals.map((x) => ({
                 id: x.id,
                 name: x.name,

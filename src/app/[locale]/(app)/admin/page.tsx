@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
-import { AddHospitalForm, ApproveDoctorForm, MergeHospitalForm, RejectDoctorForm } from "@/components/AdminForms";
+import { AddHospitalForm, ApproveDoctorForm, DoctorRoleForm, MergeHospitalForm, RejectDoctorForm } from "@/components/AdminForms";
 import { PauseTeamForm } from "@/components/TeamForms";
 import GrowthDashboard, { GROWTH_RANGES } from "@/components/GrowthDashboard";
 import TeamStatusBadge from "@/components/TeamStatusBadge";
@@ -13,7 +13,7 @@ import { decideReport, mergeHospitals, setHospitalVerified, setPremium, suspendD
 import { setTeamState } from "@/app/actions/teams";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/viewer";
-import { EVERYTHING_FREE, REQUIRED_DOCS } from "@/lib/constants";
+import { EVERYTHING_FREE, requiredDocsFor, type Specialty } from "@/lib/constants";
 import { cairoToday, formatDate, formatDateTime, formatNumber } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
@@ -57,7 +57,7 @@ export default async function AdminPage({
   if (tab === "doctors") {
     const { data: pending } = await supabase
       .from("profiles")
-      .select("id, full_name, grade, city, created_at")
+      .select("id, full_name, grade, city, specialty, created_at")
       .eq("status", "pending")
       .order("created_at", { ascending: true })
       .limit(50);
@@ -95,13 +95,14 @@ export default async function AdminPage({
         {(pending ?? []).length === 0 ? <EmptyState>{t("noPending")}</EmptyState> : null}
         {(pending ?? []).map((p) => {
           const m = byUser.get(p.id);
-          const complete = REQUIRED_DOCS.every((k) => m?.get(k) && m.get(k)!.status !== "rejected");
+          const required = requiredDocsFor(p.grade);
+          const complete = required.every((k) => m?.get(k) && m.get(k)!.status !== "rejected");
           return (
             <Card key={p.id} className="flex flex-col gap-3">
               <div className="flex flex-col">
                 <span className="text-lg font-bold">{p.full_name || "—"}</span>
                 <span className="text-sm text-ink-muted">
-                  {p.grade ? o(`grade.${p.grade as "resident"}`) : "—"} · {p.city ? o(`city.${p.city as "cairo"}`) : "—"}
+                  {o(`specialty.${p.specialty as Specialty}`)} · {p.grade ? o(`grade.${p.grade as "resident"}`) : "—"} · {p.city ? o(`city.${p.city as "cairo"}`) : "—"}
                   {phones.get(p.id) ? <> · <span dir="ltr">{phones.get(p.id)}</span></> : null}
                 </span>
                 <span className="text-xs text-ink-muted">{formatDateTime(p.created_at, locale)}</span>
@@ -110,7 +111,7 @@ export default async function AdminPage({
                 <p className="text-sm text-ink-muted">{t("noDocs")}</p>
               ) : (
                 <ul className="flex flex-col gap-2">
-                  {REQUIRED_DOCS.map((k) => {
+                  {required.map((k) => {
                     const doc = m.get(k);
                     return (
                       <li key={k} className="flex items-center justify-between gap-2 rounded-xl bg-page px-3 py-2 text-sm">
@@ -135,12 +136,12 @@ export default async function AdminPage({
                 </ul>
               )}
               <p className="text-xs text-ink-muted">{t("checklist")}</p>
-              {complete ? <ApproveDoctorForm userId={p.id} minDate={cairoToday()} /> : null}
+              {complete ? <ApproveDoctorForm userId={p.id} minDate={cairoToday()} grade={p.grade} /> : null}
               {m ? (
                 <details>
                   <summary className="cursor-pointer text-sm font-semibold text-red-700">{t("reject")}</summary>
                   <div className="pt-3">
-                    <RejectDoctorForm userId={p.id} />
+                    <RejectDoctorForm userId={p.id} grade={p.grade} />
                   </div>
                 </details>
               ) : null}
@@ -361,7 +362,7 @@ export default async function AdminPage({
   if (tab === "members") {
     const { data: members } = await supabase
       .from("profiles")
-      .select("id, full_name, grade, city, is_premium, is_admin, created_at")
+      .select("id, full_name, grade, city, specialty, is_premium, is_admin, created_at")
       .eq("status", "approved")
       .order("created_at", { ascending: false })
       .limit(200);
@@ -375,7 +376,7 @@ export default async function AdminPage({
               <Link href={`/doctors/${m.id}`} className="flex flex-col">
                 <span className="font-bold text-brand-700 underline">{m.full_name}</span>
                 <span className="text-sm text-ink-muted">
-                  {m.grade ? o(`grade.${m.grade as "resident"}`) : "—"} · {m.city ? o(`city.${m.city as "cairo"}`) : "—"}
+                  {o(`specialty.${m.specialty as Specialty}`)} · {m.grade ? o(`grade.${m.grade as "resident"}`) : "—"} · {m.city ? o(`city.${m.city as "cairo"}`) : "—"}
                 </span>
                 <span className="text-xs text-ink-muted">{formatDate(m.created_at, locale)}</span>
               </Link>
@@ -384,6 +385,7 @@ export default async function AdminPage({
                 {!EVERYTHING_FREE && m.is_premium ? <Badge tone="gold">{p("premium")}</Badge> : null}
               </div>
             </div>
+            <DoctorRoleForm id={m.id} grade={m.grade ?? "resident"} specialty={m.specialty} />
             <div className="grid grid-cols-2 gap-2">
               {/* Premium is switched on for everyone during the pilot. */}
               {!EVERYTHING_FREE ? (

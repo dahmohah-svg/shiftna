@@ -26,6 +26,7 @@ have been applied there, in this order:
 | `018_private_phone_numbers.sql` | `show_phone` setting and `contact_phones()`: a number only for yourself, the admin, or the other doctor in a confirmed booking |
 | `019_lock_phone_column.sql` | Doctors can no longer read `profiles.phone` directly (run after the app that uses `contact_phones()` is live) |
 | `020_growth_dashboard.sql` | `track_open()` (one 'open' event per doctor per day), `admin_growth()` weekly numbers and `admin_growth_summary()` for the admin Growth tab |
+| `021_specialties_and_interns.sql` | Specialties (6) with sub-specialties on doctors, shifts and alerts; intern grade and internship letter; grade/specialty locked after approval |
 
 Files 001 to 005 are exactly as printed in the build guide; copy them from
 there if you need to set up a second project (for example staging).

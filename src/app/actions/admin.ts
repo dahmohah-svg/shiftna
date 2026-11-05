@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
-import { CITIES, REQUIRED_DOCS } from "@/lib/constants";
+import { CITIES, DOC_TYPES, GRADES, requiredDocsFor, SPECIALTIES } from "@/lib/constants";
 
 // Every admin action checks is_admin in the database (RLS / functions)
 // and writes a row to audit_log.
@@ -62,7 +62,9 @@ async function latestDocs(
 const approveSchema = z.object({
   userId: uuid,
   syndicateExpiry: date,
-  licenseExpiry: date,
+  // Practice license expiry for doctors; internship end date for interns.
+  licenseExpiry: date.optional(),
+  letterExpiry: date.optional(),
 });
 
 export async function approveDoctor(
@@ -75,17 +77,27 @@ export async function approveDoctor(
   if (!ctx) return { error: "notAllowed" };
   const v = parsed.data;
 
+  const { data: doctor } = await ctx.supabase.from("profiles").select("grade").eq("id", v.userId).single();
+  const required = requiredDocsFor(doctor?.grade);
+  if (doctor?.grade === "intern" ? !v.letterExpiry : !v.licenseExpiry) return { error: "invalid" };
+
   const latest = await latestDocs(ctx, v.userId);
-  // All four documents must be uploaded and none of the latest rejected.
-  if (REQUIRED_DOCS.some((t) => !latest.get(t) || latest.get(t)!.status === "rejected")) {
+  // Every required document uploaded, and none of the latest rejected.
+  if (required.some((t) => !latest.get(t) || latest.get(t)!.status === "rejected")) {
     return { error: "invalid" };
   }
 
-  for (const type of REQUIRED_DOCS) {
+  for (const type of required) {
     const doc = latest.get(type)!;
     if (doc.status === "approved") continue;
     const expires =
-      type === "syndicate_card" ? v.syndicateExpiry : type === "license" ? v.licenseExpiry : null;
+      type === "syndicate_card"
+        ? v.syndicateExpiry
+        : type === "license"
+          ? v.licenseExpiry
+          : type === "internship_letter"
+            ? v.letterExpiry
+            : null;
     const { error } = await ctx.supabase.rpc("admin_review_document", {
       p_doc: doc.id,
       p_approve: true,
@@ -108,7 +120,7 @@ export async function approveDoctor(
 const rejectSchema = z.object({
   userId: uuid,
   reason: z.string().trim().min(3).max(500),
-  types: z.array(z.enum(REQUIRED_DOCS)).min(1),
+  types: z.array(z.enum(DOC_TYPES)).min(1),
 });
 
 export async function rejectDoctor(
@@ -266,5 +278,27 @@ export async function suspendDoctor(
   if (error) return { error: toErrorKey(error) };
   await audit(ctx, "doctor_suspended", "profiles", id.data);
   await flash("accountPaused");
+  return done();
+}
+
+const roleSchema = z.object({ id: uuid, grade: z.enum(GRADES), specialty: z.enum(SPECIALTIES) });
+
+/** Admin changes an approved doctor's grade or specialty (doctors can't, once approved). */
+export async function setDoctorRole(
+  _prev: ActionState | undefined,
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = roleSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "invalid" };
+  const ctx = await adminClient();
+  if (!ctx) return { error: "notAllowed" };
+  const v = parsed.data;
+  const { error } = await ctx.supabase
+    .from("profiles")
+    .update({ grade: v.grade, specialty: v.specialty })
+    .eq("id", v.id);
+  if (error) return { error: toErrorKey(error) };
+  await audit(ctx, "doctor_role_changed", "profiles", v.id, `${v.specialty} / ${v.grade}`);
+  await flash("detailsSaved");
   return done();
 }

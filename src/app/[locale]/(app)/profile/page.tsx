@@ -15,7 +15,7 @@ import { Badge, buttonClass, Card, DetailRow, Notice, PageTitle, SectionTitle } 
 import { signOut } from "@/app/actions/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getMyLatestDocs, requireApproved } from "@/lib/viewer";
-import { REQUIRED_DOCS, EVERYTHING_FREE } from "@/lib/constants";
+import { requiredDocsFor, EVERYTHING_FREE, type Specialty } from "@/lib/constants";
 import { formatDate } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
@@ -49,7 +49,8 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
           <div className="flex flex-col">
             <span className="text-xl font-extrabold">{profile.full_name}</span>
             <span className="text-sm text-ink-muted">
-              {profile.grade ? o(`grade.${profile.grade as "resident"}`) : null}
+              {o(`specialty.${profile.specialty as Specialty}`)}
+              {profile.grade ? ` · ${o(`grade.${profile.grade as "resident"}`)}` : null}
               {profile.city ? ` · ${o(`city.${profile.city as "cairo"}`)}` : null}
             </span>
           </div>
@@ -91,7 +92,7 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
       <Card>
         <SectionTitle>{t("documents")}</SectionTitle>
         <dl>
-          {REQUIRED_DOCS.map((k) => {
+          {requiredDocsFor(profile.grade).map((k) => {
             const doc = docs[k];
             return (
               <DetailRow key={k} label={d(k)}>
@@ -129,10 +130,12 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
           <summary className="cursor-pointer text-lg font-bold">{t("edit")}</summary>
           <div className="pt-3">
             <DetailsForm
+              locked={profile.status === "approved"}
               defaults={{
                 fullName: profile.full_name ?? "",
                 phone: myPhone,
                 grade: profile.grade ?? "",
+                specialty: profile.specialty ?? "",
                 city: profile.city ?? "",
               }}
             />

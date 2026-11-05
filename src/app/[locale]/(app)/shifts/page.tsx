@@ -4,7 +4,7 @@ import ShiftCard from "@/components/ShiftCard";
 import { buttonClass, Checkbox, EmptyState, PageTitle, Select } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
-import { CITIES, SHIFT_TYPES, SUBSPECIALTIES } from "@/lib/constants";
+import { CITIES, SHIFT_TYPES, SPECIALTIES, SUBSPECIALTIES, subspecialtiesFor, type Specialty } from "@/lib/constants";
 import { SHIFT_WITH_HOSPITAL, SHIFT_WITH_HOSPITAL_INNER, type ShiftWithHospital } from "@/lib/shifts";
 import { getHospitalTrust } from "@/lib/hospitals";
 import type { Locale } from "@/i18n/routing";
@@ -23,6 +23,9 @@ export default async function ShiftsPage({
   const sp = await searchParams;
   const city = pick(CITIES, sp.city);
   const type = pick(SHIFT_TYPES, sp.type);
+  // Own specialty by default; "all" shows every specialty.
+  const own = viewer.profile.specialty as Specialty;
+  const spec: Specialty | "all" = sp.spec === "all" ? "all" : (pick(SPECIALTIES, sp.spec) ?? own);
   const sub = pick(SUBSPECIALTIES, sp.sub);
   const paidOnDay = sp.paid === "1";
   const urgentOnly = sp.urgent === "1";
@@ -52,6 +55,7 @@ export default async function ShiftsPage({
     .order("start_at", { ascending: true })
     .limit(60);
   if (city) query = query.eq("hospital.city", city);
+  if (spec !== "all") query = query.eq("specialty", spec);
   if (type) query = query.eq("type", type);
   if (sub) query = query.eq("subspecialty", sub);
   if (paidOnDay) query = query.eq("payment", "immediate");
@@ -73,11 +77,34 @@ export default async function ShiftsPage({
     <>
       <PageTitle>{t("title")}</PageTitle>
 
+      <nav className="-mt-1 mb-3 flex flex-wrap gap-2" aria-label={t("specialty")}>
+        {[
+          { key: own, label: o(`specialty.${own}`), href: "/shifts" },
+          { key: "all", label: t("allSpecialties"), href: "/shifts?spec=all" },
+          ...(spec !== own && spec !== "all" ? [{ key: spec, label: o(`specialty.${spec}`), href: `/shifts?spec=${spec}` }] : []),
+        ].map((x) => (
+          <Link
+            key={x.key}
+            href={x.href}
+            aria-current={spec === x.key ? "page" : undefined}
+            className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${spec === x.key ? "border-brand-600 bg-brand-50 text-brand-700" : "border-line text-ink-muted"}`}
+          >
+            {x.label}
+          </Link>
+        ))}
+      </nav>
+
       <details className="mb-4 rounded-2xl border border-line bg-surface" open={filtered}>
         <summary className="cursor-pointer list-none px-4 py-3 font-semibold text-brand-700">
           {t("filters")}
         </summary>
         <form className="flex flex-col gap-3 px-4 pb-4" method="get">
+          <Select name="spec" defaultValue={spec} aria-label={t("specialty")}>
+            <option value="all">{t("allSpecialties")}</option>
+            {SPECIALTIES.map((x) => (
+              <option key={x} value={x}>{o(`specialty.${x}`)}</option>
+            ))}
+          </Select>
           <div className="grid grid-cols-2 gap-3">
             <Select name="city" defaultValue={city ?? ""} aria-label={t("city")}>
               <option value="">{t("city")}: {c("all")}</option>
@@ -94,7 +121,7 @@ export default async function ShiftsPage({
           </div>
           <Select name="sub" defaultValue={sub ?? ""} aria-label={t("subspecialty")}>
             <option value="">{t("subspecialty")}: {c("all")}</option>
-            {SUBSPECIALTIES.map((x) => (
+            {subspecialtiesFor(spec === "all" ? null : spec).map((x) => (
               <option key={x} value={x}>{o(`subspecialty.${x}`)}</option>
             ))}
           </Select>
@@ -119,7 +146,7 @@ export default async function ShiftsPage({
       ) : (
         <div className="flex flex-col gap-3">
           {shifts.map((s) => (
-            <ShiftCard key={s.id} shift={s} mine={s.poster_id === viewer.userId} teamName={s.team?.name} trust={trust.get(s.hospital_id)?.level} />
+            <ShiftCard key={s.id} shift={s} mine={s.poster_id === viewer.userId} teamName={s.team?.name} trust={trust.get(s.hospital_id)?.level} showSpecialty={s.specialty !== own} />
           ))}
         </div>
       )}

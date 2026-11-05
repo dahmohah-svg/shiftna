@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Shiftna | شفتنا",
     short_name: "Shiftna",
     description:
-      "A trusted way for anesthesiologists in Egypt to post and cover shifts.",
+      "A trusted way for doctors in Egypt to post and cover shifts.",
     start_url: "/",
     scope: "/",
     display: "standalone",

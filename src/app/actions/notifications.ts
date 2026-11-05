@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
-import { CITIES, MAX_ALERTS, SHIFT_TYPES, SUBSPECIALTIES } from "@/lib/constants";
+import { CITIES, MAX_ALERTS, SHIFT_TYPES, SPECIALTIES, SUBSPECIALTIES } from "@/lib/constants";
 
 /** Marks every unread notification of the signed-in user as read. */
 export async function markAllRead(): Promise<void> {
@@ -36,6 +36,7 @@ const flag = z
 const alertSchema = z.object({
   city: optional(CITIES),
   type: optional(SHIFT_TYPES),
+  specialty: optional(SPECIALTIES),
   subspecialty: optional(SUBSPECIALTIES),
   minPay: z
     .string()
@@ -62,6 +63,7 @@ export async function createAlert(
   if (!user) return { error: "notAllowed" };
 
   const row = {
+    specialty: v.specialty,
     city: v.city,
     shift_type: v.type,
     subspecialty: v.subspecialty,
@@ -72,7 +74,7 @@ export async function createAlert(
 
   const { data: existing } = await supabase
     .from("saved_alerts")
-    .select("city, shift_type, subspecialty, min_pay_egp, immediate_only, urgent_only")
+    .select("specialty, city, shift_type, subspecialty, min_pay_egp, immediate_only, urgent_only")
     .eq("user_id", user.id);
   const mine = existing ?? [];
   if (mine.length >= MAX_ALERTS) return { error: "invalid", message: "tooManyAlerts" };

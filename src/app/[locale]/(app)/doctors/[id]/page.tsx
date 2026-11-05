@@ -6,7 +6,7 @@ import { ScanFace } from "lucide-react";
 import { Badge, Card, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
-import { EVERYTHING_FREE } from "@/lib/constants";
+import { EVERYTHING_FREE, type Specialty } from "@/lib/constants";
 import type { Locale } from "@/i18n/routing";
 
 export default async function DoctorPage({ params }: PageProps<"/[locale]/doctors/[id]">) {
@@ -20,7 +20,7 @@ export default async function DoctorPage({ params }: PageProps<"/[locale]/doctor
 
   const { data: doctor } = await supabase
     .from("profiles")
-    .select("id, full_name, grade, city")
+    .select("id, full_name, grade, city, specialty")
     .eq("id", id)
     .maybeSingle();
   if (!doctor) return <EmptyState>{c("none")}</EmptyState>;
@@ -45,7 +45,8 @@ export default async function DoctorPage({ params }: PageProps<"/[locale]/doctor
       <Card className="flex flex-col gap-2">
         <span className="text-xl font-extrabold">{doctor.full_name}</span>
         <span className="text-sm text-ink-muted">
-          {doctor.grade ? o(`grade.${doctor.grade as "resident"}`) : null}
+          {o(`specialty.${doctor.specialty as Specialty}`)}
+          {doctor.grade ? ` · ${o(`grade.${doctor.grade as "resident"}`)}` : null}
           {doctor.city ? ` · ${o(`city.${doctor.city as "cairo"}`)}` : null}
         </span>
         <div className="flex flex-wrap gap-1.5">

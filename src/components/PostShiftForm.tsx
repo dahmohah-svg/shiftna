@@ -7,7 +7,8 @@ import {
   GRADES,
   PAYMENT_TYPES,
   SHIFT_TYPES,
-  SUBSPECIALTIES,
+  SPECIALTIES,
+  subspecialtiesFor,
   WORKLOADS,
 } from "@/lib/constants";
 import { Checkbox, Field, Input, Notice, Select, Textarea } from "./ui";
@@ -22,6 +23,7 @@ export default function PostShiftForm({
   teams = [],
   defaultTeam = "",
   defaultHospital = "",
+  defaultSpecialty = "anesthesia",
 }: {
   hospitals: HospitalOption[];
   minStart: string;
@@ -29,12 +31,16 @@ export default function PostShiftForm({
   teams?: TeamOption[];
   defaultTeam?: string;
   defaultHospital?: string;
+  /** The poster's own specialty, chosen first. */
+  defaultSpecialty?: string;
 }) {
   const t = useTranslations("Post");
   const o = useTranslations("Options");
   const c = useTranslations("Common");
   const [state, action] = useActionState(postShift, undefined);
   const [payment, setPayment] = useState<string>("immediate");
+  const [specialty, setSpecialty] = useState<string>(defaultSpecialty);
+  const subs = subspecialtiesFor(specialty);
 
   return (
     <form action={action} className="flex flex-col gap-4">
@@ -62,6 +68,14 @@ export default function PostShiftForm({
         </Field>
       ) : null}
 
+      <Field label={t("specialty")} htmlFor="specialty">
+        <Select id="specialty" name="specialty" value={specialty} onChange={(e) => setSpecialty(e.target.value)}>
+          {SPECIALTIES.map((x) => (
+            <option key={x} value={x}>{o(`specialty.${x}`)}</option>
+          ))}
+        </Select>
+      </Field>
+
       <div className="grid grid-cols-2 gap-3">
         <Field label={t("type")} htmlFor="type">
           <Select id="type" name="type" defaultValue="shift">
@@ -71,8 +85,9 @@ export default function PostShiftForm({
           </Select>
         </Field>
         <Field label={t("subspecialty")} htmlFor="subspecialty">
-          <Select id="subspecialty" name="subspecialty" defaultValue="general">
-            {SUBSPECIALTIES.map((x) => (
+          {/* key: reset to "general" when the specialty changes. */}
+          <Select key={specialty} id="subspecialty" name="subspecialty" defaultValue="general">
+            {subs.map((x) => (
               <option key={x} value={x}>{o(`subspecialty.${x}`)}</option>
             ))}
           </Select>

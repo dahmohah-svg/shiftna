@@ -23,6 +23,7 @@ import { requireApproved } from "@/lib/viewer";
 import { gradeAllows, payPerHour, SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
 import { getHospitalTrust } from "@/lib/hospitals";
 import { getVerifiedDoctors } from "@/lib/doctors";
+import type { Specialty } from "@/lib/constants";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
@@ -232,6 +233,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
               ? t("paymentDate", { date: formatDate(shift.payment_date, locale) })
               : o("payment.immediate")}
           </DetailRow>
+          <DetailRow label={t("specialty")}>{o(`specialty.${shift.specialty as Specialty}`)}</DetailRow>
           <DetailRow label={t("subspecialty")}>
             <span className="inline-flex items-center gap-1.5">
               <SubspecialtyIcon value={shift.subspecialty} className="h-4 w-4 text-brand-700" />

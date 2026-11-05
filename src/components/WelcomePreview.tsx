@@ -33,6 +33,7 @@ function sampleShift(over: Partial<ShiftWithHospital>, name: string, area: strin
     urgent: false,
     status: "open",
     created_at: new Date().toISOString(),
+    specialty: "anesthesia",
     subspecialty: "general",
     min_grade: "resident",
     group_id: null,
@@ -79,12 +80,12 @@ export default async function WelcomePreview() {
   const n = (x: number) => formatNumber(x, locale);
 
   const night = sampleShift(
-    { start_at: tomorrowAt(20), subspecialty: "cardiac", urgent: true, pay_egp: 3000, min_grade: "specialist" },
+    { start_at: tomorrowAt(20), specialty: "internal_medicine", subspecialty: "cardiology", urgent: true, pay_egp: 3000, min_grade: "specialist" },
     t("sampleHospital1"),
     t("sampleArea1"),
   );
   const day = sampleShift(
-    { start_at: tomorrowAt(8), subspecialty: "pediatric", duration_hours: 6, pay_egp: 1400, type: "per_case" },
+    { start_at: tomorrowAt(8), specialty: "surgery", subspecialty: "orthopedics", duration_hours: 6, pay_egp: 1400, type: "per_case", min_grade: "intern" },
     t("sampleHospital2"),
     t("sampleArea2"),
   );
@@ -101,8 +102,8 @@ export default async function WelcomePreview() {
       <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2">
         <Phone caption={t("captionShifts")}>
           <div aria-hidden className="flex flex-col gap-3">
-            <ShiftCard shift={night} trust="verified" preview />
-            <ShiftCard shift={day} trust="trusted" preview />
+            <ShiftCard shift={night} trust="verified" preview showSpecialty />
+            <ShiftCard shift={day} trust="trusted" preview showSpecialty />
           </div>
         </Phone>
         <Phone caption={t("captionOffers")}>

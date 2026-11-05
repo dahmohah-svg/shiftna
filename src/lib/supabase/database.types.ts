@@ -893,6 +893,7 @@ export type Database = {
           phone: string | null
           photo_url: string | null
           show_phone: boolean
+          specialty: string
           status: Database["public"]["Enums"]["user_status"]
           suspended_reason: string | null
         }
@@ -908,6 +909,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           show_phone?: boolean
+          specialty?: string
           status?: Database["public"]["Enums"]["user_status"]
           suspended_reason?: string | null
         }
@@ -923,6 +925,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           show_phone?: boolean
+          specialty?: string
           status?: Database["public"]["Enums"]["user_status"]
           suspended_reason?: string | null
         }
@@ -1196,6 +1199,7 @@ export type Database = {
           immediate_only: boolean
           min_pay_egp: number | null
           shift_type: Database["public"]["Enums"]["shift_type"] | null
+          specialty: string | null
           subspecialty: Database["public"]["Enums"]["subspecialty"] | null
           urgent_only: boolean
           user_id: string
@@ -1207,6 +1211,7 @@ export type Database = {
           immediate_only?: boolean
           min_pay_egp?: number | null
           shift_type?: Database["public"]["Enums"]["shift_type"] | null
+          specialty?: string | null
           subspecialty?: Database["public"]["Enums"]["subspecialty"] | null
           urgent_only?: boolean
           user_id: string
@@ -1218,6 +1223,7 @@ export type Database = {
           immediate_only?: boolean
           min_pay_egp?: number | null
           shift_type?: Database["public"]["Enums"]["shift_type"] | null
+          specialty?: string | null
           subspecialty?: Database["public"]["Enums"]["subspecialty"] | null
           urgent_only?: boolean
           user_id?: string
@@ -1297,6 +1303,7 @@ export type Database = {
           share_token: string | null
           start_at: string
           status: Database["public"]["Enums"]["shift_status"]
+          specialty: string
           subspecialty: Database["public"]["Enums"]["subspecialty"]
           support_staff: string | null
           swap_note: string | null
@@ -1326,6 +1333,7 @@ export type Database = {
           share_token?: string | null
           start_at: string
           status?: Database["public"]["Enums"]["shift_status"]
+          specialty?: string
           subspecialty?: Database["public"]["Enums"]["subspecialty"]
           support_staff?: string | null
           swap_note?: string | null
@@ -1355,6 +1363,7 @@ export type Database = {
           share_token?: string | null
           start_at?: string
           status?: Database["public"]["Enums"]["shift_status"]
+          specialty?: string
           subspecialty?: Database["public"]["Enums"]["subspecialty"]
           support_staff?: string | null
           swap_note?: string | null
@@ -1750,7 +1759,7 @@ export type Database = {
     Enums: {
       dispute_kind: "unpaid" | "no_show" | "rating" | "conduct" | "other"
       dispute_status: "open" | "resolved" | "dismissed"
-      doc_type: "syndicate_card" | "license" | "certificate" | "selfie"
+      doc_type: "syndicate_card" | "license" | "certificate" | "selfie" | "internship_letter"
       group_status: "pending" | "approved" | "rejected" | "suspended"
       member_role: "owner" | "moderator" | "member"
       member_status: "pending" | "active" | "removed"
@@ -1769,6 +1778,22 @@ export type Database = {
         | "regional"
         | "neuro"
         | "other"
+        | "cardiology"
+        | "gastroenterology"
+        | "chest"
+        | "nephrology"
+        | "endocrinology"
+        | "hematology"
+        | "rheumatology"
+        | "trauma"
+        | "orthopedics"
+        | "urology"
+        | "neurosurgery"
+        | "cardiothoracic"
+        | "vascular"
+        | "plastic"
+        | "ent"
+        | "neonatal"
       user_status: "pending" | "approved" | "suspended"
       workload: "light" | "moderate" | "heavy"
     }
@@ -1900,7 +1925,7 @@ export const Constants = {
     Enums: {
       dispute_kind: ["unpaid", "no_show", "rating", "conduct", "other"],
       dispute_status: ["open", "resolved", "dismissed"],
-      doc_type: ["syndicate_card", "license", "certificate", "selfie"],
+      doc_type: ["syndicate_card", "license", "certificate", "selfie", "internship_letter"],
       group_status: ["pending", "approved", "rejected", "suspended"],
       member_role: ["owner", "moderator", "member"],
       member_status: ["pending", "active", "removed"],
@@ -1919,6 +1944,22 @@ export const Constants = {
         "regional",
         "neuro",
         "other",
+        "cardiology",
+        "gastroenterology",
+        "chest",
+        "nephrology",
+        "endocrinology",
+        "hematology",
+        "rheumatology",
+        "trauma",
+        "orthopedics",
+        "urology",
+        "neurosurgery",
+        "cardiothoracic",
+        "vascular",
+        "plastic",
+        "ent",
+        "neonatal",
       ],
       user_status: ["pending", "approved", "suspended"],
       workload: ["light", "moderate", "heavy"],

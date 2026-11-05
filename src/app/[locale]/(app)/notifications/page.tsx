@@ -7,7 +7,7 @@ import { Card, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { deleteAlert } from "@/app/actions/notifications";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
-import { MAX_ALERTS, REQUIRED_DOCS, type City, type DocType } from "@/lib/constants";
+import { DOC_TYPES, MAX_ALERTS, type City, type DocType, type Specialty } from "@/lib/constants";
 import { isKnownKind, notificationHref, readPayload } from "@/lib/notifications";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
@@ -59,7 +59,7 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
   const hasUnread = items.some((n) => !n.read_at);
 
   const docName = (type?: string) =>
-    type && (REQUIRED_DOCS as readonly string[]).includes(type) ? d(type as DocType) : c("dash");
+    type && (DOC_TYPES as readonly string[]).includes(type) ? d(type as DocType) : c("dash");
 
   return (
     <div className="flex flex-col gap-6">
@@ -120,6 +120,7 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
           <ul className="flex flex-col gap-2">
             {(alerts ?? []).map((a) => {
               const parts = [
+                a.specialty ? o(`specialty.${a.specialty as Specialty}`) : t("anySpecialty"),
                 a.city ? o(`city.${a.city as City}`) : t("anyCity"),
                 a.shift_type ? o(`shiftType.${a.shift_type}`) : null,
                 a.subspecialty ? o(`subspecialty.${a.subspecialty}`) : null,
@@ -139,7 +140,7 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
           </ul>
         ) : null}
         {(alerts ?? []).length < MAX_ALERTS ? (
-          <AlertForm />
+          <AlertForm defaultSpecialty={viewer.profile.specialty} />
         ) : (
           <p className="text-sm text-ink-muted">{t("tooManyAlerts", { max: MAX_ALERTS })}</p>
         )}

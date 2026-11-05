@@ -2,12 +2,12 @@
 
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
-import { addHospital, approveDoctor, mergeHospitals, rejectDoctor } from "@/app/actions/admin";
-import { CITIES, REQUIRED_DOCS } from "@/lib/constants";
+import { addHospital, approveDoctor, mergeHospitals, rejectDoctor, setDoctorRole } from "@/app/actions/admin";
+import { CITIES, GRADES, requiredDocsFor, SPECIALTIES } from "@/lib/constants";
 import { Checkbox, Field, Input, Select, Textarea } from "./ui";
 import { FormMessage, SubmitButton } from "./forms";
 
-export function ApproveDoctorForm({ userId, minDate }: { userId: string; minDate: string }) {
+export function ApproveDoctorForm({ userId, minDate, grade }: { userId: string; minDate: string; grade: string | null }) {
   const t = useTranslations("Admin");
   const [state, action] = useActionState(approveDoctor, undefined);
   return (
@@ -17,9 +17,15 @@ export function ApproveDoctorForm({ userId, minDate }: { userId: string; minDate
         <Field label={t("syndicateExpiry")} htmlFor={`se-${userId}`}>
           <Input id={`se-${userId}`} name="syndicateExpiry" type="date" min={minDate} required dir="ltr" />
         </Field>
-        <Field label={t("licenseExpiry")} htmlFor={`le-${userId}`}>
-          <Input id={`le-${userId}`} name="licenseExpiry" type="date" min={minDate} required dir="ltr" />
-        </Field>
+        {grade === "intern" ? (
+          <Field label={t("internshipEnds")} htmlFor={`le-${userId}`}>
+            <Input id={`le-${userId}`} name="letterExpiry" type="date" min={minDate} required dir="ltr" />
+          </Field>
+        ) : (
+          <Field label={t("licenseExpiry")} htmlFor={`le-${userId}`}>
+            <Input id={`le-${userId}`} name="licenseExpiry" type="date" min={minDate} required dir="ltr" />
+          </Field>
+        )}
       </div>
       <FormMessage state={state} success={t("approved")} />
       <SubmitButton>{t("approve")}</SubmitButton>
@@ -27,7 +33,7 @@ export function ApproveDoctorForm({ userId, minDate }: { userId: string; minDate
   );
 }
 
-export function RejectDoctorForm({ userId }: { userId: string }) {
+export function RejectDoctorForm({ userId, grade }: { userId: string; grade: string | null }) {
   const t = useTranslations("Admin");
   const d = useTranslations("Docs");
   const [state, action] = useActionState(rejectDoctor, undefined);
@@ -36,7 +42,7 @@ export function RejectDoctorForm({ userId }: { userId: string }) {
       <input type="hidden" name="userId" value={userId} />
       <fieldset className="flex flex-col gap-2">
         <legend className="pb-1 text-sm font-semibold">{t("rejectDoc")}</legend>
-        {REQUIRED_DOCS.map((k) => (
+        {requiredDocsFor(grade).map((k) => (
           <Checkbox key={k} name="types" value={k} label={d(k)} />
         ))}
       </fieldset>
@@ -132,6 +138,36 @@ export function MergeHospitalForm({
         >
           {t("mergeButton")}
         </SubmitButton>
+      </form>
+    </details>
+  );
+}
+
+/** Admin: change an approved doctor's grade or specialty. */
+export function DoctorRoleForm({ id, grade, specialty }: { id: string; grade: string; specialty: string }) {
+  const t = useTranslations("Admin");
+  const o = useTranslations("Options");
+  const [state, action] = useActionState(setDoctorRole, undefined);
+  return (
+    <details className="text-sm">
+      <summary className="cursor-pointer font-semibold text-brand-700">{t("changeRole")}</summary>
+      <form action={action} className="flex flex-col gap-2 pt-2">
+        <input type="hidden" name="id" value={id} />
+        <div className="grid grid-cols-2 gap-2">
+          <Select name="specialty" defaultValue={specialty} aria-label={t("specialty")}>
+            {SPECIALTIES.map((x) => (
+              <option key={x} value={x}>{o(`specialty.${x}`)}</option>
+            ))}
+          </Select>
+          <Select name="grade" defaultValue={grade} aria-label={t("grade")}>
+            {GRADES.map((x) => (
+              <option key={x} value={x}>{o(`grade.${x}`)}</option>
+            ))}
+          </Select>
+        </div>
+        <p className="text-xs text-ink-muted">{t("changeRoleNote")}</p>
+        <FormMessage state={state} />
+        <SubmitButton variant="secondary">{t("saveRole")}</SubmitButton>
       </form>
     </details>
   );

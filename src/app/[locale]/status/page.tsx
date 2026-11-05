@@ -3,7 +3,7 @@ import { Link, redirect } from "@/i18n/navigation";
 import AuthShell from "@/components/AuthShell";
 import { buttonClass, Card, Notice } from "@/components/ui";
 import { signOut } from "@/app/actions/auth";
-import { REQUIRED_DOCS } from "@/lib/constants";
+import { requiredDocsFor } from "@/lib/constants";
 import {
   docsToUpload,
   getMyLatestDocs,
@@ -25,8 +25,8 @@ export default async function StatusPage({ params }: PageProps<"/[locale]/status
   const d = await getTranslations("Docs");
   const c = await getTranslations("Common");
   const docs = await getMyLatestDocs(viewer.userId);
-  const missing = docsToUpload(docs);
-  const rejected = REQUIRED_DOCS.filter((k) => docs[k]?.status === "rejected");
+  const missing = docsToUpload(docs, profile.grade);
+  const rejected = requiredDocsFor(profile.grade).filter((k) => docs[k]?.status === "rejected");
 
   let body;
   if (profile.status === "suspended") {

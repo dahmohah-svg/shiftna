@@ -31,10 +31,29 @@ export const CITIES = [
   "new_valley",
 ] as const;
 
-export const GRADES = ["resident", "specialist", "consultant"] as const;
+/** Grades, lowest first. Interns are below residents (migration 021). */
+export const GRADES = ["intern", "resident", "specialist", "consultant"] as const;
 export const SHIFT_TYPES = ["shift", "per_case", "replacement"] as const;
 export const PAYMENT_TYPES = ["immediate", "on_date"] as const;
 export const WORKLOADS = ["light", "moderate", "heavy"] as const;
+
+/** Specialties Shiftna covers. Labels live under "Options.specialty". */
+export const SPECIALTIES = ["anesthesia", "internal_medicine", "emergency", "surgery", "icu", "pediatrics"] as const;
+
+/**
+ * Sub-specialties per specialty (labels under "Options.subspecialty"; shared
+ * keys like "general" or "pediatric" read naturally in each specialty).
+ */
+export const SUBSPECIALTIES_BY_SPECIALTY = {
+  anesthesia: ["general", "cardiac", "pediatric", "obstetric", "icu", "regional", "neuro", "other"],
+  internal_medicine: ["general", "cardiology", "gastroenterology", "chest", "nephrology", "endocrinology", "hematology", "rheumatology", "neuro", "other"],
+  emergency: ["general", "trauma", "pediatric", "other"],
+  surgery: ["general", "orthopedics", "urology", "neurosurgery", "cardiothoracic", "vascular", "plastic", "pediatric", "ent", "other"],
+  icu: ["general", "cardiac", "neuro", "pediatric", "neonatal", "other"],
+  pediatrics: ["general", "neonatal", "icu", "cardiology", "other"],
+} as const;
+
+/** Every sub-specialty value (the database enum). */
 export const SUBSPECIALTIES = [
   "general",
   "cardiac",
@@ -44,19 +63,46 @@ export const SUBSPECIALTIES = [
   "regional",
   "neuro",
   "other",
+  "cardiology",
+  "gastroenterology",
+  "chest",
+  "nephrology",
+  "endocrinology",
+  "hematology",
+  "rheumatology",
+  "trauma",
+  "orthopedics",
+  "urology",
+  "neurosurgery",
+  "cardiothoracic",
+  "vascular",
+  "plastic",
+  "ent",
+  "neonatal",
 ] as const;
 
-/** Documents every doctor uploads before review. */
-export const REQUIRED_DOCS = [
-  "syndicate_card",
-  "license",
-  "certificate",
-  "selfie",
-] as const;
+/** Every document type a doctor can upload. */
+export const DOC_TYPES = ["syndicate_card", "license", "certificate", "internship_letter", "selfie"] as const;
+
+/** Documents a doctor uploads before review: interns have no license or certificate yet. */
+export function requiredDocsFor(grade: string | null | undefined): readonly DocType[] {
+  return grade === "intern"
+    ? (["syndicate_card", "internship_letter", "selfie"] as const)
+    : (["syndicate_card", "license", "certificate", "selfie"] as const);
+}
 
 export type City = (typeof CITIES)[number];
 export type Grade = (typeof GRADES)[number];
-export type DocType = (typeof REQUIRED_DOCS)[number];
+export type Specialty = (typeof SPECIALTIES)[number];
+export type Subspecialty = (typeof SUBSPECIALTIES)[number];
+export type DocType = (typeof DOC_TYPES)[number];
+
+/** Sub-specialties for one specialty (all of them when none is chosen). */
+export function subspecialtiesFor(specialty: string | null | undefined): readonly Subspecialty[] {
+  return specialty && specialty in SUBSPECIALTIES_BY_SPECIALTY
+    ? SUBSPECIALTIES_BY_SPECIALTY[specialty as Specialty]
+    : SUBSPECIALTIES;
+}
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
