@@ -6,7 +6,7 @@ import ActionButton from "@/components/ActionButton";
 import ShiftCard from "@/components/ShiftCard";
 import { InviteBox } from "@/components/TeamForms";
 import { Badge, buttonClass, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
-import { decideMember, leaveTeam } from "@/app/actions/teams";
+import { allowRejoin, decideMember, leaveTeam, readdMember, renewInviteCode } from "@/app/actions/teams";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import { SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
@@ -64,7 +64,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
 
   const manager = me!.role === "owner" || me!.role === "moderator";
 
-  const [{ data: members }, { data: requests }, { data: invite }, { data: shiftRows }] = await Promise.all([
+  const [{ data: members }, { data: requests }, { data: invite }, { data: shiftRows }, { data: former }] = await Promise.all([
     supabase
       .from("group_members")
       .select("user_id, role, profile:profiles!group_members_user_id_fkey(full_name, grade, city)")
@@ -89,6 +89,16 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
       .gte("start_at", new Date().toISOString())
       .order("start_at", { ascending: true })
       .limit(30),
+    manager
+      ? supabase
+          .from("group_members")
+          .select("user_id, decided_by, decided_at, profile:profiles!group_members_user_id_fkey(full_name, grade, city)")
+          .eq("group_id", id)
+          .eq("status", "removed")
+          .eq("role", "member")
+          .order("decided_at", { ascending: false })
+          .limit(50)
+      : Promise.resolve({ data: [] as never[] }),
   ]);
 
   const shifts = (shiftRows ?? []) as unknown as ShiftWithHospital[];
@@ -162,6 +172,9 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
         <Card className="flex flex-col gap-3">
           <SectionTitle>{t("inviteTitle")}</SectionTitle>
           <InviteBox code={invite.code} link={inviteLink} />
+          <ActionButton action={renewInviteCode} fields={{ teamId: id }} variant="ghost" confirm={t("renewConfirm")}>
+            {t("renewCode")}
+          </ActionButton>
         </Card>
       ) : null}
 
@@ -194,6 +207,40 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
           ))}
         </ul>
       </Card>
+
+      {manager && (former ?? []).length > 0 ? (
+        <Card className="flex flex-col gap-2">
+          <SectionTitle>{t("formerTitle")}</SectionTitle>
+          <p className="text-sm text-ink-muted">{t("formerIntro")}</p>
+          <ul className="flex flex-col">
+            {former!.map((m) => {
+              const left = m.decided_by === m.user_id;
+              return (
+                <li key={m.user_id} className="flex items-center justify-between gap-3 border-b border-line py-2.5 last:border-b-0">
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate font-semibold">{m.profile?.full_name ?? c("dash")}</span>
+                    <span className="text-xs text-ink-muted">{left ? t("leftThemselves") : t("removedByManager")}</span>
+                  </span>
+                  {left ? (
+                    <ActionButton action={allowRejoin} fields={{ teamId: id, userId: m.user_id }} variant="secondary" success={t("rejoinAllowed")}>
+                      {t("allowRejoin")}
+                    </ActionButton>
+                  ) : (
+                    <ActionButton
+                      action={readdMember}
+                      fields={{ teamId: id, userId: m.user_id }}
+                      variant="secondary"
+                      confirm={t("readdConfirm", { name: m.profile?.full_name ?? "" })}
+                    >
+                      {t("readd")}
+                    </ActionButton>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
+      ) : null}
 
       {me!.role === "member" ? (
         <ActionButton action={leaveTeam} fields={{ teamId: id }} variant="danger" confirm={t("leaveConfirm")}>

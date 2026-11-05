@@ -564,7 +564,7 @@
     "remove": "Remove",
     "removeConfirm": "Remove {name} from the team?",
     "leave": "Leave team",
-    "leaveConfirm": "Leave this team? You will not be able to rejoin with the same invite code.",
+    "leaveConfirm": "Leave this team? To come back, a team manager will need to allow you to rejoin.",
     "pendingTeams": "Teams waiting for review",
     "noPendingTeams": "No teams are waiting for review.",
     "createdBy": "Created by",
@@ -574,6 +574,16 @@
     "approve": "Approve team",
     "reject": "Reject",
     "rejectReason": "Reason the doctor will see",
-    "rejected": "Rejected."
+    "rejected": "Rejected.",
+    "renewCode": "Renew invite code",
+    "renewConfirm": "Make a new invite code? The old code and link will stop working.",
+    "formerTitle": "Former members",
+    "formerIntro": "Doctors who left, were removed or were declined.",
+    "leftThemselves": "Left the team",
+    "removedByManager": "Removed or declined by a manager",
+    "readd": "Re-add",
+    "readdConfirm": "Add {name} back to the team?",
+    "allowRejoin": "Allow to rejoin",
+    "rejoinAllowed": "They can now ask to join again with the invite code."
   }
 }

@@ -1486,6 +1486,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      allow_rejoin: {
+        Args: { p_group: string; p_user: string }
+        Returns: undefined
+      }
       admin_review_group: {
         Args: { p_approve: boolean; p_group: string; p_reason: string }
         Returns: undefined
@@ -1585,6 +1589,11 @@ export type Database = {
       is_premium: { Args: never; Returns: boolean }
       lapse_expired_users: { Args: never; Returns: number }
       leave_group: { Args: { p_group: string }; Returns: undefined }
+      readd_member: {
+        Args: { p_group: string; p_user: string }
+        Returns: undefined
+      }
+      renew_invite_code: { Args: { p_group: string }; Returns: string }
       my_duty_hours: {
         Args: { p_from: string; p_to: string }
         Returns: {

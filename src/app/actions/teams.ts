@@ -163,3 +163,59 @@ export async function reviewTeam(
   refresh();
   return { ok: true };
 }
+
+const memberSchema = z.object({ teamId: uuid, userId: uuid });
+
+/** Manager makes a new invite code; the old code and link stop working. */
+export async function renewInviteCode(
+  _prev: ActionState | undefined,
+  formData: FormData,
+): Promise<ActionState> {
+  const teamId = uuid.safeParse(formData.get("teamId"));
+  if (!teamId.success) return { error: "invalid" };
+  const ctx = await signedIn();
+  if (!ctx) return { error: "notAllowed" };
+
+  const { error } = await ctx.supabase.rpc("renew_invite_code", { p_group: teamId.data });
+  if (error) return { error: toErrorKey(error) };
+  refresh();
+  return { ok: true };
+}
+
+/** Manager puts back a doctor they removed or declined. */
+export async function readdMember(
+  _prev: ActionState | undefined,
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = memberSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "invalid" };
+  const ctx = await signedIn();
+  if (!ctx) return { error: "notAllowed" };
+
+  const { error } = await ctx.supabase.rpc("readd_member", {
+    p_group: parsed.data.teamId,
+    p_user: parsed.data.userId,
+  });
+  if (error) return { error: toErrorKey(error) };
+  refresh();
+  return { ok: true };
+}
+
+/** Manager lets a doctor who left ask to join again with the code. */
+export async function allowRejoin(
+  _prev: ActionState | undefined,
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = memberSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "invalid" };
+  const ctx = await signedIn();
+  if (!ctx) return { error: "notAllowed" };
+
+  const { error } = await ctx.supabase.rpc("allow_rejoin", {
+    p_group: parsed.data.teamId,
+    p_user: parsed.data.userId,
+  });
+  if (error) return { error: toErrorKey(error) };
+  refresh();
+  return { ok: true };
+}
