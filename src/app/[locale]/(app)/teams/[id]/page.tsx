@@ -59,6 +59,9 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
             <PageTitle>{team.name}</PageTitle>
             <Notice tone="warn">{team.status === "suspended" ? t("pausedNotice") : t("notApprovedYet")}</Notice>
           </>
+        ) : !team && active ? (
+          // Members cannot read a paused team, but their membership is still there.
+          <Notice tone="warn">{t("pausedNotice")}</Notice>
         ) : (
           <EmptyState>{t("notFound")}</EmptyState>
         )}
