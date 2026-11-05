@@ -817,7 +817,7 @@
   },
   "Growth": {
     "range": "الفترة",
-    "lastWeeks": "{n} أسابيع",
+    "lastWeeks": "{count, plural, few {{n} أسابيع} other {{n} أسبوعًا}}",
     "activeThisWeek": "الأطباء النشطون هذا الأسبوع",
     "vsPrevious": "مقارنة بالفترة السابقة",
     "vsLastWeek": "مقارنة بالأسبوع الماضي",
@@ -845,7 +845,7 @@
     "chartTimeToFill": "متوسط وقت التغطية أسبوعياً",
     "chartTimeToFillSub": "ساعات من النشر حتى الحجز، والأقل أفضل",
     "chartCities": "النبطشيات حسب المحافظة",
-    "chartCitiesSub": "المنشورة في آخر {n} أسابيع",
+    "chartCitiesSub": "{count, plural, few {المنشورة في آخر {n} أسابيع} other {المنشورة في آخر {n} أسبوعًا}}",
     "noData": "لا توجد نبطشيات بعد.",
     "hospitalsVerified": "مستشفيات موثّقة",
     "hospitalsUnverified": "مستشفيات غير موثّقة",

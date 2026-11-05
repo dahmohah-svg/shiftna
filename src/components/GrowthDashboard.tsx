@@ -115,7 +115,7 @@ export default async function GrowthDashboard({ locale, weeks }: { locale: strin
             aria-current={w === weeks ? "page" : undefined}
             className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${w === weeks ? "border-brand-600 bg-brand-50 text-brand-700" : "border-line text-ink-muted"}`}
           >
-            {t("lastWeeks", { n: w })}
+            {t("lastWeeks", { count: w, n: n(w) })}
           </Link>
         ))}
       </nav>
@@ -146,7 +146,7 @@ export default async function GrowthDashboard({ locale, weeks }: { locale: strin
         <StatTile label={t("openNow")} value={n(summary.open_shifts_now ?? 0)} note={t("openNowNote")} />
       </div>
 
-      <LineChart title={t("chartActive")} subtitle={t("chartActiveSub")} labels={labels} values={cur.map((r) => r.active_doctors)} fmt={n} />
+      <LineChart title={t("chartActive")} subtitle={t("chartActiveSub")} labels={labels} values={cur.map((r) => r.active_doctors)} format={{ locale }} />
       <ColumnChart
         title={t("chartShifts")}
         subtitle={t("chartShiftsSub")}
@@ -155,27 +155,27 @@ export default async function GrowthDashboard({ locale, weeks }: { locale: strin
           { name: t("posted"), color: "context", values: cur.map((r) => r.shifts_posted) },
           { name: t("filled"), color: "accent", values: cur.map((r) => r.shifts_filled) },
         ]}
-        fmt={n}
+        format={{ locale }}
       />
       <ColumnChart
         title={t("chartSignups")}
         subtitle={t("chartSignupsSub")}
         labels={labels}
         series={[{ name: t("signups"), color: "accent", values: cur.map((r) => r.signups) }]}
-        fmt={n}
+        format={{ locale }}
       />
       <LineChart
         title={t("chartTimeToFill")}
         subtitle={t("chartTimeToFillSub")}
         labels={labels}
         values={cur.map((r) => (r.median_hours_to_fill == null ? null : Number(r.median_hours_to_fill)))}
-        fmt={(x) => hrs(x)}
+        format={{ locale, template: t("hours", { n: "{n}" }) }}
       />
       <RankedBars
         title={t("chartCities")}
-        subtitle={t("chartCitiesSub", { n: weeks })}
+        subtitle={t("chartCitiesSub", { count: weeks, n: n(weeks) })}
         rows={(summary.cities ?? []).map((c) => ({ label: o(`city.${c.city as City}`), value: c.shifts }))}
-        fmt={n}
+        format={{ locale }}
         empty={t("noData")}
       />
 

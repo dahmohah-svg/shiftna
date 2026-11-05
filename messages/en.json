@@ -817,7 +817,7 @@
   },
   "Growth": {
     "range": "Period",
-    "lastWeeks": "{n} weeks",
+    "lastWeeks": "{count, plural, one {{n} week} other {{n} weeks}}",
     "activeThisWeek": "Active doctors this week",
     "vsPrevious": "vs previous period",
     "vsLastWeek": "vs last week",
@@ -845,7 +845,7 @@
     "chartTimeToFill": "Median time to fill per week",
     "chartTimeToFillSub": "Hours from posting to booking; lower is better",
     "chartCities": "Shifts by city",
-    "chartCitiesSub": "Posted in the last {n} weeks",
+    "chartCitiesSub": "{count, plural, one {Posted in the last week} other {Posted in the last {n} weeks}}",
     "noData": "No shifts yet.",
     "hospitalsVerified": "Verified hospitals",
     "hospitalsUnverified": "Unverified hospitals",

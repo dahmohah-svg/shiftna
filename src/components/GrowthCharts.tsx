@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { formatNumber } from "@/lib/time";
 
 /**
  * Small SVG charts for the admin growth dashboard, following the dataviz
@@ -11,6 +12,20 @@ import { useState, type ReactNode } from "react";
  * --color-viz-context (the comparison), validated in light and dark mode.
  * Time runs left to right in both languages.
  */
+
+/**
+ * How chart values are written. Server components cannot pass a function to
+ * these client charts, so they pass the locale and an optional template with
+ * "{n}" where the number goes (for example "{n} h").
+ */
+export type ValueFormat = { locale: string; template?: string };
+
+function formatter({ locale, template }: ValueFormat): (n: number) => string {
+  return (n) => {
+    const s = formatNumber(Math.round(n * 10) / 10, locale);
+    return template ? template.replace("{n}", s) : s;
+  };
+}
 
 export type Series = { name: string; color: "accent" | "context"; values: (number | null)[] };
 
@@ -121,14 +136,15 @@ export function ColumnChart({
   subtitle,
   labels,
   series,
-  fmt,
+  format,
 }: {
   title: string;
   subtitle?: string;
   labels: string[];
   series: Series[];
-  fmt: (n: number) => string;
+  format: ValueFormat;
 }) {
+  const fmt = formatter(format);
   const [active, setActive] = useState<number | null>(null);
   const max = niceMax(Math.max(1, ...series.flatMap((s) => s.values.map((v) => v ?? 0))));
   const step = PLOT_W / labels.length;
@@ -206,14 +222,15 @@ export function LineChart({
   subtitle,
   labels,
   values,
-  fmt,
+  format,
 }: {
   title: string;
   subtitle?: string;
   labels: string[];
   values: (number | null)[];
-  fmt: (n: number) => string;
+  format: ValueFormat;
 }) {
+  const fmt = formatter(format);
   const [active, setActive] = useState<number | null>(null);
   const max = niceMax(Math.max(1, ...values.map((v) => v ?? 0)));
   const step = PLOT_W / labels.length;
@@ -292,15 +309,16 @@ export function RankedBars({
   title,
   subtitle,
   rows,
-  fmt,
+  format,
   empty,
 }: {
   title: string;
   subtitle?: string;
   rows: { label: string; value: number }[];
-  fmt: (n: number) => string;
+  format: ValueFormat;
   empty: string;
 }) {
+  const fmt = formatter(format);
   const max = Math.max(1, ...rows.map((r) => r.value));
   return (
     <Frame title={title} subtitle={subtitle}>
