@@ -33,7 +33,10 @@ export async function generateMetadata({
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0d9488",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#0d9488" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a111d" },
+  ],
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -54,8 +57,18 @@ export default async function LocaleLayout({
       lang={locale}
       dir={getDirection(locale)}
       className={`${cairo.variable} h-full antialiased`}
+      // The theme script below sets data-theme before React loads.
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
+        {/* Light or dark before anything paints: the doctor's choice from
+            Profile, otherwise the phone's setting. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var r=document.documentElement,m=window.matchMedia('(prefers-color-scheme: dark)');function a(){var t='system';try{t=localStorage.getItem('shiftna-theme')||'system'}catch(e){}r.dataset.theme=t==='dark'||(t==='system'&&m.matches)?'dark':'light'}a();m.addEventListener('change',a);window.addEventListener('shiftna:theme',a)})();",
+          }}
+        />
         {/* Android announces "this app can be installed" very early; keep that
             event so the Install button can use it once the page is ready. */}
         <script

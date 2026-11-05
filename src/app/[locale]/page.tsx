@@ -1,3 +1,4 @@
+import { ClipboardList, ShieldCheck, Star } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
 import InstallApp from "@/components/InstallApp";
@@ -8,9 +9,9 @@ import { getViewer } from "@/lib/viewer";
 import type { Locale } from "@/i18n/routing";
 
 const features = [
-  { key: "Verified", icon: "✓" },
-  { key: "Clear", icon: "≡" },
-  { key: "Ratings", icon: "★" },
+  { key: "Verified", Icon: ShieldCheck },
+  { key: "Clear", Icon: ClipboardList },
+  { key: "Ratings", Icon: Star },
 ] as const;
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
@@ -57,16 +58,16 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
 
         <ul className="flex flex-col gap-3">
-          {features.map(({ key, icon }) => (
+          {features.map(({ key, Icon }) => (
             <li
               key={key}
               className="flex items-start gap-3 rounded-2xl border border-line bg-surface p-4"
             >
               <span
                 aria-hidden
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 font-bold text-brand-700"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700"
               >
-                {icon}
+                <Icon className="h-5 w-5" strokeWidth={2.25} />
               </span>
               <div className="flex flex-col gap-0.5">
                 <h2 className="font-bold text-ink">{t(`feature${key}Title`)}</h2>

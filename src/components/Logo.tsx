@@ -7,11 +7,15 @@ export default function Logo({ size = "sm" }: { size?: "sm" | "lg" }) {
     <span className="flex items-center gap-2">
       <span
         aria-hidden
-        className={`flex ${box} items-center justify-center bg-brand-600 shadow-md shadow-brand-600/30`}
+        className={`flex ${box} items-center justify-center shadow-md shadow-brand-600/30`}
+        style={{ background: "linear-gradient(135deg, #14b8a6, #0f766e)" }}
       >
-        <svg viewBox="0 0 512 512" className="h-3/4 w-3/4">
-          <circle cx="256" cy="256" r="150" fill="none" stroke="#fff" strokeWidth="40" />
-          <path d="M256 140v116l78 52" fill="none" stroke="#fff" strokeWidth="40" strokeLinecap="round" strokeLinejoin="round" />
+        {/* A clock whose hand becomes a heartbeat: medical shifts. */}
+        <svg viewBox="0 0 512 512" className="h-full w-full">
+          <g fill="none" stroke="#fff" strokeWidth="38" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M392 196 A150 150 0 1 0 392 316" />
+            <path d="M244 162 V262 H290 L314 208 L344 316 L368 262 H430" />
+          </g>
         </svg>
       </span>
       {size === "sm" ? (

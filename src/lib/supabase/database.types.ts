@@ -1587,6 +1587,13 @@ export type Database = {
           shifts_posted: number
         }[]
       }
+      doctors_verified: {
+        Args: { p_ids: string[] }
+        Returns: {
+          doctor_id: string
+          verified: boolean
+        }[]
+      }
       hospital_trust: {
         Args: { p_ids: string[] }
         Returns: {

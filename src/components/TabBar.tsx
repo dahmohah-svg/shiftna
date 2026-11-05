@@ -2,20 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Bell, ClipboardList, Handshake, SquarePlus, UserRound } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { subscribeAsUser } from "@/lib/supabase/realtime";
 
 const tabs = [
-  { href: "/shifts", key: "shifts", icon: "M4 6h16M4 12h16M4 18h10" },
-  { href: "/post", key: "post", icon: "M12 5v14M5 12h14" },
-  { href: "/activity", key: "activity", icon: "M5 13l4 4L19 7" },
-  {
-    href: "/notifications",
-    key: "alerts",
-    icon: "M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0",
-  },
-  { href: "/profile", key: "profile", icon: "M12 12a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 0114 0" },
+  { href: "/shifts", key: "shifts", Icon: ClipboardList },
+  { href: "/post", key: "post", Icon: SquarePlus },
+  { href: "/activity", key: "activity", Icon: Handshake },
+  { href: "/notifications", key: "alerts", Icon: Bell },
+  { href: "/profile", key: "profile", Icon: UserRound },
 ] as const;
 
 /** Sent by the notifications page once it has marked everything read. */
@@ -82,9 +79,7 @@ export default function TabBar({ userId, initialUnread }: { userId: string; init
                 className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-semibold ${active ? "text-brand-700" : "text-ink-muted"}`}
               >
                 <span className="relative">
-                  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d={tab.icon} />
-                  </svg>
+                  <tab.Icon className="h-6 w-6" strokeWidth={active ? 2.4 : 2} aria-hidden />
                   {badge ? (
                     <span
                       aria-hidden

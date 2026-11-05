@@ -15,12 +15,71 @@
   --color-line: #e2e8f0;
   --color-surface: #ffffff;
   --color-page: #f8fafc;
+  /* Night hours on the 24-hour strip (22:00 to 08:00). */
+  --color-night: #cbd5e1;
+  --color-night-on: #115e59;
 
   --font-sans: var(--font-cairo), system-ui, sans-serif;
+}
+
+/*
+ * Dark mode. The same colour names get darker backgrounds and lighter text,
+ * so every screen follows without its own dark styles. The theme is chosen
+ * before the page paints (see the script in the [locale] layout): it follows
+ * the phone unless the doctor picks Light or Dark in Profile.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-brand-50: #0f2a2a;
+  --color-brand-100: #134040;
+  --color-brand-200: #1d5c58;
+  --color-brand-500: #2dd4bf;
+  --color-brand-600: #0d9488;
+  --color-brand-700: #5eead4;
+  --color-brand-800: #99f6e4;
+
+  --color-ink: #e6edf5;
+  --color-ink-muted: #94a3b8;
+  --color-line: #263347;
+  --color-surface: #121b2b;
+  --color-page: #0a111d;
+  --color-night: #1e2a3d;
+  --color-night-on: #0f766e;
+
+  --color-red-50: #3a1418;
+  --color-red-200: #7a2530;
+  --color-red-600: #ef4444;
+  --color-red-700: #fca5a5;
+  --color-red-800: #fecaca;
+
+  --color-amber-50: #33270c;
+  --color-amber-100: #44330f;
+  --color-amber-200: #6b4e12;
+  --color-amber-500: #fbbf24;
+  --color-amber-800: #fcd34d;
+  --color-amber-900: #fde68a;
+
+  --color-emerald-50: #0d2b22;
+  --color-emerald-200: #14532d;
+  --color-emerald-700: #6ee7b7;
+  --color-emerald-800: #a7f3d0;
+
+  --color-slate-200: #2b3a50;
+  --color-slate-700: #e2e8f0;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 body {
   background: var(--color-page);
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/* Buttons keep white text in dark mode, so hover stays a darker teal. */
+:root[data-theme="dark"] .hover\:bg-brand-700:hover {
+  background-color: #0f766e;
 }

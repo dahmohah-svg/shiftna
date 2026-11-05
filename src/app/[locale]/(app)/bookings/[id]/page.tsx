@@ -1,6 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
+import VerifiedBadge from "@/components/VerifiedBadge";
+import { getVerifiedDoctors } from "@/lib/doctors";
 import Chat from "@/components/Chat";
 import { CancelBookingForm, RatingForm, ReportForm } from "@/components/BookingForms";
 import ShiftStrip from "@/components/ShiftStrip";
@@ -35,7 +37,7 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/booki
   const isPoster = booking.poster_id === viewer.userId;
   const otherId = isDoctor ? booking.poster_id : booking.doctor_id;
 
-  const [{ data: other }, { data: messages }, { data: ratings }] = await Promise.all([
+  const [{ data: other }, { data: messages }, { data: ratings }, verified] = await Promise.all([
     supabase.from("profiles").select("id, full_name, grade, phone").eq("id", otherId).maybeSingle(),
     supabase
       .from("messages")
@@ -44,6 +46,7 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/booki
       .order("created_at", { ascending: true })
       .limit(500),
     supabase.from("ratings").select("*").eq("booking_id", booking.id),
+    getVerifiedDoctors(supabase, [otherId]),
   ]);
 
   const cancelled = Boolean(booking.cancelled_at);
@@ -96,9 +99,12 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/booki
             </DetailRow>
           ) : null}
           <DetailRow label={isDoctor ? t("poster") : t("doctor")}>
-            <Link href={`/doctors/${other?.id}`} className="text-brand-700 underline">
-              {other?.full_name}
-            </Link>
+            <span className="inline-flex items-center gap-1.5">
+              <Link href={`/doctors/${other?.id}`} className="text-brand-700 underline">
+                {other?.full_name}
+              </Link>
+              {verified.has(otherId) ? <VerifiedBadge compact /> : null}
+            </span>
             {other?.phone ? (
               <a href={`tel:${other.phone}`} className="block text-xs text-ink-muted" dir="ltr">
                 {other.phone}

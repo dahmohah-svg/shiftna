@@ -5,7 +5,9 @@ import OfferForm from "@/components/OfferForm";
 import ShiftStrip from "@/components/ShiftStrip";
 import StatsGrid from "@/components/StatsGrid";
 import HospitalTrustBadge from "@/components/HospitalTrustBadge";
+import { SubspecialtyIcon } from "@/components/icons";
 import TrustBadge from "@/components/TrustBadge";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import {
   Badge,
   buttonClass,
@@ -20,6 +22,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import { gradeAllows, payPerHour, SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
 import { getHospitalTrust } from "@/lib/hospitals";
+import { getVerifiedDoctors } from "@/lib/doctors";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
@@ -44,7 +47,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
   }
 
   const isPoster = shift.poster_id === viewer.userId;
-  const [{ data: poster }, { data: hospitalRatings }, { data: booking }] = await Promise.all([
+  const [{ data: poster }, { data: hospitalRatings }, { data: booking }, verifiedPoster] = await Promise.all([
     supabase.from("profiles").select("id, full_name, grade").eq("id", shift.poster_id).maybeSingle(),
     supabase.from("hospital_ratings").select("*").eq("hospital_id", shift.hospital_id).maybeSingle(),
     supabase
@@ -53,6 +56,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
       .eq("shift_id", shift.id)
       .is("cancelled_at", null)
       .maybeSingle(),
+    getVerifiedDoctors(supabase, [shift.poster_id]),
   ]);
 
   const when = formatDateTime(shift.start_at, locale);
@@ -96,14 +100,16 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
           <div key={x.id} className="flex flex-col gap-3 rounded-xl border border-line p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-col">
-                <span className="font-bold">{x.doctor?.full_name}</span>
+                <span className="flex items-center gap-1.5 font-bold">
+                  {x.doctor?.full_name}
+                  {stats[i].tr?.docs_verified ? <VerifiedBadge compact /> : null}
+                </span>
                 <span className="text-xs text-ink-muted">
                   {x.doctor?.grade ? o(`grade.${x.doctor.grade as "resident"}`) : null}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <TrustBadge badge={stats[i].tr?.badge} />
-                {stats[i].tr?.docs_verified ? <Badge tone="success">✓</Badge> : null}
               </div>
             </div>
             {x.message ? <p className="rounded-lg bg-page p-2 text-sm">{x.message}</p> : null}
@@ -226,7 +232,12 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
               ? t("paymentDate", { date: formatDate(shift.payment_date, locale) })
               : o("payment.immediate")}
           </DetailRow>
-          <DetailRow label={t("subspecialty")}>{o(`subspecialty.${shift.subspecialty}`)}</DetailRow>
+          <DetailRow label={t("subspecialty")}>
+            <span className="inline-flex items-center gap-1.5">
+              <SubspecialtyIcon value={shift.subspecialty} className="h-4 w-4 text-brand-700" />
+              {o(`subspecialty.${shift.subspecialty}`)}
+            </span>
+          </DetailRow>
           <DetailRow label={t("minGrade")}>{o(`grade.${shift.min_grade as "resident"}`)}</DetailRow>
         </dl>
       </Card>
@@ -293,7 +304,10 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
         <Card className="flex items-center justify-between gap-3">
           <div className="flex flex-col">
             <span className="text-xs text-ink-muted">{t("postedBy")}</span>
-            <span className="font-bold">{isPoster ? c("you") : poster.full_name}</span>
+            <span className="flex items-center gap-1.5 font-bold">
+              {isPoster ? c("you") : poster.full_name}
+              {verifiedPoster.has(poster.id) ? <VerifiedBadge /> : null}
+            </span>
             {poster.grade ? <span className="text-xs text-ink-muted">{o(`grade.${poster.grade as "resident"}`)}</span> : null}
           </div>
           {!isPoster ? (

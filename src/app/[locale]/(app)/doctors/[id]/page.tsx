@@ -1,6 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import StatsGrid from "@/components/StatsGrid";
 import TrustBadge from "@/components/TrustBadge";
+import VerifiedBadge from "@/components/VerifiedBadge";
+import { ScanFace } from "lucide-react";
 import { Badge, Card, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
@@ -47,8 +49,12 @@ export default async function DoctorPage({ params }: PageProps<"/[locale]/doctor
         </span>
         <div className="flex flex-wrap gap-1.5">
           <TrustBadge badge={tr?.badge} />
-          {tr?.docs_verified ? <Badge tone="success">✓ {t("docsVerified")}</Badge> : null}
-          {tr?.selfie_verified ? <Badge tone="success">✓ {t("selfieVerified")}</Badge> : null}
+          {tr?.docs_verified ? <VerifiedBadge /> : null}
+          {tr?.selfie_verified ? (
+            <Badge tone="success">
+              <ScanFace className="h-3.5 w-3.5" aria-hidden /> {t("selfieVerified")}
+            </Badge>
+          ) : null}
         </div>
         <details className="text-sm text-ink-muted">
           <summary className="cursor-pointer font-semibold text-brand-700">{t("badge")}</summary>

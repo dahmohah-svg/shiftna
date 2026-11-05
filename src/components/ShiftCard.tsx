@@ -5,6 +5,7 @@ import { payPerHour, type ShiftWithHospital } from "@/lib/shifts";
 import type { TrustLevel } from "@/lib/hospitals";
 import HospitalTrustBadge from "./HospitalTrustBadge";
 import ShiftStrip from "./ShiftStrip";
+import { SubspecialtyIcon } from "./icons";
 import { Badge } from "./ui";
 
 export default async function ShiftCard({
@@ -63,7 +64,10 @@ export default async function ShiftCard({
         {teamName ? <Badge tone="brand">{t("teamOnly", { team: teamName })}</Badge> : null}
         {mine ? <Badge tone="brand">{t("yourShift")}</Badge> : null}
         <Badge>{o(`shiftType.${shift.type}`)}</Badge>
-        <Badge>{o(`subspecialty.${shift.subspecialty}`)}</Badge>
+        <Badge tone="brand">
+          <SubspecialtyIcon value={shift.subspecialty} />
+          {o(`subspecialty.${shift.subspecialty}`)}
+        </Badge>
         {shift.min_grade !== "resident" ? (
           <Badge tone="warn">
             {t("minGrade", { grade: o(`grade.${shift.min_grade as "resident"}`) })}

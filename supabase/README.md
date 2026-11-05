@@ -20,6 +20,7 @@ have been applied there, in this order:
 | `012_open_hospitals.sql` | Any approved doctor adds hospitals (5 a day, no duplicates); `hospital_trust()` credibility levels; admin alert |
 | `013_merge_hospitals.sql` | Admin merges duplicate hospitals (moves shifts, ratings, teams, logbook); similar-name suggestions (pg_trgm) |
 | `014_hospital_insert_from_sql.sql` | Hospitals added from the SQL Editor keep their values (doctors in the app are still unverified, 5 a day) |
+| `015_doctors_verified.sql` | `doctors_verified()`: yes/no "Syndicate verified" for many doctors at once (documents approved and current) |
 
 Files 001 to 005 are exactly as printed in the build guide; copy them from
 there if you need to set up a second project (for example staging).

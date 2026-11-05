@@ -645,5 +645,15 @@
     "copied": "Link copied",
     "afterInstall": "Shiftna then opens full screen from its icon, and updates by itself.",
     "gotIt": "Got it"
+  },
+  "Theme": {
+    "label": "Appearance",
+    "system": "Automatic",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "Verified": {
+    "short": "Syndicate verified",
+    "full": "Syndicate verified: Syndicate card, practice license and specialty certificate checked and current."
   }
 }

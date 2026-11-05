@@ -3,8 +3,11 @@ import { Link } from "@/i18n/navigation";
 import DetailsForm from "@/components/DetailsForm";
 import InstallApp from "@/components/InstallApp";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 import StatsGrid from "@/components/StatsGrid";
 import TrustBadge from "@/components/TrustBadge";
+import VerifiedBadge from "@/components/VerifiedBadge";
+import { ScanFace } from "lucide-react";
 import { Badge, buttonClass, Card, DetailRow, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { signOut } from "@/app/actions/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -52,8 +55,12 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
           </div>
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {tr?.docs_verified ? <Badge tone="success">✓ {t("docsVerified")}</Badge> : null}
-          {tr?.selfie_verified ? <Badge tone="success">✓ {t("selfieVerified")}</Badge> : null}
+          {tr?.docs_verified ? <VerifiedBadge /> : null}
+          {tr?.selfie_verified ? (
+            <Badge tone="success">
+              <ScanFace className="h-3.5 w-3.5" aria-hidden /> {t("selfieVerified")}
+            </Badge>
+          ) : null}
         </div>
         <details className="text-sm text-ink-muted">
           <summary className="cursor-pointer font-semibold text-brand-700">{t("badge")}</summary>
@@ -131,6 +138,10 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold">{t("language")}</span>
           <LanguageSwitcher />
+        </div>
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-semibold">{(await getTranslations("Theme"))("label")}</span>
+          <ThemeSwitcher />
         </div>
         <InstallApp variant="button" />
         {profile.is_admin ? (

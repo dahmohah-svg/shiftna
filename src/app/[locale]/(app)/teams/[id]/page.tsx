@@ -12,6 +12,8 @@ import { requireApproved } from "@/lib/viewer";
 import { SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
 import type { City, Grade } from "@/lib/constants";
 import { getHospitalTrust } from "@/lib/hospitals";
+import { getVerifiedDoctors } from "@/lib/doctors";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import type { Locale } from "@/i18n/routing";
 
 export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[id]">) {
@@ -103,7 +105,10 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
   ]);
 
   const shifts = (shiftRows ?? []) as unknown as ShiftWithHospital[];
-  const trust = await getHospitalTrust(supabase, shifts.map((s) => s.hospital_id));
+  const [trust, verified] = await Promise.all([
+    getHospitalTrust(supabase, shifts.map((s) => s.hospital_id)),
+    getVerifiedDoctors(supabase, [...(members ?? []), ...(requests ?? [])].map((m) => m.user_id)),
+  ]);
   const roleOrder: Record<string, number> = { owner: 0, moderator: 1, member: 2 };
   const sortedMembers = [...(members ?? [])].sort(
     (a, b) =>
@@ -140,9 +145,12 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
           <SectionTitle>{t("requests", { count: requests!.length })}</SectionTitle>
           {requests!.map((r) => (
             <div key={r.user_id} className="flex flex-col gap-2 rounded-xl bg-page p-3">
-              <Link href={`/doctors/${r.user_id}`} className="font-semibold underline">
-                {r.profile?.full_name ?? c("dash")}
-              </Link>
+              <span className="flex items-center gap-1.5">
+                <Link href={`/doctors/${r.user_id}`} className="font-semibold underline">
+                  {r.profile?.full_name ?? c("dash")}
+                </Link>
+                {verified.has(r.user_id) ? <VerifiedBadge compact /> : null}
+              </span>
               <span className="text-sm text-ink-muted">{doctorLine(r.profile)}</span>
               <div className="grid grid-cols-2 gap-2">
                 <ActionButton action={decideMember} fields={{ teamId: id, userId: r.user_id, accept: "1" }}>
@@ -186,10 +194,13 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
           {sortedMembers.map((m) => (
             <li key={m.user_id} className="flex items-center justify-between gap-3 border-b border-line py-2.5 last:border-b-0">
               <span className="flex min-w-0 flex-col">
-                <Link href={`/doctors/${m.user_id}`} className="truncate font-semibold">
-                  {m.profile?.full_name ?? c("dash")}
-                  {m.user_id === viewer.userId ? ` (${c("you")})` : null}
-                </Link>
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <Link href={`/doctors/${m.user_id}`} className="truncate font-semibold">
+                    {m.profile?.full_name ?? c("dash")}
+                    {m.user_id === viewer.userId ? ` (${c("you")})` : null}
+                  </Link>
+                  {verified.has(m.user_id) ? <VerifiedBadge compact /> : null}
+                </span>
                 <span className="text-xs text-ink-muted">{doctorLine(m.profile)}</span>
               </span>
               <span className="flex shrink-0 items-center gap-2">
