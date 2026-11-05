@@ -1780,20 +1780,31 @@ export type Database = {
         | "other"
         | "cardiology"
         | "gastroenterology"
-        | "chest"
         | "nephrology"
+        | "dialysis"
         | "endocrinology"
         | "hematology"
         | "rheumatology"
         | "trauma"
-        | "orthopedics"
-        | "urology"
-        | "neurosurgery"
-        | "cardiothoracic"
-        | "vascular"
-        | "plastic"
-        | "ent"
+        | "laparoscopic"
+        | "oncology"
         | "neonatal"
+        | "gynecology"
+        | "fertility"
+        | "spine"
+        | "ccu"
+        | "cath_lab"
+        | "echo"
+        | "stroke"
+        | "cosmetic"
+        | "addiction"
+        | "burns"
+        | "ultrasound"
+        | "ct_mri"
+        | "interventional"
+        | "blood_bank"
+        | "radiotherapy"
+        | "hepatology"
       user_status: "pending" | "approved" | "suspended"
       workload: "light" | "moderate" | "heavy"
     }
@@ -1946,20 +1957,31 @@ export const Constants = {
         "other",
         "cardiology",
         "gastroenterology",
-        "chest",
         "nephrology",
+        "dialysis",
         "endocrinology",
         "hematology",
         "rheumatology",
         "trauma",
-        "orthopedics",
-        "urology",
-        "neurosurgery",
-        "cardiothoracic",
-        "vascular",
-        "plastic",
-        "ent",
+        "laparoscopic",
+        "oncology",
         "neonatal",
+        "gynecology",
+        "fertility",
+        "spine",
+        "ccu",
+        "cath_lab",
+        "echo",
+        "stroke",
+        "cosmetic",
+        "addiction",
+        "burns",
+        "ultrasound",
+        "ct_mri",
+        "interventional",
+        "blood_bank",
+        "radiotherapy",
+        "hepatology",
       ],
       user_status: ["pending", "approved", "suspended"],
       workload: ["light", "moderate", "heavy"],

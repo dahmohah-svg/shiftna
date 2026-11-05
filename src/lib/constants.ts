@@ -37,8 +37,38 @@ export const SHIFT_TYPES = ["shift", "per_case", "replacement"] as const;
 export const PAYMENT_TYPES = ["immediate", "on_date"] as const;
 export const WORKLOADS = ["light", "moderate", "heavy"] as const;
 
-/** Specialties Shiftna covers. Labels live under "Options.specialty". */
-export const SPECIALTIES = ["anesthesia", "internal_medicine", "emergency", "surgery", "icu", "pediatrics"] as const;
+/**
+ * Specialties Shiftna covers, most common shift specialties first. Labels
+ * live under "Options.specialty". The database checks the same list
+ * (migration 021).
+ */
+export const SPECIALTIES = [
+  "anesthesia",
+  "internal_medicine",
+  "emergency",
+  "surgery",
+  "icu",
+  "pediatrics",
+  "obgyn",
+  "orthopedics",
+  "cardiology",
+  "chest",
+  "neurology",
+  "neurosurgery",
+  "urology",
+  "ent",
+  "ophthalmology",
+  "dermatology",
+  "psychiatry",
+  "cardiothoracic",
+  "vascular",
+  "plastic",
+  "oncology",
+  "radiology",
+  "clinical_pathology",
+  "tropical_medicine",
+  "family_medicine",
+] as const;
 
 /**
  * Sub-specialties per specialty (labels under "Options.subspecialty"; shared
@@ -46,12 +76,31 @@ export const SPECIALTIES = ["anesthesia", "internal_medicine", "emergency", "sur
  */
 export const SUBSPECIALTIES_BY_SPECIALTY = {
   anesthesia: ["general", "cardiac", "pediatric", "obstetric", "icu", "regional", "neuro", "other"],
-  internal_medicine: ["general", "cardiology", "gastroenterology", "chest", "nephrology", "endocrinology", "hematology", "rheumatology", "neuro", "other"],
+  internal_medicine: ["general", "gastroenterology", "nephrology", "dialysis", "endocrinology", "hematology", "rheumatology", "other"],
   emergency: ["general", "trauma", "pediatric", "other"],
-  surgery: ["general", "orthopedics", "urology", "neurosurgery", "cardiothoracic", "vascular", "plastic", "pediatric", "ent", "other"],
+  surgery: ["general", "trauma", "laparoscopic", "oncology", "pediatric", "other"],
   icu: ["general", "cardiac", "neuro", "pediatric", "neonatal", "other"],
   pediatrics: ["general", "neonatal", "icu", "cardiology", "other"],
-} as const;
+  obgyn: ["general", "obstetric", "gynecology", "fertility", "other"],
+  orthopedics: ["general", "trauma", "spine", "pediatric", "other"],
+  cardiology: ["general", "ccu", "cath_lab", "echo", "other"],
+  chest: ["general", "icu", "other"],
+  neurology: ["general", "stroke", "other"],
+  neurosurgery: ["general", "spine", "pediatric", "other"],
+  urology: ["general", "pediatric", "other"],
+  ent: ["general", "pediatric", "other"],
+  ophthalmology: ["general", "pediatric", "other"],
+  dermatology: ["general", "cosmetic", "other"],
+  psychiatry: ["general", "addiction", "pediatric", "other"],
+  cardiothoracic: ["general", "pediatric", "other"],
+  vascular: ["general", "other"],
+  plastic: ["general", "burns", "cosmetic", "other"],
+  oncology: ["general", "radiotherapy", "other"],
+  radiology: ["general", "ultrasound", "ct_mri", "interventional", "other"],
+  clinical_pathology: ["general", "blood_bank", "other"],
+  tropical_medicine: ["general", "hepatology", "other"],
+  family_medicine: ["general", "other"],
+} as const satisfies Record<(typeof SPECIALTIES)[number], readonly string[]>;
 
 /** Every sub-specialty value (the database enum). */
 export const SUBSPECIALTIES = [
@@ -65,20 +114,31 @@ export const SUBSPECIALTIES = [
   "other",
   "cardiology",
   "gastroenterology",
-  "chest",
   "nephrology",
+  "dialysis",
   "endocrinology",
   "hematology",
   "rheumatology",
   "trauma",
-  "orthopedics",
-  "urology",
-  "neurosurgery",
-  "cardiothoracic",
-  "vascular",
-  "plastic",
-  "ent",
+  "laparoscopic",
+  "oncology",
   "neonatal",
+  "gynecology",
+  "fertility",
+  "spine",
+  "ccu",
+  "cath_lab",
+  "echo",
+  "stroke",
+  "cosmetic",
+  "addiction",
+  "burns",
+  "ultrasound",
+  "ct_mri",
+  "interventional",
+  "blood_bank",
+  "radiotherapy",
+  "hepatology",
 ] as const;
 
 /** Every document type a doctor can upload. */

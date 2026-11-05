@@ -80,12 +80,12 @@ export default async function WelcomePreview() {
   const n = (x: number) => formatNumber(x, locale);
 
   const night = sampleShift(
-    { start_at: tomorrowAt(20), specialty: "internal_medicine", subspecialty: "cardiology", urgent: true, pay_egp: 3000, min_grade: "specialist" },
+    { start_at: tomorrowAt(20), specialty: "obgyn", subspecialty: "obstetric", urgent: true, pay_egp: 3000, min_grade: "specialist" },
     t("sampleHospital1"),
     t("sampleArea1"),
   );
   const day = sampleShift(
-    { start_at: tomorrowAt(8), specialty: "surgery", subspecialty: "orthopedics", duration_hours: 6, pay_egp: 1400, type: "per_case", min_grade: "intern" },
+    { start_at: tomorrowAt(8), specialty: "orthopedics", subspecialty: "trauma", duration_hours: 6, pay_egp: 1400, type: "per_case", min_grade: "intern" },
     t("sampleHospital2"),
     t("sampleArea2"),
   );

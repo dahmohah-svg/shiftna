@@ -1,7 +1,8 @@
 # Shiftna | شفتنا
 
 A mobile-first web app (installable PWA) where verified doctors in Egypt
-(anesthesia, internal medicine, emergency, surgery, ICU and pediatrics, from
+(anesthesia, internal medicine, emergency, surgery, OB/GYN, pediatrics, ICU,
+orthopedics, cardiology and about 15 more specialties, from
 interns to consultants) post and cover shifts. Arabic (right-to-left) is the default language,
 with English available from a toggle.
 

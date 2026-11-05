@@ -1,7 +1,8 @@
 -- 021: more specialties, and interns.
 -- Shiftna was anesthesia only. Now every doctor and every shift has a
 -- specialty (anesthesia, internal medicine, emergency, surgery, ICU,
--- pediatrics), each with its own sub-specialties. Interns get their own grade
+-- pediatrics, OB/GYN, orthopedics, cardiology and more; see SPECIALTIES in
+-- src/lib/constants.ts), each with its own sub-specialties. Interns get their own grade
 -- (below resident) and their own documents: Syndicate card, internship
 -- letter, selfie. A shift allows interns when its minimum grade is "intern".
 -- Existing doctors and shifts become "anesthesia". Approved doctors can no
@@ -11,20 +12,31 @@
 --    pediatric, cardiac, neuro, icu and other are reused).
 alter type public.subspecialty add value if not exists 'cardiology';
 alter type public.subspecialty add value if not exists 'gastroenterology';
-alter type public.subspecialty add value if not exists 'chest';
 alter type public.subspecialty add value if not exists 'nephrology';
+alter type public.subspecialty add value if not exists 'dialysis';
 alter type public.subspecialty add value if not exists 'endocrinology';
 alter type public.subspecialty add value if not exists 'hematology';
 alter type public.subspecialty add value if not exists 'rheumatology';
 alter type public.subspecialty add value if not exists 'trauma';
-alter type public.subspecialty add value if not exists 'orthopedics';
-alter type public.subspecialty add value if not exists 'urology';
-alter type public.subspecialty add value if not exists 'neurosurgery';
-alter type public.subspecialty add value if not exists 'cardiothoracic';
-alter type public.subspecialty add value if not exists 'vascular';
-alter type public.subspecialty add value if not exists 'plastic';
-alter type public.subspecialty add value if not exists 'ent';
+alter type public.subspecialty add value if not exists 'laparoscopic';
+alter type public.subspecialty add value if not exists 'oncology';
 alter type public.subspecialty add value if not exists 'neonatal';
+alter type public.subspecialty add value if not exists 'gynecology';
+alter type public.subspecialty add value if not exists 'fertility';
+alter type public.subspecialty add value if not exists 'spine';
+alter type public.subspecialty add value if not exists 'ccu';
+alter type public.subspecialty add value if not exists 'cath_lab';
+alter type public.subspecialty add value if not exists 'echo';
+alter type public.subspecialty add value if not exists 'stroke';
+alter type public.subspecialty add value if not exists 'cosmetic';
+alter type public.subspecialty add value if not exists 'addiction';
+alter type public.subspecialty add value if not exists 'burns';
+alter type public.subspecialty add value if not exists 'ultrasound';
+alter type public.subspecialty add value if not exists 'ct_mri';
+alter type public.subspecialty add value if not exists 'interventional';
+alter type public.subspecialty add value if not exists 'blood_bank';
+alter type public.subspecialty add value if not exists 'radiotherapy';
+alter type public.subspecialty add value if not exists 'hepatology';
 
 -- 2. Interns' document.
 alter type public.doc_type add value if not exists 'internship_letter';
@@ -35,13 +47,28 @@ alter table public.shifts add column if not exists specialty text not null defau
 alter table public.saved_alerts add column if not exists specialty text;
 alter table public.profiles drop constraint if exists profiles_specialty_check;
 alter table public.profiles add constraint profiles_specialty_check
-  check (specialty in ('anesthesia', 'internal_medicine', 'emergency', 'surgery', 'icu', 'pediatrics'));
+  check (specialty in (
+    'anesthesia', 'internal_medicine', 'emergency', 'surgery', 'icu',
+    'pediatrics', 'obgyn', 'orthopedics', 'cardiology', 'chest',
+    'neurology', 'neurosurgery', 'urology', 'ent', 'ophthalmology',
+    'dermatology', 'psychiatry', 'cardiothoracic', 'vascular', 'plastic',
+    'oncology', 'radiology', 'clinical_pathology', 'tropical_medicine', 'family_medicine'));
 alter table public.shifts drop constraint if exists shifts_specialty_check;
 alter table public.shifts add constraint shifts_specialty_check
-  check (specialty in ('anesthesia', 'internal_medicine', 'emergency', 'surgery', 'icu', 'pediatrics'));
+  check (specialty in (
+    'anesthesia', 'internal_medicine', 'emergency', 'surgery', 'icu',
+    'pediatrics', 'obgyn', 'orthopedics', 'cardiology', 'chest',
+    'neurology', 'neurosurgery', 'urology', 'ent', 'ophthalmology',
+    'dermatology', 'psychiatry', 'cardiothoracic', 'vascular', 'plastic',
+    'oncology', 'radiology', 'clinical_pathology', 'tropical_medicine', 'family_medicine'));
 alter table public.saved_alerts drop constraint if exists saved_alerts_specialty_check;
 alter table public.saved_alerts add constraint saved_alerts_specialty_check
-  check (specialty is null or specialty in ('anesthesia', 'internal_medicine', 'emergency', 'surgery', 'icu', 'pediatrics'));
+  check (specialty is null or specialty in (
+    'anesthesia', 'internal_medicine', 'emergency', 'surgery', 'icu',
+    'pediatrics', 'obgyn', 'orthopedics', 'cardiology', 'chest',
+    'neurology', 'neurosurgery', 'urology', 'ent', 'ophthalmology',
+    'dermatology', 'psychiatry', 'cardiothoracic', 'vascular', 'plastic',
+    'oncology', 'radiology', 'clinical_pathology', 'tropical_medicine', 'family_medicine'));
 create index if not exists shifts_specialty_open_idx on public.shifts (specialty, start_at) where status = 'open';
 
 -- Doctors may read their specialty like the other profile fields (see 019).
