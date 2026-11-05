@@ -32,7 +32,8 @@ export default function DetailsForm({
   const hr = accountType === "hr";
 
   return (
-    <form action={action} className="flex flex-col gap-4">
+    // Keyed on the saved values so the fields show them after saving (React resets forms after an action).
+    <form key={JSON.stringify(defaults)} action={action} className="flex flex-col gap-4">
       {!locked ? (
         <Field label={t("accountType")} htmlFor="accountType">
           <Select id="accountType" name="accountType" value={accountType} onChange={(e) => setAccountType(e.target.value)}>

@@ -72,7 +72,7 @@ export default async function JobOfferPage({ params }: PageProps<"/[locale]/jobs
             </DetailRow>
           ) : null}
           {job.pay_egp ? (
-            <DetailRow label={t("pay")}>
+            <DetailRow label={t("payLabel")}>
               {formatNumber(job.pay_egp, locale)} {c("egp")}
               {job.pay_period ? ` ${o(`payPeriod.${job.pay_period as "month"}`)}` : null}
             </DetailRow>

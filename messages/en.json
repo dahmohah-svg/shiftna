@@ -987,6 +987,7 @@
     "turnOff": "Turn off",
     "noteLabel": "What are you looking for? (optional)",
     "noteHint": "Shown to hospital HR. For example: part-time evenings in Giza.",
-    "saveNote": "Save"
+    "saveNote": "Save",
+    "payLabel": "Pay"
   }
 }
