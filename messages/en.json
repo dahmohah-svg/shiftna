@@ -564,7 +564,7 @@
     "remove": "Remove",
     "removeConfirm": "Remove {name} from the team?",
     "leave": "Leave team",
-    "leaveConfirm": "Leave this team? You will need a new invite to join again.",
+    "leaveConfirm": "Leave this team? You will not be able to rejoin with the same invite code.",
     "pendingTeams": "Teams waiting for review",
     "noPendingTeams": "No teams are waiting for review.",
     "createdBy": "Created by",
