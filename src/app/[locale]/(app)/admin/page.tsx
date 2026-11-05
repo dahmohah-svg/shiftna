@@ -2,12 +2,13 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
 import { AddHospitalForm, ApproveDoctorForm, MergeHospitalForm, RejectDoctorForm } from "@/components/AdminForms";
-import { RejectTeamForm } from "@/components/TeamForms";
+import { PauseTeamForm } from "@/components/TeamForms";
+import TeamStatusBadge from "@/components/TeamStatusBadge";
 import HospitalTrustBadge from "@/components/HospitalTrustBadge";
 import { getHospitalTrust } from "@/lib/hospitals";
 import { Badge, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { decideReport, mergeHospitals, setHospitalVerified, setPremium, suspendDoctor } from "@/app/actions/admin";
-import { reviewTeam } from "@/app/actions/teams";
+import { setTeamState } from "@/app/actions/teams";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/viewer";
 import { EVERYTHING_FREE, REQUIRED_DOCS } from "@/lib/constants";
@@ -236,10 +237,12 @@ export default async function AdminPage({
     const { data: teams } = await supabase
       .from("groups")
       .select(
-        "id, name, institution, description, proof_path, created_at, creator:profiles!groups_created_by_fkey(id, full_name, grade), hospital:hospitals!groups_hospital_id_fkey(name)",
+        "id, name, institution, description, proof_path, created_at, status, verified, reject_reason, creator:profiles!groups_created_by_fkey(id, full_name, grade), hospital:hospitals!groups_hospital_id_fkey(name), members:group_members!group_members_group_id_fkey(count)",
       )
-      .eq("status", "pending")
-      .order("created_at", { ascending: true });
+      .neq("status", "rejected")
+      .order("verified", { ascending: true })
+      .order("created_at", { ascending: false })
+      .limit(200);
     const withProof = (teams ?? []).filter((g) => g.proof_path);
     const proofUrl = new Map<string, string>();
     if (withProof.length) {
@@ -252,42 +255,64 @@ export default async function AdminPage({
     }
     content = (
       <section className="flex flex-col gap-3">
-        <SectionTitle>{tm("pendingTeams")}</SectionTitle>
-        <Notice tone="warn">{t("linkNote")}</Notice>
-        {(teams ?? []).length === 0 ? <EmptyState>{tm("noPendingTeams")}</EmptyState> : null}
-        {(teams ?? []).map((g) => (
-          <Card key={g.id} className="flex flex-col gap-2">
-            <span className="text-lg font-bold">{g.name}</span>
-            <span className="text-sm text-ink-muted">
-              {g.institution}
-              {g.hospital ? ` · ${g.hospital.name}` : null}
-            </span>
-            {g.description ? <p className="whitespace-pre-line text-sm">{g.description}</p> : null}
-            <span className="text-xs text-ink-muted">
-              {tm("createdBy")}{" "}
-              {g.creator ? (
-                <Link href={`/doctors/${g.creator.id}`} className="font-semibold text-brand-700 underline">
-                  {g.creator.full_name}
-                </Link>
+        <SectionTitle>{tm("allTeams")}</SectionTitle>
+        <p className="text-sm text-ink-muted">{tm("adminIntro")}</p>
+        {withProof.length ? <Notice tone="warn">{t("linkNote")}</Notice> : null}
+        {(teams ?? []).length === 0 ? <EmptyState>{tm("noTeamsYet")}</EmptyState> : null}
+        {(teams ?? []).map((g) => {
+          const paused = g.status === "suspended";
+          const memberCount = (g.members as unknown as { count: number }[] | null)?.[0]?.count ?? 0;
+          return (
+            <Card key={g.id} className="flex flex-col gap-2">
+              <div className="flex items-start justify-between gap-2">
+                <span className="text-lg font-bold">{g.name}</span>
+                <TeamStatusBadge verified={g.verified} paused={paused} />
+              </div>
+              <span className="text-sm text-ink-muted">
+                {g.institution}
+                {g.hospital ? ` · ${g.hospital.name}` : null}
+                {` · ${tm("members", { count: memberCount })}`}
+              </span>
+              {g.description ? <p className="whitespace-pre-line text-sm">{g.description}</p> : null}
+              <span className="text-xs text-ink-muted">
+                {tm("createdBy")}{" "}
+                {g.creator ? (
+                  <Link href={`/doctors/${g.creator.id}`} className="font-semibold text-brand-700 underline">
+                    {g.creator.full_name}
+                  </Link>
+                ) : (
+                  "—"
+                )}{" "}
+                · {formatDateTime(g.created_at, locale)}
+              </span>
+              {paused && g.reject_reason ? <Notice tone="danger">{tm("pausedReason", { reason: g.reject_reason })}</Notice> : null}
+              {proofUrl.get(g.id) ? (
+                <a href={proofUrl.get(g.id)} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand-700 underline">
+                  {tm("openProof")}
+                </a>
               ) : (
-                "—"
-              )}{" "}
-              · {formatDateTime(g.created_at, locale)}
-            </span>
-            {proofUrl.get(g.id) ? (
-              <a href={proofUrl.get(g.id)} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand-700 underline">
-                {tm("openProof")}
-              </a>
-            ) : (
-              <Notice tone="warn">{tm("noProof")}</Notice>
-            )}
-            <p className="text-xs text-ink-muted">{tm("reviewChecklist")}</p>
-            <ActionButton action={reviewTeam} fields={{ teamId: g.id, approve: "1" }}>
-              {tm("approve")}
-            </ActionButton>
-            <RejectTeamForm teamId={g.id} />
-          </Card>
-        ))}
+                <p className="text-xs text-ink-muted">{tm("noProof")}</p>
+              )}
+              {!g.verified ? <p className="text-xs text-ink-muted">{tm("reviewChecklist")}</p> : null}
+              <div className="grid grid-cols-2 gap-2">
+                <ActionButton
+                  action={setTeamState}
+                  fields={{ teamId: g.id, action: g.verified ? "unverify" : "verify" }}
+                  variant={g.verified ? "secondary" : "primary"}
+                >
+                  {g.verified ? tm("unverify") : tm("verify")}
+                </ActionButton>
+                {paused ? (
+                  <ActionButton action={setTeamState} fields={{ teamId: g.id, action: "resume" }} variant="secondary">
+                    {tm("resume")}
+                  </ActionButton>
+                ) : (
+                  <PauseTeamForm teamId={g.id} />
+                )}
+              </div>
+            </Card>
+          );
+        })}
       </section>
     );
   }

@@ -86,7 +86,8 @@ npm run build      # full production build
   Trusted, Active, New) based on shifts from different doctors and
   completed shifts. The admin can merge duplicate hospitals; similar names
   in the same city are suggested automatically.
-- Teams (private groups): create a team (checked by admin), invite
+- Teams (private groups): create a team (works at once; the admin verifies
+  or pauses it later), invite
   doctors with a code, accept requests, and post shifts only the team sees.
 
 Not built yet (later steps in the guide): usage insights,

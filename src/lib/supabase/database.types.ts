@@ -508,6 +508,7 @@ export type Database = {
           reviewed_at: string | null
           reviewed_by: string | null
           status: Database["public"]["Enums"]["group_status"]
+          verified: boolean
         }
         Insert: {
           created_at?: string
@@ -522,6 +523,7 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["group_status"]
+          verified?: boolean
         }
         Update: {
           created_at?: string
@@ -536,6 +538,7 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["group_status"]
+          verified?: boolean
         }
         Relationships: [
           {
@@ -1499,6 +1502,10 @@ export type Database = {
       }
       allow_rejoin: {
         Args: { p_group: string; p_user: string }
+        Returns: undefined
+      }
+      admin_set_team: {
+        Args: { p_action: string; p_group: string; p_reason?: string }
         Returns: undefined
       }
       admin_review_group: {

@@ -30,7 +30,7 @@ const createSchema = z.object({
   institution: z.string().trim().min(2).max(120),
   hospitalId: uuid.or(z.literal("")).optional(),
   description: z.string().trim().max(500).optional(),
-  proofPath: z.string().min(5).max(300),
+  proofPath: z.string().max(300).optional(),
 });
 
 export async function createTeam(
@@ -38,15 +38,12 @@ export async function createTeam(
   formData: FormData,
 ): Promise<ActionState> {
   const parsed = createSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) {
-    const noProof = parsed.error.issues.some((i) => i.path[0] === "proofPath");
-    return { error: "invalid", message: noProof ? "proofNeeded" : undefined };
-  }
+  if (!parsed.success) return { error: "invalid" };
   const v = parsed.data;
   const ctx = await signedIn();
   if (!ctx) return { error: "notAllowed" };
-  // The proof must be a file the doctor uploaded to their own private folder.
-  if (!v.proofPath.startsWith(`${ctx.userId}/`)) return { error: "invalid" };
+  // Proof is optional; if given it must be in the doctor's own private folder.
+  if (v.proofPath && !v.proofPath.startsWith(`${ctx.userId}/`)) return { error: "invalid" };
 
   const { data: teamId, error } = await ctx.supabase.rpc("create_group", {
     p_name: v.name,
@@ -54,7 +51,7 @@ export async function createTeam(
     // The database accepts no hospital; the generated types do not say so.
     p_hospital: (v.hospitalId || null) as string,
     p_description: v.description || "",
-    p_proof_path: v.proofPath,
+    p_proof_path: v.proofPath || "",
   });
   if (error || !teamId) return { error: toErrorKey(error) };
 
@@ -141,28 +138,28 @@ export async function leaveTeam(
   return { ok: true };
 }
 
-const reviewSchema = z.object({
+const teamStateSchema = z.object({
   teamId: uuid,
-  approve: z.enum(["1", "0"]),
+  action: z.enum(["verify", "unverify", "pause", "resume"]),
   reason: z.string().trim().max(500).optional(),
 });
 
-/** Admin approves or rejects a new team (writes to the audit log). */
-export async function reviewTeam(
+/** Admin: verify, remove verification, pause or resume a team (audit logged). */
+export async function setTeamState(
   _prev: ActionState | undefined,
   formData: FormData,
 ): Promise<ActionState> {
-  const parsed = reviewSchema.safeParse(Object.fromEntries(formData));
+  const parsed = teamStateSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "invalid" };
-  const approve = parsed.data.approve === "1";
-  if (!approve && (parsed.data.reason ?? "").length < 3) return { error: "invalid" };
+  const v = parsed.data;
+  if (v.action === "pause" && (v.reason ?? "").length < 3) return { error: "invalid" };
   const ctx = await signedIn();
   if (!ctx) return { error: "notAllowed" };
 
-  const { error } = await ctx.supabase.rpc("admin_review_group", {
-    p_group: parsed.data.teamId,
-    p_approve: approve,
-    p_reason: approve ? "" : parsed.data.reason!,
+  const { error } = await ctx.supabase.rpc("admin_set_team", {
+    p_group: v.teamId,
+    p_action: v.action,
+    p_reason: v.action === "pause" ? v.reason : undefined,
   });
   if (error) return { error: toErrorKey(error) };
   await flash("teamReviewed");

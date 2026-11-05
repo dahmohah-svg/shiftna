@@ -14,6 +14,7 @@ import type { City, Grade } from "@/lib/constants";
 import { getHospitalTrust } from "@/lib/hospitals";
 import { getVerifiedDoctors } from "@/lib/doctors";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import TeamStatusBadge from "@/components/TeamStatusBadge";
 import type { Locale } from "@/i18n/routing";
 
 export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[id]">) {
@@ -37,7 +38,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
   const [{ data: team }, { data: me }] = await Promise.all([
     supabase
       .from("groups")
-      .select("id, name, institution, description, status, hospital:hospitals!groups_hospital_id_fkey(name, city)")
+      .select("id, name, institution, description, status, verified, hospital:hospitals!groups_hospital_id_fkey(name, city)")
       .eq("id", id)
       .maybeSingle(),
     supabase
@@ -56,7 +57,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
         {team && team.status !== "approved" ? (
           <>
             <PageTitle>{team.name}</PageTitle>
-            <Notice tone="warn">{t("notApprovedYet")}</Notice>
+            <Notice tone="warn">{team.status === "suspended" ? t("pausedNotice") : t("notApprovedYet")}</Notice>
           </>
         ) : (
           <EmptyState>{t("notFound")}</EmptyState>
@@ -132,7 +133,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
     <div className="flex flex-col gap-5">
       {back}
       <div>
-        <PageTitle>{team.name}</PageTitle>
+        <PageTitle action={<TeamStatusBadge verified={team.verified} />}>{team.name}</PageTitle>
         <p className="-mt-3 text-sm text-ink-muted">
           {team.institution}
           {team.hospital ? ` · ${team.hospital.name}` : null}

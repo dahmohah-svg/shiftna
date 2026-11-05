@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { JoinTeamForm } from "@/components/TeamForms";
+import TeamStatusBadge from "@/components/TeamStatusBadge";
 import { Badge, buttonClass, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
@@ -19,7 +20,7 @@ export default async function TeamsPage({ params, searchParams }: PageProps<"/[l
   const [{ data: memberships }, { data: created }, { data: pending }] = await Promise.all([
     supabase
       .from("group_members")
-      .select("role, group:groups!group_members_group_id_fkey(id, name, institution, status)")
+      .select("role, group:groups!group_members_group_id_fkey(id, name, institution, status, verified)")
       .eq("user_id", viewer.userId)
       .eq("status", "active"),
     supabase
@@ -61,7 +62,10 @@ export default async function TeamsPage({ params, searchParams }: PageProps<"/[l
               <span className="truncate font-bold">{m.group!.name}</span>
               <span className="truncate text-sm text-ink-muted">{m.group!.institution}</span>
             </span>
-            {roleLabel(m.role) ? <Badge tone="brand">{roleLabel(m.role)}</Badge> : null}
+            <span className="flex shrink-0 flex-col items-end gap-1">
+              <TeamStatusBadge verified={m.group!.verified} />
+              {roleLabel(m.role) ? <Badge tone="brand">{roleLabel(m.role)}</Badge> : null}
+            </span>
           </Link>
         ))}
       </section>
@@ -83,7 +87,7 @@ export default async function TeamsPage({ params, searchParams }: PageProps<"/[l
                   {t(`teamStatus.${g.status as "pending" | "rejected" | "suspended"}`)}
                 </Badge>
               </div>
-              {g.status === "rejected" && g.reject_reason ? (
+              {(g.status === "rejected" || g.status === "suspended") && g.reject_reason ? (
                 <Notice tone="danger">{t("rejectedReason", { reason: g.reject_reason })}</Notice>
               ) : null}
             </div>

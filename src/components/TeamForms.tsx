@@ -2,7 +2,7 @@
 
 import { useActionState, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { createTeam, joinTeam, reviewTeam } from "@/app/actions/teams";
+import { createTeam, joinTeam, setTeamState } from "@/app/actions/teams";
 import { createClient } from "@/lib/supabase/client";
 import { MAX_UPLOAD_BYTES } from "@/lib/constants";
 import { buttonClass, Field, Input, Notice, Select, Textarea } from "./ui";
@@ -98,12 +98,8 @@ export function CreateTeamForm({
         {uploadError ? <Notice tone="danger">{uploadError}</Notice> : null}
       </div>
 
-      {state?.message === "proofNeeded" ? (
-        <Notice tone="danger">{t("proofNeeded")}</Notice>
-      ) : (
-        <FormMessage state={state} />
-      )}
-      <SubmitButton disabled={uploading || !proofPath}>{t("submitTeam")}</SubmitButton>
+      <FormMessage state={state} />
+      <SubmitButton disabled={uploading}>{t("submitTeam")}</SubmitButton>
       <p className="text-xs text-ink-muted">{t("reviewNote")}</p>
     </form>
   );
@@ -183,27 +179,28 @@ export function InviteBox({ code, link }: { code: string; link: string }) {
   );
 }
 
-export function RejectTeamForm({ teamId }: { teamId: string }) {
+/** Admin: pause a team with a reason the creator will see. */
+export function PauseTeamForm({ teamId }: { teamId: string }) {
   const t = useTranslations("Teams");
   const [open, setOpen] = useState(false);
-  const [state, action] = useActionState(reviewTeam, undefined);
-  if (state?.ok) return <Notice tone="success">{t("rejected")}</Notice>;
+  const [state, action] = useActionState(setTeamState, undefined);
+  if (state?.ok) return null;
   if (!open) {
     return (
       <button type="button" className={buttonClass.danger} onClick={() => setOpen(true)}>
-        {t("reject")}
+        {t("pause")}
       </button>
     );
   }
   return (
     <form action={action} className="flex flex-col gap-2">
       <input type="hidden" name="teamId" value={teamId} />
-      <input type="hidden" name="approve" value="0" />
-      <Field label={t("rejectReason")} htmlFor={`reject-${teamId}`}>
-        <Textarea id={`reject-${teamId}`} name="reason" minLength={3} maxLength={500} required />
+      <input type="hidden" name="action" value="pause" />
+      <Field label={t("pauseReason")} htmlFor={`pause-${teamId}`}>
+        <Textarea id={`pause-${teamId}`} name="reason" minLength={3} maxLength={500} required />
       </Field>
       <FormMessage state={state} />
-      <SubmitButton variant="danger">{t("reject")}</SubmitButton>
+      <SubmitButton variant="danger">{t("pause")}</SubmitButton>
     </form>
   );
 }
