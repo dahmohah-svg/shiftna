@@ -69,3 +69,8 @@ export const MAX_ALERTS = 10;
  * false, and restore is_premium() in the database, to start charging.
  */
 export const EVERYTHING_FREE = true;
+
+// Anaesthesia patient list tool. PDFs are uploaded here, read once and deleted.
+export const PATIENT_LIST_BUCKET = "patient-lists";
+// Claude accepts requests up to 32 MB; base64 makes the PDF a third bigger.
+export const PATIENT_LIST_MAX_BYTES = 20 * 1024 * 1024;

@@ -723,5 +723,37 @@
     "statRating": "Rating",
     "statShifts": "Shifts done",
     "statShowUp": "Show-up"
+  },
+  "AnaesthesiaList": {
+    "title": "Anaesthesia patient list",
+    "profileLink": "Turn one PDF (list + patient sheets) into a formatted Word list",
+    "intro": "Upload one PDF with the list (names, operations, rooms) and the patient sheets. You get a Word file in the Jaber Al Ahmad Hospital format: rooms, 3-column tables and short anaesthetic details, with pending items in yellow and critical alerts in red.",
+    "disclaimer": "Made by AI from the PDF only. Check every patient against the sheets before use. The PDF is deleted as soon as it is read and nothing is saved.",
+    "choosePdf": "Choose PDF",
+    "changePdf": "Choose another PDF",
+    "notesLabel": "Notes (optional)",
+    "notesHint": "Answers to questions from a previous run, or corrections, e.g. \"Room 3 sheet for file 123456 is on page 14\".",
+    "build": "Make Word list",
+    "working": "Reading the PDF…",
+    "workingHint": "This usually takes 1 to 4 minutes. Keep this screen open.",
+    "ready": "Your list is ready",
+    "download": "Download Word file",
+    "review": "{count, plural, one {# item to review} other {# items to review}}",
+    "nothingFlagged": "Nothing flagged. Still check the list before use.",
+    "answerHint": "To answer the questions, write the answers in Notes and make the list again.",
+    "errors": {
+      "notSignedIn": "Please sign in again.",
+      "notApproved": "Only approved doctors can use this tool.",
+      "invalid": "Something was wrong with the request. Please try again.",
+      "notConfigured": "This tool is not switched on yet (the AI key is missing).",
+      "fileMissing": "The uploaded PDF was not found. Please upload it again.",
+      "fileTooBig": "The PDF is too big. The limit is 20 MB (and about 600 pages).",
+      "fileType": "Please choose a PDF file.",
+      "refused": "The AI could not process this PDF. Please check the file.",
+      "tooLong": "This PDF is too long to make into one list. Split it by list (Main OT, NORA, Added).",
+      "aiFailed": "The list could not be made. Please try again.",
+      "busy": "The AI is busy. Please wait a minute and try again.",
+      "uploadFailed": "Upload failed. Please check your connection and try again."
+    }
   }
 }

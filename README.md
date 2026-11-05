@@ -90,6 +90,15 @@ npm run build      # full production build
   or pauses it later), invite
   doctors with a code, accept requests, and post shifts only the team sees.
 
+- Anaesthesia patient list (Profile → Anaesthesia patient list): upload one
+  PDF with the list and the patient sheets; Claude reads it and the server
+  builds a Word (.docx) list in the Jaber Al Ahmad Hospital format (rooms,
+  3-column tables, pending items in yellow, critical alerts in red, items to
+  review shown on screen). The PDF is deleted straight after reading. Needs
+  `ANTHROPIC_API_KEY` (server only) and `supabase/migrations/018_patient_lists.sql`.
+  The prompt is in `src/lib/anaesthesia/prompt.ts`, the Word layout in
+  `src/lib/anaesthesia/docx.ts`.
+
 Not built yet (later steps in the guide): usage insights,
 email/WhatsApp/phone push notifications, disputes screen, arrival selfie, instant booking,
 share links, logbook, rotas, pay ranges, offline mode.
@@ -98,7 +107,8 @@ share links, logbook, rotas, pay ranges, offline mode.
 
 1. On vercel.com: **Add New → Project → Import** the `shiftna` GitHub repo.
 2. Under **Environment Variables** add `NEXT_PUBLIC_SUPABASE_URL` and
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (same values as `.env.local`). Deploy.
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (same values as `.env.local`), and
+   `ANTHROPIC_API_KEY` for the anaesthesia list tool. Deploy.
 3. In Supabase: **Authentication → URL Configuration**. Set **Site URL** to
    your Vercel address (for example `https://shiftna.vercel.app`) and add
    `https://shiftna.vercel.app/**` and `http://localhost:3000/**` under

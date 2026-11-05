@@ -23,6 +23,7 @@ have been applied there, in this order:
 | `015_doctors_verified.sql` | `doctors_verified()`: yes/no "Syndicate verified" for many doctors at once (documents approved and current) |
 | `016_everything_free.sql` | Pilot: every approved doctor counts as Premium (create teams, see others' rank). The file shows how to undo it |
 | `017_open_teams.sql` | Teams work straight away (proof optional); admin verifies, pauses or resumes them later; alerts for each |
+| `018_patient_lists.sql` | Private `patient-lists` bucket for the anaesthesia list tool (own folder only; PDFs deleted after reading). **Not applied yet** |
 
 Files 001 to 005 are exactly as printed in the build guide; copy them from
 there if you need to set up a second project (for example staging).
