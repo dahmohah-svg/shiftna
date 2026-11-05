@@ -2,7 +2,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import { ShieldCheck } from "lucide-react";
 import { getVerifiedDoctors } from "@/lib/doctors";
+import { getContactPhones } from "@/lib/contacts";
 import Chat from "@/components/Chat";
 import { CancelBookingForm, RatingForm, ReportForm } from "@/components/BookingForms";
 import ShiftStrip from "@/components/ShiftStrip";
@@ -37,8 +39,8 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/booki
   const isPoster = booking.poster_id === viewer.userId;
   const otherId = isDoctor ? booking.poster_id : booking.doctor_id;
 
-  const [{ data: other }, { data: messages }, { data: ratings }, verified] = await Promise.all([
-    supabase.from("profiles").select("id, full_name, grade, phone").eq("id", otherId).maybeSingle(),
+  const [{ data: other }, { data: messages }, { data: ratings }, verified, phones] = await Promise.all([
+    supabase.from("profiles").select("id, full_name, grade").eq("id", otherId).maybeSingle(),
     supabase
       .from("messages")
       .select("id, sender_id, body, created_at")
@@ -47,6 +49,7 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/booki
       .limit(500),
     supabase.from("ratings").select("*").eq("booking_id", booking.id),
     getVerifiedDoctors(supabase, [otherId]),
+    getContactPhones(supabase, [otherId]),
   ]);
 
   const cancelled = Boolean(booking.cancelled_at);
@@ -105,11 +108,13 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/booki
               </Link>
               {verified.has(otherId) ? <VerifiedBadge compact /> : null}
             </span>
-            {other?.phone ? (
-              <a href={`tel:${other.phone}`} className="block text-xs text-ink-muted" dir="ltr">
-                {other.phone}
+            {phones.get(otherId) ? (
+              <a href={`tel:${phones.get(otherId)}`} className="block text-xs text-ink-muted" dir="ltr">
+                {phones.get(otherId)}
               </a>
-            ) : null}
+            ) : (
+              <span className="block text-xs text-ink-muted">{t("chatOnly")}</span>
+            )}
           </DetailRow>
         </dl>
         {!cancelled ? (
@@ -121,6 +126,10 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/booki
 
       <Card>
         <SectionTitle>{t("chat")}</SectionTitle>
+        <p className="-mt-1 flex items-start gap-1.5 text-xs leading-relaxed text-ink-muted">
+          <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-700" aria-hidden />
+          {t("chatNote")}
+        </p>
         <Chat bookingId={booking.id} me={viewer.userId} initial={messages ?? []} disabled={cancelled} />
       </Card>
 

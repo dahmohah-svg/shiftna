@@ -91,7 +91,7 @@
     "step1": "1. Your details",
     "step2": "2. Your documents",
     "phone": "Mobile number",
-    "phoneHint": "For example 01012345678",
+    "phoneHint": "For example 01012345678. Only doctors you are booked with can see it, and you can hide it.",
     "grade": "Grade",
     "city": "City you work in",
     "choose": "Choose…",
@@ -365,7 +365,9 @@
     "reportReason": "What happened?",
     "reportSent": "Report sent. The Shiftna team will review it.",
     "notFound": "This booking does not exist or you cannot see it.",
-    "addToCalendar": "Add to calendar"
+    "addToCalendar": "Add to calendar",
+    "chatOnly": "Reachable through the chat below",
+    "chatNote": "Keep shift details in this chat, so there's a record if anything goes wrong. Phone numbers are only for the day of the shift."
   },
   "Profile": {
     "title": "My profile",
@@ -397,7 +399,12 @@
     "adminPanel": "Admin panel",
     "doctorTitle": "Doctor profile",
     "ratingsReceived": "Ratings received",
-    "noRatings": "No ratings yet."
+    "noRatings": "No ratings yet.",
+    "showPhone": "My phone number",
+    "showPhoneOn": "Doctors you are booked with can call you, until 2 days after the shift.",
+    "showPhoneOff": "Hidden. Doctors you are booked with can reach you through the chat only.",
+    "hidePhone": "Hide",
+    "sharePhone": "Show"
   },
   "Admin": {
     "title": "Admin",
@@ -717,7 +724,8 @@
     "memberReadded": "Doctor added back to the team.",
     "rejoinAllowed": "They can ask to join again.",
     "alertSaved": "Alert saved.",
-    "alertDeleted": "Alert deleted."
+    "alertDeleted": "Alert deleted.",
+    "privacyUpdated": "Privacy setting saved."
   },
   "Welcome": {
     "previewTitle": "How Shiftna looks",

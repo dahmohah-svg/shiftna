@@ -892,6 +892,7 @@ export type Database = {
           max_groups: number
           phone: string | null
           photo_url: string | null
+          show_phone: boolean
           status: Database["public"]["Enums"]["user_status"]
           suspended_reason: string | null
         }
@@ -906,6 +907,7 @@ export type Database = {
           max_groups?: number
           phone?: string | null
           photo_url?: string | null
+          show_phone?: boolean
           status?: Database["public"]["Enums"]["user_status"]
           suspended_reason?: string | null
         }
@@ -920,6 +922,7 @@ export type Database = {
           max_groups?: number
           phone?: string | null
           photo_url?: string | null
+          show_phone?: boolean
           status?: Database["public"]["Enums"]["user_status"]
           suspended_reason?: string | null
         }
@@ -1527,6 +1530,13 @@ export type Database = {
         }[]
       }
       confirm_arrival: { Args: { p_booking: string }; Returns: undefined }
+      contact_phones: {
+        Args: { p_ids: string[] }
+        Returns: {
+          phone: string
+          user_id: string
+        }[]
+      }
       create_group: {
         Args: {
           p_description: string

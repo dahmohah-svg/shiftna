@@ -85,3 +85,21 @@ export async function recordDocument(
   revalidatePath("/", "layout");
   return { ok: true };
 }
+
+/** Whether doctors I'm booked with can see my phone number. */
+export async function setShowPhone(
+  _prev: ActionState | undefined,
+  formData: FormData,
+): Promise<ActionState> {
+  const show = formData.get("show") === "1";
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "notAllowed" };
+  const { error } = await supabase.from("profiles").update({ show_phone: show }).eq("id", user.id);
+  if (error) return { error: toErrorKey(error) };
+  await flash("privacyUpdated");
+  revalidatePath("/", "layout");
+  return { ok: true };
+}

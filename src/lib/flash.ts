@@ -36,6 +36,7 @@ export const FLASH_KEYS = [
   "rejoinAllowed",
   "alertSaved",
   "alertDeleted",
+  "privacyUpdated",
 ] as const;
 export type FlashKey = (typeof FLASH_KEYS)[number];
 

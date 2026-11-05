@@ -129,6 +129,14 @@ Every approved doctor gets the Premium features. To start charging: set
 `is_premium()` in the database (the SQL is in
 `supabase/migrations/016_everything_free.sql`).
 
+## Phone numbers are private
+
+Doctors cannot read `profiles.phone` directly. Use `getContactPhones()`
+(`src/lib/contacts.ts`), which returns a number only for yourself, the admin,
+or the other doctor in a confirmed booking who allows it. If you add a column
+to `profiles`, add it to `PROFILE_COLUMNS` (`src/lib/viewer.ts`) and to the
+grant in `supabase/migrations/019_lock_phone_column.sql`.
+
 ## Rules
 
 - Never use the Supabase **service-role** key in browser code.

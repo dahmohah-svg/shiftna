@@ -6,7 +6,15 @@ import { createClient } from "@/lib/supabase/server";
 import { REQUIRED_DOCS, type DocType } from "@/lib/constants";
 import type { Database } from "@/lib/supabase/database.types";
 
-export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
+/**
+ * The signed-in doctor's profile. Phone numbers are not readable directly
+ * (migration 018); use getContactPhones() from lib/contacts when needed.
+ */
+export type Profile = Omit<Database["public"]["Tables"]["profiles"]["Row"], "phone">;
+
+/** Every profile column doctors may read (all except phone). */
+export const PROFILE_COLUMNS =
+  "id, full_name, city, grade, photo_url, status, is_premium, is_admin, created_at, max_groups, suspended_reason, show_phone" as const;
 export type DocumentRow = Database["public"]["Tables"]["documents"]["Row"];
 
 export type Viewer = {
@@ -33,14 +41,14 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   ] = await Promise.all([
     supabase.auth.getUser(),
     guessedId
-      ? supabase.from("profiles").select("*").eq("id", guessedId).maybeSingle()
+      ? supabase.from("profiles").select(PROFILE_COLUMNS).eq("id", guessedId).maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
   if (!user) return null;
 
   let profile = early.data && early.data.id === user.id ? early.data : null;
   if (!profile) {
-    ({ data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single());
+    ({ data: profile } = await supabase.from("profiles").select(PROFILE_COLUMNS).eq("id", user.id).single());
   }
   if (!profile) return null;
 

@@ -6,6 +6,7 @@ import { PauseTeamForm } from "@/components/TeamForms";
 import TeamStatusBadge from "@/components/TeamStatusBadge";
 import HospitalTrustBadge from "@/components/HospitalTrustBadge";
 import { getHospitalTrust } from "@/lib/hospitals";
+import { getContactPhones } from "@/lib/contacts";
 import { Badge, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { decideReport, mergeHospitals, setHospitalVerified, setPremium, suspendDoctor } from "@/app/actions/admin";
 import { setTeamState } from "@/app/actions/teams";
@@ -48,11 +49,12 @@ export default async function AdminPage({
   if (tab === "doctors") {
     const { data: pending } = await supabase
       .from("profiles")
-      .select("id, full_name, grade, city, phone, created_at")
+      .select("id, full_name, grade, city, created_at")
       .eq("status", "pending")
       .order("created_at", { ascending: true })
       .limit(50);
     const ids = (pending ?? []).map((p) => p.id);
+    const phones = await getContactPhones(supabase, ids);
     const { data: docs } = ids.length
       ? await supabase
           .from("documents")
@@ -92,7 +94,7 @@ export default async function AdminPage({
                 <span className="text-lg font-bold">{p.full_name || "—"}</span>
                 <span className="text-sm text-ink-muted">
                   {p.grade ? o(`grade.${p.grade as "resident"}`) : "—"} · {p.city ? o(`city.${p.city as "cairo"}`) : "—"}
-                  {p.phone ? <> · <span dir="ltr">{p.phone}</span></> : null}
+                  {phones.get(p.id) ? <> · <span dir="ltr">{phones.get(p.id)}</span></> : null}
                 </span>
                 <span className="text-xs text-ink-muted">{formatDateTime(p.created_at, locale)}</span>
               </div>

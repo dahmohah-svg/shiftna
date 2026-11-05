@@ -1,4 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getContactPhones } from "@/lib/contacts";
+import { createClient } from "@/lib/supabase/server";
 import { Link, redirect } from "@/i18n/navigation";
 import AuthShell from "@/components/AuthShell";
 import DetailsForm from "@/components/DetailsForm";
@@ -27,6 +29,7 @@ export default async function OnboardingPage({
   const docs = await getMyLatestDocs(viewer.userId);
   const ready = profileComplete(viewer.profile) && docsToUpload(docs).length === 0;
   const p = viewer.profile;
+  const myPhone = (await getContactPhones(await createClient(), [viewer.userId])).get(viewer.userId) ?? "";
 
   return (
     <AuthShell>
@@ -40,7 +43,7 @@ export default async function OnboardingPage({
         <DetailsForm
           defaults={{
             fullName: p.full_name ?? "",
-            phone: p.phone ?? "",
+            phone: myPhone,
             grade: p.grade ?? "",
             city: p.city ?? "",
           }}

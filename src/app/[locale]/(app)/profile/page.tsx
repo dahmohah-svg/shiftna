@@ -1,4 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getContactPhones } from "@/lib/contacts";
+import ActionButton from "@/components/ActionButton";
+import { setShowPhone } from "@/app/actions/profile";
 import { Link } from "@/i18n/navigation";
 import DetailsForm from "@/components/DetailsForm";
 import InstallApp from "@/components/InstallApp";
@@ -28,6 +31,7 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
   const ob = await getTranslations("Onboarding");
   const c = await getTranslations("Common");
   const supabase = await createClient();
+  const myPhone = (await getContactPhones(supabase, [viewer.userId])).get(viewer.userId) ?? "";
 
   const [{ data: stats }, { data: trust }, docs] = await Promise.all([
     supabase.rpc("doctor_stats", { p_doctor: viewer.userId }),
@@ -127,7 +131,7 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
             <DetailsForm
               defaults={{
                 fullName: profile.full_name ?? "",
-                phone: profile.phone ?? "",
+                phone: myPhone,
                 grade: profile.grade ?? "",
                 city: profile.city ?? "",
               }}
@@ -141,6 +145,24 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold">{t("language")}</span>
           <LanguageSwitcher />
+        </div>
+        <div className="flex flex-col gap-2 border-t border-line pt-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold">{t("showPhone")}</span>
+              <span className="text-xs text-ink-muted">
+                {profile.show_phone ? t("showPhoneOn") : t("showPhoneOff")}
+              </span>
+            </div>
+            <ActionButton
+              action={setShowPhone}
+              fields={{ show: profile.show_phone ? "0" : "1" }}
+              variant={profile.show_phone ? "secondary" : "primary"}
+              className="shrink-0"
+            >
+              {profile.show_phone ? t("hidePhone") : t("sharePhone")}
+            </ActionButton>
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold">{(await getTranslations("Theme"))("label")}</span>
