@@ -5,6 +5,7 @@ import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
 import {
   GRADES,
@@ -95,6 +96,7 @@ export async function postShift(
     .single();
   if (error || !data) return { error: toErrorKey(error) };
 
+  await flash("shiftPosted");
   revalidatePath("/", "layout");
   const locale = await getLocale();
   redirect({ href: `/shifts/${data.id}`, locale });
@@ -126,6 +128,7 @@ export async function sendOffer(
   });
   if (error) return { error: toErrorKey(error) };
 
+  await flash("offerSent");
   revalidatePath("/", "layout");
   return { ok: true };
 }
@@ -149,6 +152,7 @@ export async function withdrawOffer(
     .eq("id", id)
     .eq("status", "pending");
   if (error) return { error: toErrorKey(error) };
+  await flash("offerWithdrawn");
   revalidatePath("/", "layout");
   return { ok: true };
 }
@@ -164,6 +168,7 @@ export async function acceptOffer(
     p_offer: id,
   });
   if (error || !bookingId) return { error: toErrorKey(error) };
+  await flash("bookingConfirmed");
   revalidatePath("/", "layout");
   const locale = await getLocale();
   redirect({ href: `/bookings/${bookingId}`, locale });
@@ -179,6 +184,7 @@ export async function refuseOffer(
   const supabase = await createClient();
   const { error } = await supabase.rpc("refuse_offer", { p_offer: id });
   if (error) return { error: toErrorKey(error) };
+  await flash("offerDeclined");
   revalidatePath("/", "layout");
   return { ok: true };
 }
@@ -201,6 +207,7 @@ export async function cancelShift(
     .eq("poster_id", user.id)
     .eq("status", "open");
   if (error) return { error: toErrorKey(error) };
+  await flash("shiftCancelled");
   revalidatePath("/", "layout");
   return { ok: true };
 }

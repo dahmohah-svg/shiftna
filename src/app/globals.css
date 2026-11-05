@@ -18,6 +18,8 @@
   /* Night hours on the 24-hour strip (22:00 to 08:00). */
   --color-night: #cbd5e1;
   --color-night-on: #115e59;
+  /* Phone frames on the welcome page. */
+  --color-phone-frame: #0b1220;
 
   --font-sans: var(--font-cairo), system-ui, sans-serif;
 }
@@ -46,6 +48,7 @@
   --color-page: #0a111d;
   --color-night: #1e2a3d;
   --color-night-on: #0f766e;
+  --color-phone-frame: #334155;
 
   --color-red-50: #3a1418;
   --color-red-200: #7a2530;
@@ -82,4 +85,16 @@ body {
 /* Buttons keep white text in dark mode, so hover stays a darker teal. */
 :root[data-theme="dark"] .hover\:bg-brand-700:hover {
   background-color: #0f766e;
+}
+
+/* Confirmation banner slides down from the top. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

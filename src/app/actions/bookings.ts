@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
 
 const uuid = z.string().uuid();
@@ -53,6 +54,7 @@ export async function markCompleted(
   if (bothDone && role === "poster") {
     await supabase.from("shifts").update({ status: "completed" }).eq("id", booking.shift_id);
   }
+  await flash("markedCompleted");
   return done();
 }
 
@@ -70,6 +72,7 @@ export async function setPaid(
     .update({ payment_status: paid ? "paid" : "pending" })
     .eq("id", ctx.booking.id);
   if (error) return { error: toErrorKey(error) };
+  await flash("paymentUpdated");
   return done();
 }
 
@@ -86,6 +89,7 @@ export async function markNoShow(
     .update({ doctor_no_show: true })
     .eq("id", ctx.booking.id);
   if (error) return { error: toErrorKey(error) };
+  await flash("noShowRecorded");
   return done();
 }
 
@@ -106,6 +110,7 @@ export async function cancelBooking(
     p_reason: parsed.data.reason,
   });
   if (error) return { error: toErrorKey(error) };
+  await flash("bookingCancelled");
   return done();
 }
 
@@ -145,6 +150,7 @@ export async function submitRating(
     comment: parsed.data.comment || null,
   });
   if (error) return { error: toErrorKey(error) };
+  await flash("ratingSubmitted");
   return done();
 }
 
@@ -167,5 +173,6 @@ export async function fileReport(
     reason: parsed.data.reason,
   });
   if (error) return { error: toErrorKey(error) };
+  await flash("reportSent");
   return { ok: true };
 }

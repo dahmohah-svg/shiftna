@@ -5,6 +5,7 @@ import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
 
 // "Teams" in the app are the private groups from migration 003. Every rule
@@ -57,6 +58,7 @@ export async function createTeam(
   });
   if (error || !teamId) return { error: toErrorKey(error) };
 
+  await flash("teamSubmitted");
   refresh();
   redirect({ href: `/teams/${teamId}`, locale: await getLocale() });
   return { ok: true };
@@ -87,6 +89,7 @@ export async function joinTeam(
     .eq("user_id", ctx.userId)
     .maybeSingle();
 
+  await flash(me?.status === "active" ? "teamJoined" : "joinRequested");
   refresh();
   if (me?.status === "active") {
     redirect({ href: `/teams/${teamId}`, locale: await getLocale() });
@@ -116,6 +119,7 @@ export async function decideMember(
     p_accept: parsed.data.accept === "1",
   });
   if (error) return { error: toErrorKey(error) };
+  await flash("memberUpdated");
   refresh();
   return { ok: true };
 }
@@ -131,6 +135,7 @@ export async function leaveTeam(
 
   const { error } = await ctx.supabase.rpc("leave_group", { p_group: teamId.data });
   if (error) return { error: toErrorKey(error) };
+  await flash("leftTeam");
   refresh();
   redirect({ href: "/teams", locale: await getLocale() });
   return { ok: true };
@@ -160,6 +165,7 @@ export async function reviewTeam(
     p_reason: approve ? "" : parsed.data.reason!,
   });
   if (error) return { error: toErrorKey(error) };
+  await flash("teamReviewed");
   refresh();
   return { ok: true };
 }
@@ -178,6 +184,7 @@ export async function renewInviteCode(
 
   const { error } = await ctx.supabase.rpc("renew_invite_code", { p_group: teamId.data });
   if (error) return { error: toErrorKey(error) };
+  await flash("codeRenewed");
   refresh();
   return { ok: true };
 }
@@ -197,6 +204,7 @@ export async function readdMember(
     p_user: parsed.data.userId,
   });
   if (error) return { error: toErrorKey(error) };
+  await flash("memberReadded");
   refresh();
   return { ok: true };
 }
@@ -216,6 +224,7 @@ export async function allowRejoin(
     p_user: parsed.data.userId,
   });
   if (error) return { error: toErrorKey(error) };
+  await flash("rejoinAllowed");
   refresh();
   return { ok: true };
 }

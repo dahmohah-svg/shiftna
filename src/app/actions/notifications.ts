@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
 import { CITIES, MAX_ALERTS, SHIFT_TYPES, SUBSPECIALTIES } from "@/lib/constants";
 
@@ -82,6 +83,7 @@ export async function createAlert(
   const { error } = await supabase.from("saved_alerts").insert({ user_id: user.id, ...row });
   if (error) return { error: toErrorKey(error) };
 
+  await flash("alertSaved");
   revalidatePath("/[locale]/notifications", "page");
   return { ok: true };
 }
@@ -97,6 +99,7 @@ export async function deleteAlert(
   const { error } = await supabase.from("saved_alerts").delete().eq("id", id.data);
   if (error) return { error: toErrorKey(error) };
 
+  await flash("alertDeleted");
   revalidatePath("/[locale]/notifications", "page");
   return { ok: true };
 }

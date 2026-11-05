@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
 import { CITIES, REQUIRED_DOCS } from "@/lib/constants";
 
@@ -100,6 +101,7 @@ export async function approveDoctor(
     .eq("id", v.userId);
   if (error) return { error: toErrorKey(error) };
   await audit(ctx, "doctor_approved", "profiles", v.userId);
+  await flash("doctorApproved");
   return done();
 }
 
@@ -136,6 +138,7 @@ export async function rejectDoctor(
     if (error) return { error: toErrorKey(error) };
   }
   await audit(ctx, "doctor_rejected", "profiles", v.userId, v.reason);
+  await flash("doctorRejected");
   return done();
 }
 
@@ -171,6 +174,7 @@ export async function addHospital(
     .single();
   if (error || !data) return { error: toErrorKey(error) };
   await audit(ctx, "hospital_added", "hospitals", data.id, v.name);
+  await flash("hospitalAdded");
   return done();
 }
 
@@ -186,6 +190,7 @@ export async function setHospitalVerified(
   const { error } = await ctx.supabase.from("hospitals").update({ verified }).eq("id", id.data);
   if (error) return { error: toErrorKey(error) };
   await audit(ctx, verified ? "hospital_verified" : "hospital_unverified", "hospitals", id.data);
+  await flash("hospitalUpdated");
   return done();
 }
 
@@ -206,6 +211,7 @@ export async function mergeHospitals(
     p_remove: parsed.data.removeId,
   });
   if (error) return { error: toErrorKey(error) };
+  await flash("hospitalsMerged");
   return done();
 }
 
@@ -224,6 +230,7 @@ export async function decideReport(
     .eq("id", id.data);
   if (error) return { error: toErrorKey(error) };
   await audit(ctx, handled ? "report_handled" : "report_dismissed", "reports", id.data);
+  await flash("reportHandled");
   return done();
 }
 
@@ -239,6 +246,7 @@ export async function setPremium(
   const { error } = await ctx.supabase.from("profiles").update({ is_premium: premium }).eq("id", id.data);
   if (error) return { error: toErrorKey(error) };
   await audit(ctx, premium ? "premium_on" : "premium_off", "profiles", id.data);
+  await flash("premiumUpdated");
   return done();
 }
 
@@ -257,5 +265,6 @@ export async function suspendDoctor(
     .eq("id", id.data);
   if (error) return { error: toErrorKey(error) };
   await audit(ctx, "doctor_suspended", "profiles", id.data);
+  await flash("accountPaused");
   return done();
 }

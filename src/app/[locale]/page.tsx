@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
 import InstallApp from "@/components/InstallApp";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import WelcomePreview from "@/components/WelcomePreview";
 import Logo from "@/components/Logo";
 import { buttonClass } from "@/components/ui";
 import { getViewer } from "@/lib/viewer";
@@ -56,6 +57,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </Link>
           <InstallApp variant="button" />
         </div>
+
+        <WelcomePreview />
 
         <ul className="flex flex-col gap-3">
           {features.map(({ key, Icon }) => (

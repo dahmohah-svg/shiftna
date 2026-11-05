@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { formatDateTime, formatNumber } from "@/lib/time";
@@ -8,11 +9,17 @@ import ShiftStrip from "./ShiftStrip";
 import { SubspecialtyIcon } from "./icons";
 import { Badge } from "./ui";
 
+/** Same box as the link, for sample cards that go nowhere. */
+function PlainBox({ children, className }: { children: ReactNode; className: string; href: string }) {
+  return <div className={className}>{children}</div>;
+}
+
 export default async function ShiftCard({
   shift,
   mine = false,
   teamName,
   trust,
+  preview = false,
 }: {
   shift: ShiftWithHospital;
   mine?: boolean;
@@ -20,15 +27,18 @@ export default async function ShiftCard({
   teamName?: string | null;
   /** Hospital credibility level, when the list has looked it up. */
   trust?: TrustLevel;
+  /** Sample card on the welcome page: not a link. */
+  preview?: boolean;
 }) {
   const locale = await getLocale();
   const t = await getTranslations("Shifts");
   const o = await getTranslations("Options");
   const c = await getTranslations("Common");
   const when = formatDateTime(shift.start_at, locale);
+  const Wrapper = preview ? PlainBox : Link;
 
   return (
-    <Link
+    <Wrapper
       href={`/shifts/${shift.id}`}
       className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4 transition-shadow hover:shadow-md"
     >
@@ -77,6 +87,6 @@ export default async function ShiftCard({
           <Badge tone="success">{o("payment.immediate")}</Badge>
         ) : null}
       </div>
-    </Link>
+    </Wrapper>
   );
 }

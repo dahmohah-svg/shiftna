@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { flash } from "@/lib/flash";
 import { toErrorKey, type ActionState } from "@/lib/errors";
 import { CITIES, GRADES, REQUIRED_DOCS } from "@/lib/constants";
 
@@ -41,6 +42,7 @@ export async function saveDetails(
     .eq("id", user.id);
   if (error) return { error: toErrorKey(error) };
 
+  await flash("detailsSaved");
   revalidatePath("/", "layout");
   return { ok: true };
 }
@@ -79,6 +81,7 @@ export async function recordDocument(
   });
   if (error) return { error: toErrorKey(error) };
 
+  await flash("documentUploaded");
   revalidatePath("/", "layout");
   return { ok: true };
 }

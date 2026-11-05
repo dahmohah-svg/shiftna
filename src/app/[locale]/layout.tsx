@@ -4,6 +4,7 @@ import { Cairo } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, getDirection, type Locale } from "@/i18n/routing";
+import Toaster from "@/components/Toaster";
 import "../globals.css";
 
 // Cairo covers both Arabic and Latin letters, so one font serves both languages.
@@ -77,7 +78,10 @@ export default async function LocaleLayout({
               "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__shiftnaInstall=e;window.dispatchEvent(new Event('shiftna:installable'))});window.addEventListener('appinstalled',function(){window.__shiftnaInstall=null;window.dispatchEvent(new Event('shiftna:installed'))});",
           }}
         />
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          {children}
+          <Toaster />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
