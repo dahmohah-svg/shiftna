@@ -12,7 +12,7 @@
     "yes": "Yes",
     "no": "No",
     "egp": "EGP",
-    "hours": "{count, plural, one {# hour} other {# hours}}",
+    "hours": "{count, plural, one {{n} hour} other {{n} hours}}",
     "optional": "optional",
     "required": "Required",
     "signOut": "Sign out",
@@ -141,7 +141,7 @@
     "alerts": "Alerts",
     "profile": "Profile",
     "admin": "Admin",
-    "alertsUnread": "{count, plural, one {Alerts, # new} other {Alerts, # new}}"
+    "alertsUnread": "{count, plural, one {Alerts, {n} new} other {Alerts, {n} new}}"
   },
   "Options": {
     "grade": {
@@ -291,7 +291,7 @@
     "minGrade": "{grade}+",
     "perHour": "{amount} EGP/hour",
     "yourShift": "Your shift",
-    "offersCount": "{count, plural, =0 {No offers yet} one {# offer} other {# offers}}",
+    "offersCount": "{count, plural, =0 {No offers yet} one {{n} offer} other {{n} offers}}",
     "teamOnly": "Team: {team}",
     "teamShiftsOnly": "My teams' shifts only",
     "specialty": "Specialty",
@@ -633,7 +633,7 @@
       "owner": "Manager",
       "moderator": "Co-manager"
     },
-    "requests": "{count, plural, one {# join request} other {# join requests}}",
+    "requests": "{count, plural, one {{n} join request} other {{n} join requests}}",
     "accept": "Accept",
     "decline": "Decline",
     "teamShifts": "Team shifts",
@@ -646,7 +646,7 @@
     "inviteNote": "Anyone with this code can ask to join. You accept or decline each request.",
     "shareTitle": "Join our team on Shiftna",
     "shareText": "Join our team on Shiftna. Invite code: {code}",
-    "members": "{count, plural, one {# member} other {# members}}",
+    "members": "{count, plural, one {{n} member} other {{n} members}}",
     "remove": "Remove",
     "removeConfirm": "Remove {name} from the team?",
     "leave": "Leave team",
@@ -699,7 +699,7 @@
       "new": "Added recently and not checked yet. Confirm details with the poster."
     },
     "credibility": "Hospital credibility",
-    "activity": "{shifts, plural, one {# shift} other {# shifts}} · {posters, plural, one {by # doctor} other {by # doctors}} · {completed} completed",
+    "activity": "{shifts, plural, one {{ns} shift} other {{ns} shifts}} · {posters, plural, one {by {np} doctor} other {by {np} doctors}} · {completed} completed",
     "cantFind": "Can't find the hospital? Add it",
     "addTitle": "Add a hospital",
     "addIntro": "Anyone can add a hospital. It shows as \"New hospital\" until the Shiftna team checks it.",
@@ -712,7 +712,7 @@
     "existing": "This hospital was already listed, so we selected it.",
     "addedBy": "Added by {name}",
     "unverifiedFirst": "Not verified yet",
-    "duplicatesTitle": "{count, plural, one {# possible duplicate} other {# possible duplicates}}",
+    "duplicatesTitle": "{count, plural, one {{n} possible duplicate} other {{n} possible duplicates}}",
     "duplicatesIntro": "These hospitals are in the same city and have similar names. If they are the same place, choose the one to keep: its shifts, ratings, teams and logbook entries will include both.",
     "keepThis": "Keep \"{name}\" and merge the other into it",
     "mergeInto": "Merge into another hospital…",

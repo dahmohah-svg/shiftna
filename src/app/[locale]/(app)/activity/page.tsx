@@ -5,7 +5,7 @@ import { Badge, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import { SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
-import { formatDateTime, nowMs } from "@/lib/time";
+import { formatDateTime, formatNumber, nowMs } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
 export default async function ActivityPage({ params }: PageProps<"/[locale]/activity">) {
@@ -89,7 +89,7 @@ export default async function ActivityPage({ params }: PageProps<"/[locale]/acti
             return (
               <div key={x.id} className="flex flex-col gap-1">
                 <ShiftCard shift={x as unknown as ShiftWithHospital} mine />
-                <p className="px-2 text-sm font-semibold text-brand-700">{s("offersCount", { count: pending })}</p>
+                <p className="px-2 text-sm font-semibold text-brand-700">{s("offersCount", { count: pending, n: formatNumber(pending, locale) })}</p>
               </div>
             );
           })

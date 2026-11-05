@@ -164,13 +164,13 @@ export default async function AdminPage({
     const activity = (id: string) => {
       const x = trust.get(id);
       if (!x || x.shiftsPosted === 0) return ht("noActivity");
-      return ht("activity", { shifts: x.shiftsPosted, posters: x.posters, completed: formatNumber(x.completed, locale) });
+      return ht("activity", { shifts: x.shiftsPosted, ns: formatNumber(x.shiftsPosted, locale), posters: x.posters, np: formatNumber(x.posters, locale), completed: formatNumber(x.completed, locale) });
     };
     content = (
       <section className="flex flex-col gap-4">
         {(dupes ?? []).length > 0 ? (
           <Card className="flex flex-col gap-3">
-            <SectionTitle>{ht("duplicatesTitle", { count: dupes!.length })}</SectionTitle>
+            <SectionTitle>{ht("duplicatesTitle", { count: dupes!.length, n: formatNumber(dupes!.length, locale) })}</SectionTitle>
             <p className="text-sm text-ink-muted">{ht("duplicatesIntro")}</p>
             {dupes!.map((d) => (
               <div key={`${d.a_id}-${d.b_id}`} className="flex flex-col gap-2 rounded-xl bg-page p-3">
@@ -282,7 +282,7 @@ export default async function AdminPage({
               <span className="text-sm text-ink-muted">
                 {g.institution}
                 {g.hospital ? ` · ${g.hospital.name}` : null}
-                {` · ${tm("members", { count: memberCount })}`}
+                {` · ${tm("members", { count: memberCount, n: formatNumber(memberCount, locale) })}`}
               </span>
               {g.description ? <p className="whitespace-pre-line text-sm">{g.description}</p> : null}
               <span className="text-xs text-ink-muted">

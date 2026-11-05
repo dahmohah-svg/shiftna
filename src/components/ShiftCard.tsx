@@ -67,7 +67,7 @@ export default async function ShiftCard({
       </div>
 
       <div className="text-sm font-semibold text-ink">
-        {when} · {c("hours", { count: shift.duration_hours })}
+        {when} · {c("hours", { count: shift.duration_hours, n: formatNumber(shift.duration_hours, locale) })}
       </div>
 
       <ShiftStrip startAt={shift.start_at} hours={shift.duration_hours} label={when} />

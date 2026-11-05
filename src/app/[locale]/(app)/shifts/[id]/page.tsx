@@ -91,7 +91,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
     actionArea = (
       <Card className="flex flex-col gap-3">
         <SectionTitle>
-          {t("offersTitle")} · {s("offersCount", { count: pending.length })}
+          {t("offersTitle")} · {s("offersCount", { count: pending.length, n: formatNumber(pending.length, locale) })}
         </SectionTitle>
         {shift.status === "open" && pending.length > 0 ? (
           <Notice>{t("acceptConfirm")}</Notice>
@@ -223,7 +223,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
         <ShiftStrip startAt={shift.start_at} hours={shift.duration_hours} label={when} />
         <dl>
           <DetailRow label={t("when")}>{when}</DetailRow>
-          <DetailRow label={t("duration")}>{c("hours", { count: shift.duration_hours })}</DetailRow>
+          <DetailRow label={t("duration")}>{c("hours", { count: shift.duration_hours, n: formatNumber(shift.duration_hours, locale) })}</DetailRow>
           <DetailRow label={t("pay")}>
             {formatNumber(shift.pay_egp, locale)} {c("egp")} ·{" "}
             {s("perHour", { amount: formatNumber(payPerHour(shift.pay_egp, shift.duration_hours), locale) })}
@@ -270,7 +270,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
           <p className="text-xs text-ink-muted">
             {trust.shiftsPosted === 0
               ? ht("noActivity")
-              : ht("activity", { shifts: trust.shiftsPosted, posters: trust.posters, completed: formatNumber(trust.completed, locale) })}
+              : ht("activity", { shifts: trust.shiftsPosted, ns: formatNumber(trust.shiftsPosted, locale), posters: trust.posters, np: formatNumber(trust.posters, locale), completed: formatNumber(trust.completed, locale) })}
           </p>
         </Card>
       ) : null}

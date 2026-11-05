@@ -12,7 +12,7 @@
     "yes": "نعم",
     "no": "لا",
     "egp": "جنيه",
-    "hours": "{count, plural, zero {# ساعة} one {ساعة واحدة} two {ساعتان} few {# ساعات} many {# ساعة} other {# ساعة}}",
+    "hours": "{count, plural, zero {{n} ساعة} one {ساعة واحدة} two {ساعتان} few {{n} ساعات} many {{n} ساعة} other {{n} ساعة}}",
     "optional": "اختياري",
     "required": "مطلوب",
     "signOut": "تسجيل الخروج",
@@ -141,7 +141,7 @@
     "alerts": "التنبيهات",
     "profile": "حسابي",
     "admin": "الإدارة",
-    "alertsUnread": "{count, plural, one {التنبيهات، # جديد} other {التنبيهات، # جديدة}}"
+    "alertsUnread": "{count, plural, one {التنبيهات، {n} جديد} other {التنبيهات، {n} جديدة}}"
   },
   "Options": {
     "grade": {
@@ -291,7 +291,7 @@
     "minGrade": "{grade} فأعلى",
     "perHour": "{amount} جنيه/ساعة",
     "yourShift": "نبطشيتك",
-    "offersCount": "{count, plural, zero {لا توجد عروض بعد} one {عرض واحد} two {عرضان} few {# عروض} many {# عرضًا} other {# عرض}}",
+    "offersCount": "{count, plural, zero {لا توجد عروض بعد} one {عرض واحد} two {عرضان} few {{n} عروض} many {{n} عرضًا} other {{n} عرض}}",
     "teamOnly": "فريق: {team}",
     "teamShiftsOnly": "نبطشيات فرقي فقط",
     "specialty": "التخصص",
@@ -633,7 +633,7 @@
       "owner": "المسؤول",
       "moderator": "مسؤول مساعد"
     },
-    "requests": "{count, plural, one {طلب انضمام واحد} two {طلبا انضمام} few {# طلبات انضمام} many {# طلب انضمام} other {# طلب انضمام}}",
+    "requests": "{count, plural, one {طلب انضمام واحد} two {طلبا انضمام} few {{n} طلبات انضمام} many {{n} طلب انضمام} other {{n} طلب انضمام}}",
     "accept": "قبول",
     "decline": "رفض",
     "teamShifts": "نبطشيات الفريق",
@@ -646,7 +646,7 @@
     "inviteNote": "أي شخص لديه هذا الكود يمكنه طلب الانضمام، وأنت تقبل أو ترفض كل طلب.",
     "shareTitle": "انضم إلى فريقنا على شفتنا",
     "shareText": "انضم إلى فريقنا على شفتنا. كود الدعوة: {code}",
-    "members": "{count, plural, one {عضو واحد} two {عضوان} few {# أعضاء} many {# عضواً} other {# عضو}}",
+    "members": "{count, plural, one {عضو واحد} two {عضوان} few {{n} أعضاء} many {{n} عضواً} other {{n} عضو}}",
     "remove": "إزالة",
     "removeConfirm": "إزالة {name} من الفريق؟",
     "leave": "مغادرة الفريق",
@@ -699,7 +699,7 @@
       "new": "أضيف حديثاً ولم تتم مراجعته بعد. تأكد من التفاصيل مع الناشر."
     },
     "credibility": "مصداقية المستشفى",
-    "activity": "{shifts, plural, one {نبطشية واحدة} two {نبطشيتان} few {# نبطشيات} many {# نبطشية} other {# نبطشية}} · {posters, plural, one {من طبيب واحد} two {من طبيبين} few {من # أطباء} many {من # طبيباً} other {من # طبيب}} · {completed} مكتملة",
+    "activity": "{shifts, plural, one {نبطشية واحدة} two {نبطشيتان} few {{ns} نبطشيات} many {{ns} نبطشية} other {{ns} نبطشية}} · {posters, plural, one {من طبيب واحد} two {من طبيبين} few {من {np} أطباء} many {من {np} طبيباً} other {من {np} طبيب}} · {completed} مكتملة",
     "cantFind": "لا تجد المستشفى؟ أضفه",
     "addTitle": "إضافة مستشفى",
     "addIntro": "يمكن لأي طبيب إضافة مستشفى. يظهر بعلامة \"مستشفى جديد\" حتى يراجعه فريق شفتنا.",
@@ -712,7 +712,7 @@
     "existing": "هذا المستشفى مسجل بالفعل، فاخترناه لك.",
     "addedBy": "أضافه {name}",
     "unverifiedFirst": "لم يُوثّق بعد",
-    "duplicatesTitle": "{count, plural, one {تكرار محتمل واحد} two {تكراران محتملان} few {# تكرارات محتملة} many {# تكراراً محتملاً} other {# تكرار محتمل}}",
+    "duplicatesTitle": "{count, plural, one {تكرار محتمل واحد} two {تكراران محتملان} few {{n} تكرارات محتملة} many {{n} تكراراً محتملاً} other {{n} تكرار محتمل}}",
     "duplicatesIntro": "هذه المستشفيات في نفس المحافظة وأسماؤها متشابهة. إن كانت نفس المكان، اختر الذي تريد إبقاءه: ستُجمع فيه نبطشيات وتقييمات وفرق وسجلات الاثنين.",
     "keepThis": "إبقاء \"{name}\" ودمج الآخر فيه",
     "mergeInto": "دمج في مستشفى آخر…",

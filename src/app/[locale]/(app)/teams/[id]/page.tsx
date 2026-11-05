@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { formatNumber } from "@/lib/time";
 import { z } from "zod";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
@@ -146,7 +147,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
 
       {manager && (requests ?? []).length > 0 ? (
         <Card className="flex flex-col gap-3">
-          <SectionTitle>{t("requests", { count: requests!.length })}</SectionTitle>
+          <SectionTitle>{t("requests", { count: requests!.length, n: formatNumber(requests!.length, locale) })}</SectionTitle>
           {requests!.map((r) => (
             <div key={r.user_id} className="flex flex-col gap-2 rounded-xl bg-page p-3">
               <span className="flex items-center gap-1.5">
@@ -193,7 +194,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
       ) : null}
 
       <Card className="flex flex-col gap-2">
-        <SectionTitle>{t("members", { count: sortedMembers.length })}</SectionTitle>
+        <SectionTitle>{t("members", { count: sortedMembers.length, n: formatNumber(sortedMembers.length, locale) })}</SectionTitle>
         <ul className="flex flex-col">
           {sortedMembers.map((m) => (
             <li key={m.user_id} className="flex items-center justify-between gap-3 border-b border-line py-2.5 last:border-b-0">

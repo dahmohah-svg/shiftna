@@ -88,7 +88,7 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/booki
         <ShiftStrip startAt={shift.start_at} hours={shift.duration_hours} label={when} />
         <dl>
           <DetailRow label={sh("when")}>{when}</DetailRow>
-          <DetailRow label={sh("duration")}>{c("hours", { count: shift.duration_hours })}</DetailRow>
+          <DetailRow label={sh("duration")}>{c("hours", { count: shift.duration_hours, n: formatNumber(shift.duration_hours, locale) })}</DetailRow>
           <DetailRow label={sh("pay")}>{formatNumber(shift.pay_egp, locale)} {c("egp")}</DetailRow>
           <DetailRow label={sh("payment")}>
             {shift.payment === "on_date" && shift.payment_date

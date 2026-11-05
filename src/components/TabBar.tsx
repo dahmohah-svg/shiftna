@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatNumber } from "@/lib/time";
 import { Bell, ClipboardList, Handshake, SquarePlus, UserRound } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -21,6 +22,7 @@ export const NOTIFICATIONS_READ_EVENT = "shiftna:notifications-read";
 /** Bottom tab bar: Shifts, Post, Offers, Alerts, Profile. */
 export default function TabBar({ userId, initialUnread }: { userId: string; initialUnread: number }) {
   const t = useTranslations("Nav");
+  const locale = useLocale();
   const pathname = usePathname();
   const [unread, setUnread] = useState(initialUnread);
 
@@ -75,7 +77,7 @@ export default function TabBar({ userId, initialUnread }: { userId: string; init
               <Link
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
-                aria-label={badge ? t("alertsUnread", { count: badge }) : undefined}
+                aria-label={badge ? t("alertsUnread", { count: badge, n: formatNumber(badge, locale) }) : undefined}
                 className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-semibold ${active ? "text-brand-700" : "text-ink-muted"}`}
               >
                 <span className="relative">
