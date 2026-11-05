@@ -78,6 +78,8 @@ npm run build      # full production build
   messages, approval, urgent shifts and document expiry; saved shift alerts
   that notify you when a matching shift is posted.
 
+- Install page: shiftna.vercel.app/install (one link for WhatsApp groups,
+  with a QR code for posters); it shows each visitor the right way to install.
 - Install button: a dismissible banner, a Profile button and a welcome-page
   button. One tap on Android; illustrated steps on iPhone and in-app
   browsers. Hidden once installed.

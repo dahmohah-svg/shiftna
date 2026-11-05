@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import { buttonClass } from "./ui";
+import { Link } from "@/i18n/navigation";
+import { buttonClass, Notice } from "./ui";
 
 /**
  * "Install Shiftna" for phones.
@@ -29,7 +30,7 @@ declare global {
 const DISMISS_KEY = "shiftna-install-dismissed";
 const DISMISS_DAYS = 14;
 
-function detect(): { mode: Mode; mobile: boolean; ios: boolean } {
+function detect(): { mode: Mode; mobile: boolean; ios: boolean; installed: boolean } {
   const ua = navigator.userAgent;
   const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const android = /Android/i.test(ua);
@@ -37,13 +38,14 @@ function detect(): { mode: Mode; mobile: boolean; ios: boolean } {
   const standalone =
     window.matchMedia("(display-mode: standalone)").matches ||
     (navigator as Navigator & { standalone?: boolean }).standalone === true;
-  if (standalone) return { mode: "hidden", mobile, ios };
-  if (window.__shiftnaInstall) return { mode: "prompt", mobile, ios };
+  const base = { mobile, ios, installed: standalone };
+  if (standalone) return { ...base, mode: "hidden" };
+  if (window.__shiftnaInstall) return { ...base, mode: "prompt" };
   const inApp = /FBAN|FBAV|FB_IAB|Instagram|Line\/|Snapchat|WhatsApp|; wv\)/i.test(ua);
-  if (mobile && inApp) return { mode: "inapp", mobile, ios };
-  if (ios) return { mode: "ios", mobile, ios };
-  if (android) return { mode: "android", mobile, ios };
-  return { mode: "hidden", mobile, ios };
+  if (mobile && inApp) return { ...base, mode: "inapp" };
+  if (ios) return { ...base, mode: "ios" };
+  if (android) return { ...base, mode: "android" };
+  return { ...base, mode: "hidden" };
 }
 
 function dismissedRecently(): boolean {
@@ -56,19 +58,21 @@ function dismissedRecently(): boolean {
 }
 
 function useInstall() {
-  const [state, setState] = useState<{ mode: Mode; ios: boolean; dismissed: boolean }>({
-    mode: "hidden",
-    ios: false,
-    dismissed: true,
-  });
+  const [state, setState] = useState<{
+    mode: Mode;
+    ios: boolean;
+    dismissed: boolean;
+    installed: boolean;
+    ready: boolean;
+  }>({ mode: "hidden", ios: false, dismissed: true, installed: false, ready: false });
 
   useEffect(() => {
     const update = () => {
       const d = detect();
-      setState({ mode: d.mode, ios: d.ios, dismissed: dismissedRecently() });
+      setState({ mode: d.mode, ios: d.ios, installed: d.installed, dismissed: dismissedRecently(), ready: true });
     };
     update();
-    const installed = () => setState((s) => ({ ...s, mode: "hidden" }));
+    const installed = () => setState((s) => ({ ...s, mode: "hidden", installed: true }));
     window.addEventListener("shiftna:installable", update);
     window.addEventListener("shiftna:installed", installed);
     return () => {
@@ -84,7 +88,7 @@ function useInstall() {
     await e.prompt();
     const { outcome } = await e.userChoice;
     window.__shiftnaInstall = null;
-    if (outcome === "accepted") setState((s) => ({ ...s, mode: "hidden" }));
+    if (outcome === "accepted") setState((s) => ({ ...s, mode: "hidden", installed: true }));
     return true;
   }, []);
 
@@ -110,13 +114,15 @@ const DotsIcon = () => (
   </svg>
 );
 
-function Steps({ mode, ios, onClose }: { mode: Mode; ios: boolean; onClose: () => void }) {
+/** The install steps for this phone (or the "open in Safari/Chrome first" note). */
+function StepsContent({ mode, ios }: { mode: Mode; ios: boolean }) {
   const t = useTranslations("Install");
   const locale = useLocale();
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.origin);
+      // The install page is the best place to land after switching browser.
+      await navigator.clipboard.writeText(`${window.location.origin}/install`);
       setCopied(true);
     } catch {
       setCopied(false);
@@ -134,36 +140,89 @@ function Steps({ mode, ios, onClose }: { mode: Mode; ios: boolean; onClose: () =
         ? [<>{t.rich("androidStep1", { icon: () => <DotsIcon /> })}</>, <>{t("androidStep2")}</>, <>{t("androidStep3")}</>]
         : [];
 
+  if (mode === "inapp") {
+    return (
+      <>
+        <p className="text-sm leading-relaxed">{ios ? t("inAppIos") : t("inAppAndroid")}</p>
+        <button type="button" onClick={copy} className={buttonClass.secondary}>
+          {copied ? t("copied") : t("copyLink")}
+        </button>
+      </>
+    );
+  }
+  return (
+    <ol className="flex flex-col gap-3">
+      {steps.map((s, i) => (
+        <li key={i} className="flex items-start gap-3 text-sm leading-relaxed">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-50 font-bold text-brand-700">
+            {(i + 1).toLocaleString(locale === "ar" ? "ar-EG" : "en-GB")}
+          </span>
+          <span className="pt-0.5">{s}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function Steps({ mode, ios, onClose }: { mode: Mode; ios: boolean; onClose: () => void }) {
+  const t = useTranslations("Install");
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center" role="dialog" aria-modal="true" aria-labelledby="install-title" onClick={onClose}>
       <div className="flex w-full max-w-md flex-col gap-4 rounded-2xl bg-surface p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <h2 id="install-title" className="text-lg font-bold">
           {t("stepsTitle")}
         </h2>
-        {mode === "inapp" ? (
-          <>
-            <p className="text-sm leading-relaxed">{ios ? t("inAppIos") : t("inAppAndroid")}</p>
-            <button type="button" onClick={copy} className={buttonClass.secondary}>
-              {copied ? t("copied") : t("copyLink")}
-            </button>
-          </>
-        ) : (
-          <ol className="flex flex-col gap-3">
-            {steps.map((s, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm leading-relaxed">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-50 font-bold text-brand-700">
-                  {(i + 1).toLocaleString(locale === "ar" ? "ar-EG" : "en-GB")}
-                </span>
-                <span className="pt-0.5">{s}</span>
-              </li>
-            ))}
-          </ol>
-        )}
+        <StepsContent mode={mode} ios={ios} />
         <p className="text-xs text-ink-muted">{t("afterInstall")}</p>
         <button type="button" onClick={onClose} className={buttonClass.primary}>
           {t("gotIt")}
         </button>
       </div>
+    </div>
+  );
+}
+
+/**
+ * The /install page: the right thing for this visitor, shown at once.
+ * Installed → "already installed"; Android with a prompt → one big button;
+ * iPhone / other Android / in-app browser → the steps; computer → `desktop`
+ * (the page shows a QR code to scan with the phone).
+ */
+export function InstallPanel({ desktop }: { desktop: ReactNode }) {
+  const t = useTranslations("Install");
+  const { mode, ios, installed, ready, promptInstall } = useInstall();
+
+  if (!ready) return <div className="h-40 animate-pulse rounded-2xl bg-line/50" aria-hidden />;
+
+  if (installed) {
+    return (
+      <div className="flex flex-col gap-3">
+        <Notice tone="success">{t("alreadyInstalled")}</Notice>
+        <Link href="/shifts" className={buttonClass.primary}>
+          {t("openApp")}
+        </Link>
+      </div>
+    );
+  }
+
+  if (mode === "prompt") {
+    return (
+      <div className="flex flex-col gap-3">
+        <button type="button" onClick={promptInstall} className={`${buttonClass.primary} min-h-14 text-lg`}>
+          <DownloadIcon />
+          {t("button")}
+        </button>
+        <p className="text-center text-xs text-ink-muted">{t("afterInstall")}</p>
+      </div>
+    );
+  }
+
+  if (mode === "hidden") return <>{desktop}</>;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <StepsContent mode={mode} ios={ios} />
+      <p className="text-xs text-ink-muted">{t("afterInstall")}</p>
     </div>
   );
 }

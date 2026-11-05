@@ -661,7 +661,18 @@
     "copyLink": "Copy link",
     "copied": "Link copied",
     "afterInstall": "Shiftna then opens full screen from its icon, and updates by itself.",
-    "gotIt": "Got it"
+    "gotIt": "Got it",
+    "pageTitle": "Install Shiftna",
+    "pageIntro": "Add Shiftna to your phone's home screen. It opens full screen like a real app, with no app store and no download size.",
+    "alreadyInstalled": "Shiftna is already installed on this phone.",
+    "openApp": "Open Shiftna",
+    "onComputer": "You're on a computer. Scan the code below with your phone's camera to install Shiftna on your phone.",
+    "qrLabel": "QR code for the Shiftna install link",
+    "shareHeading": "Invite colleagues",
+    "shareIntro": "Send this link to your department's WhatsApp group, or show the code on a screen or poster.",
+    "share": "Share",
+    "shareTitle": "Install Shiftna",
+    "shareText": "Shiftna: anesthesia shifts, with verified doctors. Install it here:"
   },
   "Theme": {
     "label": "Appearance",
