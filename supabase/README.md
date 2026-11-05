@@ -21,6 +21,7 @@ have been applied there, in this order:
 | `013_merge_hospitals.sql` | Admin merges duplicate hospitals (moves shifts, ratings, teams, logbook); similar-name suggestions (pg_trgm) |
 | `014_hospital_insert_from_sql.sql` | Hospitals added from the SQL Editor keep their values (doctors in the app are still unverified, 5 a day) |
 | `015_doctors_verified.sql` | `doctors_verified()`: yes/no "Syndicate verified" for many doctors at once (documents approved and current) |
+| `016_everything_free.sql` | Pilot: every approved doctor counts as Premium (create teams, see others' rank). The file shows how to undo it |
 
 Files 001 to 005 are exactly as printed in the build guide; copy them from
 there if you need to set up a second project (for example staging).

@@ -6,6 +6,7 @@ import { ScanFace } from "lucide-react";
 import { Badge, Card, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
+import { EVERYTHING_FREE } from "@/lib/constants";
 import type { Locale } from "@/i18n/routing";
 
 export default async function DoctorPage({ params }: PageProps<"/[locale]/doctors/[id]">) {
@@ -65,7 +66,7 @@ export default async function DoctorPage({ params }: PageProps<"/[locale]/doctor
       <Card className="flex flex-col gap-2">
         <SectionTitle>{t("stats")}</SectionTitle>
         <StatsGrid stats={stats?.[0] ?? null} />
-        {stats?.[0]?.rank_percentile == null ? (
+        {!EVERYTHING_FREE && stats?.[0]?.rank_percentile == null ? (
           <p className="text-xs text-ink-muted">{t("rankPremium")}</p>
         ) : null}
       </Card>

@@ -12,7 +12,7 @@ import { Badge, buttonClass, Card, DetailRow, Notice, PageTitle, SectionTitle } 
 import { signOut } from "@/app/actions/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getMyLatestDocs, requireApproved } from "@/lib/viewer";
-import { REQUIRED_DOCS } from "@/lib/constants";
+import { REQUIRED_DOCS, EVERYTHING_FREE } from "@/lib/constants";
 import { formatDate } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
@@ -51,7 +51,7 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
           </div>
           <div className="flex flex-wrap gap-1.5">
             <TrustBadge badge={tr?.badge} />
-            {profile.is_premium ? <Badge tone="gold">{t("premium")}</Badge> : null}
+            {!EVERYTHING_FREE && profile.is_premium ? <Badge tone="gold">{t("premium")}</Badge> : null}
           </div>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -111,11 +111,14 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
         </dl>
       </Card>
 
-      <Card className="flex flex-col gap-2">
-        <SectionTitle>{t("premium")}</SectionTitle>
-        {profile.is_premium ? <Notice tone="success">{t("premiumActive")}</Notice> : null}
-        <p className="text-sm leading-relaxed text-ink-muted">{t("premiumBody")}</p>
-      </Card>
+      {/* Hidden while everything is free during the pilot. */}
+      {!EVERYTHING_FREE ? (
+        <Card className="flex flex-col gap-2">
+          <SectionTitle>{t("premium")}</SectionTitle>
+          {profile.is_premium ? <Notice tone="success">{t("premiumActive")}</Notice> : null}
+          <p className="text-sm leading-relaxed text-ink-muted">{t("premiumBody")}</p>
+        </Card>
+      ) : null}
 
       <Card>
         <details>

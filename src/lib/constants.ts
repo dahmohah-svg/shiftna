@@ -62,3 +62,10 @@ export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 /** Most saved shift alerts one doctor can keep. */
 export const MAX_ALERTS = 10;
+
+/**
+ * Everything is free during the pilot: every approved doctor gets the
+ * Premium features (migration 016 does the same in the database). Set to
+ * false, and restore is_premium() in the database, to start charging.
+ */
+export const EVERYTHING_FREE = true;

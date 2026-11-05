@@ -4,6 +4,7 @@ import { JoinTeamForm } from "@/components/TeamForms";
 import { Badge, buttonClass, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
+import { EVERYTHING_FREE } from "@/lib/constants";
 import type { Locale } from "@/i18n/routing";
 
 export default async function TeamsPage({ params, searchParams }: PageProps<"/[locale]/teams">) {
@@ -100,7 +101,7 @@ export default async function TeamsPage({ params, searchParams }: PageProps<"/[l
       <Card className="flex flex-col gap-3">
         <SectionTitle>{t("createTitle")}</SectionTitle>
         <p className="text-sm text-ink-muted">{t("createIntro")}</p>
-        {viewer.profile.is_premium ? (
+        {EVERYTHING_FREE || viewer.profile.is_premium ? (
           <Link href="/teams/new" className={buttonClass.secondary}>
             {t("createButton")}
           </Link>

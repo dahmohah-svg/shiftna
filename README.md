@@ -86,7 +86,7 @@ npm run build      # full production build
   Trusted, Active, New) based on shifts from different doctors and
   completed shifts. The admin can merge duplicate hospitals; similar names
   in the same city are suggested automatically.
-- Teams (private groups): create a team (Premium, checked by admin), invite
+- Teams (private groups): create a team (checked by admin), invite
   doctors with a code, accept requests, and post shifts only the team sees.
 
 Not built yet (later steps in the guide): usage insights,
@@ -118,6 +118,13 @@ where id = (select id from auth.users where email = 'you@example.com');
 
 Doctors can add hospitals themselves while posting; verify them later in
 **Profile → Admin panel → Hospitals**.
+
+## Everything is free during the pilot
+
+Every approved doctor gets the Premium features. To start charging: set
+`EVERYTHING_FREE` to `false` in `src/lib/constants.ts` and restore
+`is_premium()` in the database (the SQL is in
+`supabase/migrations/016_everything_free.sql`).
 
 ## Rules
 

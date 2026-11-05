@@ -10,7 +10,7 @@ import { decideReport, mergeHospitals, setHospitalVerified, setPremium, suspendD
 import { reviewTeam } from "@/app/actions/teams";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/viewer";
-import { REQUIRED_DOCS } from "@/lib/constants";
+import { EVERYTHING_FREE, REQUIRED_DOCS } from "@/lib/constants";
 import { cairoToday, formatDate, formatDateTime, formatNumber } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
@@ -346,13 +346,16 @@ export default async function AdminPage({
               </Link>
               <div className="flex flex-col items-end gap-1">
                 {m.is_admin ? <Badge tone="brand">{t("title")}</Badge> : null}
-                {m.is_premium ? <Badge tone="gold">{p("premium")}</Badge> : null}
+                {!EVERYTHING_FREE && m.is_premium ? <Badge tone="gold">{p("premium")}</Badge> : null}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <ActionButton action={setPremium} fields={{ id: m.id, premium: m.is_premium ? "0" : "1" }} variant="secondary">
-                {m.is_premium ? t("removePremium") : t("makePremium")}
-              </ActionButton>
+              {/* Premium is switched on for everyone during the pilot. */}
+              {!EVERYTHING_FREE ? (
+                <ActionButton action={setPremium} fields={{ id: m.id, premium: m.is_premium ? "0" : "1" }} variant="secondary">
+                  {m.is_premium ? t("removePremium") : t("makePremium")}
+                </ActionButton>
+              ) : null}
               {m.id !== viewer.userId ? (
                 <ActionButton action={suspendDoctor} fields={{ id: m.id }} variant="danger" confirm={t("suspend") + "?"}>
                   {t("suspend")}

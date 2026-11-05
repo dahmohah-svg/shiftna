@@ -4,7 +4,7 @@ import { CreateTeamForm } from "@/components/TeamForms";
 import { Card, Notice, PageTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
-import type { City } from "@/lib/constants";
+import { EVERYTHING_FREE, type City } from "@/lib/constants";
 import type { Locale } from "@/i18n/routing";
 
 export default async function NewTeamPage({ params }: PageProps<"/[locale]/teams/new">) {
@@ -27,7 +27,7 @@ export default async function NewTeamPage({ params }: PageProps<"/[locale]/teams
         <span aria-hidden className="inline-block rtl:rotate-180">←</span> {c("back")}
       </Link>
       <PageTitle>{t("createTitle")}</PageTitle>
-      {viewer.profile.is_premium ? (
+      {EVERYTHING_FREE || viewer.profile.is_premium ? (
         <Card>
           <CreateTeamForm
             userId={viewer.userId}
