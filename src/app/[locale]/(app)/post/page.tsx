@@ -5,10 +5,11 @@ import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import type { Locale } from "@/i18n/routing";
 
-export default async function PostPage({ params }: PageProps<"/[locale]/post">) {
+export default async function PostPage({ params, searchParams }: PageProps<"/[locale]/post">) {
   const { locale } = await params;
   setRequestLocale(locale as Locale);
-  await requireApproved(locale);
+  const viewer = await requireApproved(locale);
+  const sp = await searchParams;
   const t = await getTranslations("Post");
   const o = await getTranslations("Options");
 
@@ -18,6 +19,18 @@ export default async function PostPage({ params }: PageProps<"/[locale]/post">) 
     .select("id, name, city")
     .eq("verified", true)
     .order("name");
+
+  const { data: memberships } = await supabase
+    .from("group_members")
+    .select("group:groups!group_members_group_id_fkey(id, name, status)")
+    .eq("user_id", viewer.userId)
+    .eq("status", "active");
+  const teams = (memberships ?? [])
+    .map((m) => m.group)
+    .filter((g): g is NonNullable<typeof g> => Boolean(g && g.status === "approved"))
+    .map((g) => ({ id: g.id, name: g.name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const defaultTeam = teams.some((g) => g.id === sp.team) ? (sp.team as string) : "";
 
   // Earliest allowed start, as a Cairo local time for the date picker.
   const minStart = new Intl.DateTimeFormat("sv-SE", {
@@ -38,6 +51,8 @@ export default async function PostPage({ params }: PageProps<"/[locale]/post">) 
         <Card>
           <PostShiftForm
             minStart={minStart}
+            teams={teams}
+            defaultTeam={defaultTeam}
             hospitals={hospitals.map((h) => ({
               id: h.id,
               name: h.name,

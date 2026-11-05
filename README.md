@@ -78,7 +78,10 @@ npm run build      # full production build
   messages, approval, urgent shifts and document expiry; saved shift alerts
   that notify you when a matching shift is posted.
 
-Not built yet (later steps in the guide): private groups, usage insights,
+- Teams (private groups): create a team (Premium, checked by admin), invite
+  doctors with a code, accept requests, and post shifts only the team sees.
+
+Not built yet (later steps in the guide): usage insights,
 email/WhatsApp/phone push notifications, disputes screen, arrival selfie, instant booking,
 share links, logbook, rotas, pay ranges, offline mode.
 

@@ -8,9 +8,12 @@ import { Badge } from "./ui";
 export default async function ShiftCard({
   shift,
   mine = false,
+  teamName,
 }: {
   shift: ShiftWithHospital;
   mine?: boolean;
+  /** Set when the shift is only visible to one team. */
+  teamName?: string | null;
 }) {
   const locale = await getLocale();
   const t = await getTranslations("Shifts");
@@ -51,6 +54,7 @@ export default async function ShiftCard({
 
       <div className="flex flex-wrap gap-1.5">
         {shift.urgent ? <Badge tone="danger">{t("urgent")}</Badge> : null}
+        {teamName ? <Badge tone="brand">{t("teamOnly", { team: teamName })}</Badge> : null}
         {mine ? <Badge tone="brand">{t("yourShift")}</Badge> : null}
         <Badge>{o(`shiftType.${shift.type}`)}</Badge>
         <Badge>{o(`subspecialty.${shift.subspecialty}`)}</Badge>

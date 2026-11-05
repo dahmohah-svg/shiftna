@@ -25,17 +25,27 @@ export default async function ShiftsPage({
   const sub = pick(SUBSPECIALTIES, sp.sub);
   const paidOnDay = sp.paid === "1";
   const urgentOnly = sp.urgent === "1";
+  const teamOnly = sp.team === "1";
 
   const t = await getTranslations("Shifts");
   const o = await getTranslations("Options");
   const c = await getTranslations("Common");
 
   const supabase = await createClient();
+  // The feed shows public shifts plus shifts of the viewer's own teams
+  // (admins may read every team's shifts, but should not see them here).
+  const { data: myTeams } = await supabase
+    .from("group_members")
+    .select("group_id")
+    .eq("user_id", viewer.userId)
+    .eq("status", "active");
+  const teamIds = (myTeams ?? []).map((m) => m.group_id);
+
   let query = supabase
     .from("shifts")
-    .select(city ? SHIFT_WITH_HOSPITAL_INNER : SHIFT_WITH_HOSPITAL)
+    // Team shifts are only returned to that team's members (Row Level Security).
+    .select(`${city ? SHIFT_WITH_HOSPITAL_INNER : SHIFT_WITH_HOSPITAL}, team:groups!shifts_group_id_fkey(name)`)
     .eq("status", "open")
-    .is("group_id", null)
     .gte("start_at", new Date().toISOString())
     .order("urgent", { ascending: false })
     .order("start_at", { ascending: true })
@@ -45,10 +55,17 @@ export default async function ShiftsPage({
   if (sub) query = query.eq("subspecialty", sub);
   if (paidOnDay) query = query.eq("payment", "immediate");
   if (urgentOnly) query = query.eq("urgent", true);
+  if (teamOnly) {
+    query = teamIds.length ? query.in("group_id", teamIds) : query.eq("id", "00000000-0000-0000-0000-000000000000");
+  } else {
+    query = teamIds.length
+      ? query.or(`group_id.is.null,group_id.in.(${teamIds.join(",")})`)
+      : query.is("group_id", null);
+  }
 
   const { data } = await query;
-  const shifts = (data ?? []) as unknown as ShiftWithHospital[];
-  const filtered = Boolean(city || type || sub || paidOnDay || urgentOnly);
+  const shifts = (data ?? []) as unknown as (ShiftWithHospital & { team: { name: string } | null })[];
+  const filtered = Boolean(city || type || sub || paidOnDay || urgentOnly || teamOnly);
 
   return (
     <>
@@ -83,6 +100,7 @@ export default async function ShiftsPage({
             <Checkbox name="paid" value="1" defaultChecked={paidOnDay} label={t("paidOnDay")} />
             <Checkbox name="urgent" value="1" defaultChecked={urgentOnly} label={t("urgentOnly")} />
           </div>
+          <Checkbox name="team" value="1" defaultChecked={teamOnly} label={t("teamShiftsOnly")} />
           <div className="grid grid-cols-2 gap-3">
             <button type="submit" className={buttonClass.primary}>{t("apply")}</button>
             <Link href="/shifts" className={buttonClass.secondary}>{t("clear")}</Link>
@@ -99,7 +117,7 @@ export default async function ShiftsPage({
       ) : (
         <div className="flex flex-col gap-3">
           {shifts.map((s) => (
-            <ShiftCard key={s.id} shift={s} mine={s.poster_id === viewer.userId} />
+            <ShiftCard key={s.id} shift={s} mine={s.poster_id === viewer.userId} teamName={s.team?.name} />
           ))}
         </div>
       )}

@@ -71,7 +71,7 @@ export default function TabBar({ userId, initialUnread }: { userId: string; init
             pathname === tab.href ||
             pathname.startsWith(tab.href + "/") ||
             (tab.href === "/activity" && pathname.startsWith("/bookings")) ||
-            (tab.href === "/profile" && (pathname.startsWith("/doctors") || pathname.startsWith("/admin")));
+            (tab.href === "/profile" && ["/doctors", "/admin", "/teams"].some((p) => pathname.startsWith(p)));
           const badge = tab.key === "alerts" && unread > 0 ? unread : 0;
           return (
             <li key={tab.href}>

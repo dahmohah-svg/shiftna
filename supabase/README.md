@@ -15,6 +15,7 @@ have been applied there, in this order:
 | `007_app_support.sql` | `refuse_offer` function and live chat (Realtime on `messages`) |
 | `008_notifications.sql` | In-app notifications: read tracking, triggers that create them, shift-alert matching, Realtime |
 | `009_urgent_alert_fix.sql` | Urgent "needs cover" alerts skip the doctor who cancelled and include hospital and time |
+| `010_team_notifications.sql` | Alerts for Teams (the app's name for private groups): approved/rejected, join requests, accepted, new team shift |
 
 Files 001 to 005 are exactly as printed in the build guide; copy them from
 there if you need to set up a second project (for example staging).

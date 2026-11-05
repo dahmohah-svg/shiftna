@@ -2,15 +2,17 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
 import { AddHospitalForm, ApproveDoctorForm, RejectDoctorForm } from "@/components/AdminForms";
+import { RejectTeamForm } from "@/components/TeamForms";
 import { Badge, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { decideReport, setHospitalVerified, setPremium, suspendDoctor } from "@/app/actions/admin";
+import { reviewTeam } from "@/app/actions/teams";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/viewer";
 import { REQUIRED_DOCS } from "@/lib/constants";
 import { cairoToday, formatDate, formatDateTime } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
-const TABS = ["doctors", "hospitals", "reports", "members"] as const;
+const TABS = ["doctors", "teams", "hospitals", "reports", "members"] as const;
 type Tab = (typeof TABS)[number];
 
 export default async function AdminPage({
@@ -27,6 +29,7 @@ export default async function AdminPage({
   const d = await getTranslations("Docs");
   const ob = await getTranslations("Onboarding");
   const p = await getTranslations("Profile");
+  const tm = await getTranslations("Teams");
   const supabase = await createClient();
 
   const tabLabel: Record<Tab, string> = {
@@ -34,6 +37,7 @@ export default async function AdminPage({
     hospitals: t("tabHospitals"),
     reports: t("tabReports"),
     members: t("tabMembers"),
+    teams: tm("tab"),
   };
 
   let content: React.ReactNode = null;
@@ -170,6 +174,66 @@ export default async function AdminPage({
     );
   }
 
+  if (tab === "teams") {
+    const { data: teams } = await supabase
+      .from("groups")
+      .select(
+        "id, name, institution, description, proof_path, created_at, creator:profiles!groups_created_by_fkey(id, full_name, grade), hospital:hospitals!groups_hospital_id_fkey(name)",
+      )
+      .eq("status", "pending")
+      .order("created_at", { ascending: true });
+    const withProof = (teams ?? []).filter((g) => g.proof_path);
+    const proofUrl = new Map<string, string>();
+    if (withProof.length) {
+      const { data: signed } = await supabase.storage
+        .from("documents")
+        .createSignedUrls(withProof.map((g) => g.proof_path!), 300);
+      signed?.forEach((u, i) => {
+        if (u.signedUrl) proofUrl.set(withProof[i].id, u.signedUrl);
+      });
+    }
+    content = (
+      <section className="flex flex-col gap-3">
+        <SectionTitle>{tm("pendingTeams")}</SectionTitle>
+        <Notice tone="warn">{t("linkNote")}</Notice>
+        {(teams ?? []).length === 0 ? <EmptyState>{tm("noPendingTeams")}</EmptyState> : null}
+        {(teams ?? []).map((g) => (
+          <Card key={g.id} className="flex flex-col gap-2">
+            <span className="text-lg font-bold">{g.name}</span>
+            <span className="text-sm text-ink-muted">
+              {g.institution}
+              {g.hospital ? ` · ${g.hospital.name}` : null}
+            </span>
+            {g.description ? <p className="whitespace-pre-line text-sm">{g.description}</p> : null}
+            <span className="text-xs text-ink-muted">
+              {tm("createdBy")}{" "}
+              {g.creator ? (
+                <Link href={`/doctors/${g.creator.id}`} className="font-semibold text-brand-700 underline">
+                  {g.creator.full_name}
+                </Link>
+              ) : (
+                "—"
+              )}{" "}
+              · {formatDateTime(g.created_at, locale)}
+            </span>
+            {proofUrl.get(g.id) ? (
+              <a href={proofUrl.get(g.id)} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand-700 underline">
+                {tm("openProof")}
+              </a>
+            ) : (
+              <Notice tone="warn">{tm("noProof")}</Notice>
+            )}
+            <p className="text-xs text-ink-muted">{tm("reviewChecklist")}</p>
+            <ActionButton action={reviewTeam} fields={{ teamId: g.id, approve: "1" }}>
+              {tm("approve")}
+            </ActionButton>
+            <RejectTeamForm teamId={g.id} />
+          </Card>
+        ))}
+      </section>
+    );
+  }
+
   if (tab === "reports") {
     const { data: reports } = await supabase
       .from("reports")
@@ -246,7 +310,7 @@ export default async function AdminPage({
   return (
     <div className="flex flex-col gap-4">
       <PageTitle>{t("title")}</PageTitle>
-      <nav className="grid grid-cols-4 gap-1 rounded-xl bg-line/50 p-1" aria-label={t("title")}>
+      <nav className="grid grid-cols-5 gap-1 rounded-xl bg-line/50 p-1" aria-label={t("title")}>
         {TABS.map((k) => (
           <Link
             key={k}

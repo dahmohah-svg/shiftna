@@ -42,6 +42,7 @@ const postSchema = z
     urgent: bool,
     subspecialty: z.enum(SUBSPECIALTIES),
     minGrade: z.enum(GRADES),
+    groupId: uuid.or(z.literal("")).optional(),
   })
   .refine((v) => v.payment === "immediate" || Boolean(v.paymentDate), {
     path: ["paymentDate"],
@@ -87,6 +88,8 @@ export async function postShift(
       urgent: v.urgent,
       subspecialty: v.subspecialty,
       min_grade: v.minGrade,
+      // Team-only shift; the database checks the poster is an active member.
+      group_id: v.groupId || null,
     })
     .select("id")
     .single();

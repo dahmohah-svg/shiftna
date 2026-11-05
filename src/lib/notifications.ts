@@ -15,6 +15,11 @@ export const NOTIFICATION_KINDS = [
   "urgent_shift",
   "shift_invite",
   "document_expiring",
+  "team_approved",
+  "team_rejected",
+  "team_join_request",
+  "team_joined",
+  "team_shift",
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -27,6 +32,9 @@ type Payload = {
   sender?: string;
   document?: string;
   expires_on?: string;
+  team_id?: string;
+  team?: string;
+  reason?: string;
 };
 
 export function readPayload(n: NotificationRow): Payload {
@@ -46,6 +54,8 @@ export function notificationHref(kind: NotificationKind, p: Payload): string {
   if (p.booking_id) return `/bookings/${p.booking_id}`;
   if (kind === "account_approved") return "/shifts";
   if (kind === "document_expiring") return "/profile";
+  if (kind === "team_rejected") return "/teams";
+  if (kind !== "team_shift" && p.team_id) return `/teams/${p.team_id}`;
   if (p.shift_id) return `/shifts/${p.shift_id}`;
   return "/activity";
 }

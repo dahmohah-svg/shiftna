@@ -33,10 +33,10 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
 
   const { data: raw } = await supabase
     .from("shifts")
-    .select(SHIFT_WITH_HOSPITAL)
+    .select(`${SHIFT_WITH_HOSPITAL}, team:groups!shifts_group_id_fkey(id, name)`)
     .eq("id", id)
     .maybeSingle();
-  const shift = raw as unknown as ShiftWithHospital | null;
+  const shift = raw as unknown as (ShiftWithHospital & { team: { id: string; name: string } | null }) | null;
   if (!shift) {
     return <EmptyState>{t("notFound")}</EmptyState>;
   }
@@ -199,6 +199,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
       <Card className="flex flex-col gap-3">
         <div className="flex flex-wrap gap-1.5">
           {shift.urgent ? <Badge tone="danger">{s("urgent")}</Badge> : null}
+          {shift.team ? <Badge tone="brand">{s("teamOnly", { team: shift.team.name })}</Badge> : null}
           <Badge>{o(`shiftType.${shift.type}`)}</Badge>
           <Badge>{o(`shiftStatus.${shift.status}`)}</Badge>
           {shift.hospital?.verified ? <Badge tone="success">✓ {t("hospital")}</Badge> : null}

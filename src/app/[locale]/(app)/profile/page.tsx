@@ -18,6 +18,7 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
   const viewer = await requireApproved(locale);
   const { profile } = viewer;
   const t = await getTranslations("Profile");
+  const tm = await getTranslations("Teams");
   const o = await getTranslations("Options");
   const d = await getTranslations("Docs");
   const ob = await getTranslations("Onboarding");
@@ -58,6 +59,17 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
           <p className="pt-1">{t("badgeExplain")}</p>
         </details>
       </Card>
+
+      <Link
+        href="/teams"
+        className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4"
+      >
+        <span className="flex flex-col">
+          <span className="font-bold">{tm("title")}</span>
+          <span className="text-sm text-ink-muted">{tm("profileLink")}</span>
+        </span>
+        <span aria-hidden className="text-xl text-brand-700 rtl:rotate-180">›</span>
+      </Link>
 
       <Card>
         <SectionTitle>{t("stats")}</SectionTitle>

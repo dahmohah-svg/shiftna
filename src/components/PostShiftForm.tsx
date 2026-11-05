@@ -14,13 +14,19 @@ import { Checkbox, Field, Input, Notice, Select, Textarea } from "./ui";
 import { FormMessage, SubmitButton } from "./forms";
 
 type HospitalOption = { id: string; name: string; cityLabel: string };
+type TeamOption = { id: string; name: string };
 
 export default function PostShiftForm({
   hospitals,
   minStart,
+  teams = [],
+  defaultTeam = "",
 }: {
   hospitals: HospitalOption[];
   minStart: string;
+  /** Teams the poster belongs to; a shift can be shown to one team only. */
+  teams?: TeamOption[];
+  defaultTeam?: string;
 }) {
   const t = useTranslations("Post");
   const o = useTranslations("Options");
@@ -40,6 +46,19 @@ export default function PostShiftForm({
           ))}
         </Select>
       </Field>
+
+      {teams.length > 0 ? (
+        <Field label={t("visibility")} hint={t("visibilityHint")} htmlFor="groupId">
+          <Select id="groupId" name="groupId" defaultValue={defaultTeam}>
+            <option value="">{t("visibilityAll")}</option>
+            {teams.map((g) => (
+              <option key={g.id} value={g.id}>
+                {t("visibilityTeam", { team: g.name })}
+              </option>
+            ))}
+          </Select>
+        </Field>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-3">
         <Field label={t("type")} htmlFor="type">

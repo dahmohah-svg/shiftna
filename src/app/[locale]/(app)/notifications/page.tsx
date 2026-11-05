@@ -82,6 +82,8 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
               sender: p.sender ?? c("dash"),
               document: docName(p.document),
               date: p.expires_on ? formatDate(p.expires_on, locale) : c("dash"),
+              team: p.team ?? c("dash"),
+              reason: p.reason ?? c("dash"),
             });
             const unread = !n.read_at;
             return (

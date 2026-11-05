@@ -21,7 +21,10 @@ export type ErrorKey =
   | "notAllowed"
   | "fileTooBig"
   | "fileType"
-  | "uploadFailed";
+  | "uploadFailed"
+  | "needsPremium"
+  | "tooManyTeams"
+  | "invalidCode";
 
 /** Result returned by every server action. */
 export type ActionState = {
@@ -39,6 +42,9 @@ const DB_MESSAGES: [RegExp, ErrorKey][] = [
   [/grade is below|grade_rank/i, "gradeTooLow"],
   [/already cancelled/i, "alreadyCancelled"],
   [/not your booking/i, "notYourBooking"],
+  [/needs premium/i, "needsPremium"],
+  [/does not allow more groups/i, "tooManyTeams"],
+  [/invalid code/i, "invalidCode"],
   [/not allowed/i, "notAllowed"],
 ];
 
