@@ -20,6 +20,10 @@
   --color-night-on: #115e59;
   /* Phone frames on the welcome page. */
   --color-phone-frame: #0b1220;
+  /* Growth dashboard charts (validated with the dataviz checker):
+     accent = the series that matters, context = the comparison series. */
+  --color-viz-accent: #0d9488;
+  --color-viz-context: #cbd5e1;
 
   --font-sans: var(--font-cairo), system-ui, sans-serif;
 }
@@ -49,6 +53,8 @@
   --color-night: #1e2a3d;
   --color-night-on: #0f766e;
   --color-phone-frame: #334155;
+  --color-viz-accent: #0d9488;
+  --color-viz-context: #334155;
 
   --color-red-50: #3a1418;
   --color-red-200: #7a2530;

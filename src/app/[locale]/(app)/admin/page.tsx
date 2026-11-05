@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
 import { AddHospitalForm, ApproveDoctorForm, MergeHospitalForm, RejectDoctorForm } from "@/components/AdminForms";
 import { PauseTeamForm } from "@/components/TeamForms";
+import GrowthDashboard, { GROWTH_RANGES } from "@/components/GrowthDashboard";
 import TeamStatusBadge from "@/components/TeamStatusBadge";
 import HospitalTrustBadge from "@/components/HospitalTrustBadge";
 import { getHospitalTrust } from "@/lib/hospitals";
@@ -16,7 +17,7 @@ import { EVERYTHING_FREE, REQUIRED_DOCS } from "@/lib/constants";
 import { cairoToday, formatDate, formatDateTime, formatNumber } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
-const TABS = ["doctors", "teams", "hospitals", "reports", "members"] as const;
+const TABS = ["growth", "doctors", "teams", "hospitals", "reports", "members"] as const;
 type Tab = (typeof TABS)[number];
 
 export default async function AdminPage({
@@ -42,9 +43,16 @@ export default async function AdminPage({
     reports: t("tabReports"),
     members: t("tabMembers"),
     teams: tm("tab"),
+    growth: t("tabGrowth"),
   };
 
   let content: React.ReactNode = null;
+
+  if (tab === "growth") {
+    const w = Number(sp.weeks);
+    const weeks = (GROWTH_RANGES as readonly number[]).includes(w) ? w : 12;
+    content = <GrowthDashboard locale={locale} weeks={weeks} />;
+  }
 
   if (tab === "doctors") {
     const { data: pending } = await supabase
@@ -398,7 +406,7 @@ export default async function AdminPage({
   return (
     <div className="flex flex-col gap-4">
       <PageTitle>{t("title")}</PageTitle>
-      <nav className="grid grid-cols-5 gap-1 rounded-xl bg-line/50 p-1" aria-label={t("title")}>
+      <nav className="grid grid-cols-3 gap-1 rounded-xl bg-line/50 p-1" aria-label={t("title")}>
         {TABS.map((k) => (
           <Link
             key={k}

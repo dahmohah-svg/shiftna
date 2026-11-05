@@ -1,5 +1,6 @@
 import InstallApp from "@/components/InstallApp";
 import TabBar from "@/components/TabBar";
+import TrackOpen from "@/components/TrackOpen";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 
@@ -25,6 +26,7 @@ export default async function AppLayout({
         {children}
       </main>
       <TabBar userId={viewer.userId} initialUnread={count ?? 0} />
+      <TrackOpen />
     </>
   );
 }

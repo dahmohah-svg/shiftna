@@ -78,6 +78,9 @@ npm run build      # full production build
   messages, approval, urgent shifts and document expiry; saved shift alerts
   that notify you when a matching shift is posted.
 
+- Admin Growth tab: active doctors, sign-ups, shifts posted and filled,
+  fill rate and time to fill per week (4 / 12 / 26 weeks), busiest cities,
+  and a table view of every number.
 - Install page: shiftna.vercel.app/install (one link for WhatsApp groups,
   with a QR code for posters); it shows each visitor the right way to install.
 - Install button: a dismissible banner, a Profile button and a welcome-page

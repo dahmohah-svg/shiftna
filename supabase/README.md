@@ -25,6 +25,7 @@ have been applied there, in this order:
 | `017_open_teams.sql` | Teams work straight away (proof optional); admin verifies, pauses or resumes them later; alerts for each |
 | `018_private_phone_numbers.sql` | `show_phone` setting and `contact_phones()`: a number only for yourself, the admin, or the other doctor in a confirmed booking |
 | `019_lock_phone_column.sql` | Doctors can no longer read `profiles.phone` directly (run after the app that uses `contact_phones()` is live) |
+| `020_growth_dashboard.sql` | `track_open()` (one 'open' event per doctor per day), `admin_growth()` weekly numbers and `admin_growth_summary()` for the admin Growth tab |
 
 Files 001 to 005 are exactly as printed in the build guide; copy them from
 there if you need to set up a second project (for example staging).

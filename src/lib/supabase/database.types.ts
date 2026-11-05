@@ -1511,6 +1511,20 @@ export type Database = {
         Args: { p_action: string; p_group: string; p_reason?: string }
         Returns: undefined
       }
+      admin_growth: {
+        Args: { p_weeks?: number }
+        Returns: {
+          active_doctors: number
+          cancelled: number
+          completed: number
+          median_hours_to_fill: number | null
+          shifts_filled: number
+          shifts_posted: number
+          signups: number
+          week_start: string
+        }[]
+      }
+      admin_growth_summary: { Args: { p_weeks?: number }; Returns: Json }
       admin_review_group: {
         Args: { p_approve: boolean; p_group: string; p_reason: string }
         Returns: undefined
@@ -1648,6 +1662,7 @@ export type Database = {
       is_group_member: { Args: { p_group: string }; Returns: boolean }
       is_premium: { Args: never; Returns: boolean }
       lapse_expired_users: { Args: never; Returns: number }
+      track_open: { Args: never; Returns: undefined }
       leave_group: { Args: { p_group: string }; Returns: undefined }
       readd_member: {
         Args: { p_group: string; p_user: string }
