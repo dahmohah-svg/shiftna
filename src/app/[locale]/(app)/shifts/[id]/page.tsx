@@ -255,7 +255,9 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
           </div>
           <p className="text-sm">{ht(`levelHelp.${trust.level}`)}</p>
           <p className="text-xs text-ink-muted">
-            {ht("activity", { shifts: trust.shiftsPosted, posters: trust.posters, completed: trust.completed })}
+            {trust.shiftsPosted === 0
+              ? ht("noActivity")
+              : ht("activity", { shifts: trust.shiftsPosted, posters: trust.posters, completed: formatNumber(trust.completed, locale) })}
           </p>
         </Card>
       ) : null}

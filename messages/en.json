@@ -603,7 +603,7 @@
       "new": "Added recently and not checked yet. Confirm details with the poster."
     },
     "credibility": "Hospital credibility",
-    "activity": "{shifts, plural, =0 {No shifts yet} one {# shift} other {# shifts}} · {posters, plural, =0 {no doctors} one {by # doctor} other {by # doctors}} · {completed} completed",
+    "activity": "{shifts, plural, one {# shift} other {# shifts}} · {posters, plural, one {by # doctor} other {by # doctors}} · {completed} completed",
     "cantFind": "Can't find the hospital? Add it",
     "addTitle": "Add a hospital",
     "addIntro": "Anyone can add a hospital. It shows as \"New hospital\" until the Shiftna team checks it.",
@@ -623,6 +623,7 @@
     "mergeKeep": "Hospital to keep",
     "mergeExplain": "Everything at \"{name}\" (shifts, ratings, teams, logbook) moves to the hospital you keep, then \"{name}\" is deleted. If either was verified, the kept one stays verified.",
     "mergeButton": "Merge",
-    "mergeConfirm": "Merge \"{remove}\" into \"{keep}\"? \"{remove}\" will be deleted. This cannot be undone."
+    "mergeConfirm": "Merge \"{remove}\" into \"{keep}\"? \"{remove}\" will be deleted. This cannot be undone.",
+    "noActivity": "No shifts yet"
   }
 }

@@ -11,7 +11,7 @@ import { reviewTeam } from "@/app/actions/teams";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/viewer";
 import { REQUIRED_DOCS } from "@/lib/constants";
-import { cairoToday, formatDate, formatDateTime } from "@/lib/time";
+import { cairoToday, formatDate, formatDateTime, formatNumber } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
 const TABS = ["doctors", "teams", "hospitals", "reports", "members"] as const;
@@ -151,7 +151,8 @@ export default async function AdminPage({
     const { data: dupes } = await supabase.rpc("possible_duplicate_hospitals");
     const activity = (id: string) => {
       const x = trust.get(id);
-      return x ? ht("activity", { shifts: x.shiftsPosted, posters: x.posters, completed: x.completed }) : "";
+      if (!x || x.shiftsPosted === 0) return ht("noActivity");
+      return ht("activity", { shifts: x.shiftsPosted, posters: x.posters, completed: formatNumber(x.completed, locale) });
     };
     content = (
       <section className="flex flex-col gap-4">
@@ -208,15 +209,7 @@ export default async function AdminPage({
                     {ht("addedBy", { name: h.adder.full_name ?? "—" })}
                   </Link>
                 ) : null}
-                {trust.get(h.id) ? (
-                  <span className="text-xs text-ink-muted">
-                    {ht("activity", {
-                      shifts: trust.get(h.id)!.shiftsPosted,
-                      posters: trust.get(h.id)!.posters,
-                      completed: trust.get(h.id)!.completed,
-                    })}
-                  </span>
-                ) : null}
+                <span className="text-xs text-ink-muted">{activity(h.id)}</span>
               </div>
               <HospitalTrustBadge level={trust.get(h.id)?.level ?? (h.verified ? "verified" : "new")} />
             </div>
