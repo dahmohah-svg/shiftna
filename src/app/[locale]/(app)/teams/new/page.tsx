@@ -19,7 +19,6 @@ export default async function NewTeamPage({ params }: PageProps<"/[locale]/teams
   const { data: hospitals } = await supabase
     .from("hospitals")
     .select("id, name, city")
-    .eq("verified", true)
     .order("name");
 
   return (

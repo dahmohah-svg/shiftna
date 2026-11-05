@@ -20,6 +20,7 @@ export const NOTIFICATION_KINDS = [
   "team_join_request",
   "team_joined",
   "team_shift",
+  "hospital_added",
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -55,6 +56,7 @@ export function notificationHref(kind: NotificationKind, p: Payload): string {
   if (kind === "account_approved") return "/shifts";
   if (kind === "document_expiring") return "/profile";
   if (kind === "team_rejected") return "/teams";
+  if (kind === "hospital_added") return "/admin?tab=hospitals";
   if (kind !== "team_shift" && p.team_id) return `/teams/${p.team_id}`;
   if (p.shift_id) return `/shifts/${p.shift_id}`;
   return "/activity";

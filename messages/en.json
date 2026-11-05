@@ -45,7 +45,9 @@
     "uploadFailed": "The upload did not finish. Check your connection and try again.",
     "needsPremium": "Creating a team needs Premium. Contact the Shiftna team to switch it on.",
     "tooManyTeams": "You have reached the number of teams your plan allows.",
-    "invalidCode": "This invite code is not valid. Check it with the team manager."
+    "invalidCode": "This invite code is not valid. Check it with the team manager.",
+    "tooManyHospitals": "You can add up to 5 hospitals a day. Try again tomorrow, or ask the Shiftna team.",
+    "hospitalExists": "This hospital is already listed in that city."
   },
   "Home": {
     "tagline": "Anesthesia shifts, with trust.",
@@ -279,7 +281,7 @@
   "Post": {
     "title": "Post a shift",
     "hospital": "Hospital",
-    "noHospitals": "No verified hospitals yet. Ask the admin to add your hospital.",
+    "noHospitals": "No hospitals yet. Add the first one below.",
     "type": "Type",
     "start": "Start (Cairo time)",
     "duration": "Duration (hours)",
@@ -482,7 +484,8 @@
       "team_rejected": "Your team {team} was not approved: {reason}",
       "team_join_request": "{doctor} asked to join {team}.",
       "team_joined": "You joined {team}. Its shifts now appear in your feed.",
-      "team_shift": "New {team} shift: {hospital}, {when}."
+      "team_shift": "New {team} shift: {hospital}, {when}.",
+      "hospital_added": "{doctor} added a new hospital: {hospital}. Check and verify it when you can."
     },
     "alertsTitle": "Shift alerts",
     "alertsIntro": "Get an alert here when a new shift matching these choices is posted.",
@@ -585,5 +588,33 @@
     "readdConfirm": "Add {name} back to the team?",
     "allowRejoin": "Allow to rejoin",
     "rejoinAllowed": "They can now ask to join again with the invite code."
+  },
+  "Hospitals": {
+    "level": {
+      "verified": "Verified",
+      "trusted": "Trusted",
+      "active": "Active",
+      "new": "New hospital"
+    },
+    "levelHelp": {
+      "verified": "Checked by the Shiftna team.",
+      "trusted": "Many shifts here from different doctors, several completed.",
+      "active": "Some shifts have been posted here.",
+      "new": "Added recently and not checked yet. Confirm details with the poster."
+    },
+    "credibility": "Hospital credibility",
+    "activity": "{shifts, plural, =0 {No shifts yet} one {# shift} other {# shifts}} · {posters, plural, =0 {no doctors} one {by # doctor} other {by # doctors}} · {completed} completed",
+    "cantFind": "Can't find the hospital? Add it",
+    "addTitle": "Add a hospital",
+    "addIntro": "Anyone can add a hospital. It shows as \"New hospital\" until the Shiftna team checks it.",
+    "name": "Hospital name",
+    "nameHint": "Use the official name, for example: Kasr Al Ainy Hospital",
+    "area": "Area (optional)",
+    "add": "Add and select",
+    "notVerified": "not verified",
+    "added": "Hospital added and selected.",
+    "existing": "This hospital was already listed, so we selected it.",
+    "addedBy": "Added by {name}",
+    "unverifiedFirst": "Not verified yet"
   }
 }

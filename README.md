@@ -78,6 +78,10 @@ npm run build      # full production build
   messages, approval, urgent shifts and document expiry; saved shift alerts
   that notify you when a matching shift is posted.
 
+- Hospitals: any approved doctor can add one while posting; the admin
+  verifies later. Each hospital shows a credibility level (Verified,
+  Trusted, Active, New) based on shifts from different doctors and
+  completed shifts.
 - Teams (private groups): create a team (Premium, checked by admin), invite
   doctors with a code, accept requests, and post shifts only the team sees.
 
@@ -108,7 +112,8 @@ update profiles set is_admin = true, status = 'approved', grade = 'consultant', 
 where id = (select id from auth.users where email = 'you@example.com');
 ```
 
-Then add your hospitals in **Profile → Admin panel → Hospitals**.
+Doctors can add hospitals themselves while posting; verify them later in
+**Profile → Admin panel → Hospitals**.
 
 ## Rules
 

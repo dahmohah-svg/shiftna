@@ -3,6 +3,8 @@ import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
 import { AddHospitalForm, ApproveDoctorForm, RejectDoctorForm } from "@/components/AdminForms";
 import { RejectTeamForm } from "@/components/TeamForms";
+import HospitalTrustBadge from "@/components/HospitalTrustBadge";
+import { getHospitalTrust } from "@/lib/hospitals";
 import { Badge, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { decideReport, setHospitalVerified, setPremium, suspendDoctor } from "@/app/actions/admin";
 import { reviewTeam } from "@/app/actions/teams";
@@ -139,7 +141,13 @@ export default async function AdminPage({
   }
 
   if (tab === "hospitals") {
-    const { data: hospitals } = await supabase.from("hospitals").select("*").order("created_at", { ascending: false });
+    const { data: hospitals } = await supabase
+      .from("hospitals")
+      .select("*, adder:profiles!hospitals_added_by_fkey(id, full_name)")
+      .order("verified", { ascending: true })
+      .order("created_at", { ascending: false });
+    const trust = await getHospitalTrust(supabase, (hospitals ?? []).map((h) => h.id));
+    const ht = await getTranslations("Hospitals");
     content = (
       <section className="flex flex-col gap-4">
         <Card>
@@ -158,8 +166,22 @@ export default async function AdminPage({
                   {h.area ? ` · ${h.area}` : ""}
                 </span>
                 {h.contact ? <span className="text-xs text-ink-muted" dir="ltr">{h.contact}</span> : null}
+                {h.adder ? (
+                  <Link href={`/doctors/${h.adder.id}`} className="text-xs text-brand-700 underline">
+                    {ht("addedBy", { name: h.adder.full_name ?? "—" })}
+                  </Link>
+                ) : null}
+                {trust.get(h.id) ? (
+                  <span className="text-xs text-ink-muted">
+                    {ht("activity", {
+                      shifts: trust.get(h.id)!.shiftsPosted,
+                      posters: trust.get(h.id)!.posters,
+                      completed: trust.get(h.id)!.completed,
+                    })}
+                  </span>
+                ) : null}
               </div>
-              {h.verified ? <Badge tone="success">✓ {t("verified")}</Badge> : <Badge>{t("verified")}: ✗</Badge>}
+              <HospitalTrustBadge level={trust.get(h.id)?.level ?? (h.verified ? "verified" : "new")} />
             </div>
             <ActionButton
               action={setHospitalVerified}

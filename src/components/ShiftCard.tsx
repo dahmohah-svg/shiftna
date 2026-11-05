@@ -2,6 +2,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { formatDateTime, formatNumber } from "@/lib/time";
 import { payPerHour, type ShiftWithHospital } from "@/lib/shifts";
+import type { TrustLevel } from "@/lib/hospitals";
+import HospitalTrustBadge from "./HospitalTrustBadge";
 import ShiftStrip from "./ShiftStrip";
 import { Badge } from "./ui";
 
@@ -9,11 +11,14 @@ export default async function ShiftCard({
   shift,
   mine = false,
   teamName,
+  trust,
 }: {
   shift: ShiftWithHospital;
   mine?: boolean;
   /** Set when the shift is only visible to one team. */
   teamName?: string | null;
+  /** Hospital credibility level, when the list has looked it up. */
+  trust?: TrustLevel;
 }) {
   const locale = await getLocale();
   const t = await getTranslations("Shifts");
@@ -54,6 +59,7 @@ export default async function ShiftCard({
 
       <div className="flex flex-wrap gap-1.5">
         {shift.urgent ? <Badge tone="danger">{t("urgent")}</Badge> : null}
+        {trust ? <HospitalTrustBadge level={trust} /> : null}
         {teamName ? <Badge tone="brand">{t("teamOnly", { team: teamName })}</Badge> : null}
         {mine ? <Badge tone="brand">{t("yourShift")}</Badge> : null}
         <Badge>{o(`shiftType.${shift.type}`)}</Badge>

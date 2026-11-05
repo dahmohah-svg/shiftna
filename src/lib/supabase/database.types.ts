@@ -607,6 +607,7 @@ export type Database = {
       }
       hospitals: {
         Row: {
+          added_by: string | null
           address: string | null
           area: string | null
           city: string
@@ -617,6 +618,7 @@ export type Database = {
           verified: boolean
         }
         Insert: {
+          added_by?: string | null
           address?: string | null
           area?: string | null
           city: string
@@ -627,6 +629,7 @@ export type Database = {
           verified?: boolean
         }
         Update: {
+          added_by?: string | null
           address?: string | null
           area?: string | null
           city?: string
@@ -636,7 +639,15 @@ export type Database = {
           name?: string
           verified?: boolean
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hospitals_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       logbook_entries: {
         Row: {
@@ -1573,6 +1584,16 @@ export type Database = {
           my_median_pay_per_hour: number
           reviews: number
           shifts_filled: number
+          shifts_posted: number
+        }[]
+      }
+      hospital_trust: {
+        Args: { p_ids: string[] }
+        Returns: {
+          completed: number
+          hospital_id: string
+          level: string
+          posters: number
           shifts_posted: number
         }[]
       }

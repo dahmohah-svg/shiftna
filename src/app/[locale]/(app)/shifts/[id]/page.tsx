@@ -4,6 +4,7 @@ import ActionButton from "@/components/ActionButton";
 import OfferForm from "@/components/OfferForm";
 import ShiftStrip from "@/components/ShiftStrip";
 import StatsGrid from "@/components/StatsGrid";
+import HospitalTrustBadge from "@/components/HospitalTrustBadge";
 import TrustBadge from "@/components/TrustBadge";
 import {
   Badge,
@@ -18,6 +19,7 @@ import { acceptOffer, cancelShift, refuseOffer, withdrawOffer } from "@/app/acti
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import { gradeAllows, payPerHour, SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
+import { getHospitalTrust } from "@/lib/hospitals";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
@@ -188,6 +190,8 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
   }
 
   const hr = hospitalRatings;
+  const trust = (await getHospitalTrust(supabase, [shift.hospital_id])).get(shift.hospital_id);
+  const ht = await getTranslations("Hospitals");
   const enoughReviews = (hr?.review_count ?? 0) >= 3;
 
   return (
@@ -202,7 +206,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
           {shift.team ? <Badge tone="brand">{s("teamOnly", { team: shift.team.name })}</Badge> : null}
           <Badge>{o(`shiftType.${shift.type}`)}</Badge>
           <Badge>{o(`shiftStatus.${shift.status}`)}</Badge>
-          {shift.hospital?.verified ? <Badge tone="success">✓ {t("hospital")}</Badge> : null}
+          {trust ? <HospitalTrustBadge level={trust.level} /> : null}
         </div>
         <h1 className="text-2xl font-extrabold">{shift.hospital?.name}</h1>
         <p className="text-sm text-ink-muted">
@@ -242,6 +246,19 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
           </div>
         ) : null}
       </Card>
+
+      {trust ? (
+        <Card className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <SectionTitle>{ht("credibility")}</SectionTitle>
+            <HospitalTrustBadge level={trust.level} />
+          </div>
+          <p className="text-sm">{ht(`levelHelp.${trust.level}`)}</p>
+          <p className="text-xs text-ink-muted">
+            {ht("activity", { shifts: trust.shiftsPosted, posters: trust.posters, completed: trust.completed })}
+          </p>
+        </Card>
+      ) : null}
 
       <Card>
         <SectionTitle>{t("hospitalRatings")}</SectionTitle>

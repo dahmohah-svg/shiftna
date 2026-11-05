@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import { CITIES, SHIFT_TYPES, SUBSPECIALTIES } from "@/lib/constants";
 import { SHIFT_WITH_HOSPITAL, SHIFT_WITH_HOSPITAL_INNER, type ShiftWithHospital } from "@/lib/shifts";
+import { getHospitalTrust } from "@/lib/hospitals";
 import type { Locale } from "@/i18n/routing";
 
 function pick<T extends readonly string[]>(list: T, v: unknown): T[number] | null {
@@ -65,6 +66,7 @@ export default async function ShiftsPage({
 
   const { data } = await query;
   const shifts = (data ?? []) as unknown as (ShiftWithHospital & { team: { name: string } | null })[];
+  const trust = await getHospitalTrust(supabase, shifts.map((s) => s.hospital_id));
   const filtered = Boolean(city || type || sub || paidOnDay || urgentOnly || teamOnly);
 
   return (
@@ -117,7 +119,7 @@ export default async function ShiftsPage({
       ) : (
         <div className="flex flex-col gap-3">
           {shifts.map((s) => (
-            <ShiftCard key={s.id} shift={s} mine={s.poster_id === viewer.userId} teamName={s.team?.name} />
+            <ShiftCard key={s.id} shift={s} mine={s.poster_id === viewer.userId} teamName={s.team?.name} trust={trust.get(s.hospital_id)?.level} />
           ))}
         </div>
       )}

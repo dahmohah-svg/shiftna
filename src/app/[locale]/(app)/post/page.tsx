@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import AddHospitalInline from "@/components/AddHospitalInline";
 import PostShiftForm from "@/components/PostShiftForm";
-import { Card, EmptyState, PageTitle } from "@/components/ui";
+import { Card, Notice, PageTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import type { Locale } from "@/i18n/routing";
@@ -16,8 +17,7 @@ export default async function PostPage({ params, searchParams }: PageProps<"/[lo
   const supabase = await createClient();
   const { data: hospitals } = await supabase
     .from("hospitals")
-    .select("id, name, city")
-    .eq("verified", true)
+    .select("id, name, city, verified")
     .order("name");
 
   const { data: memberships } = await supabase
@@ -31,6 +31,8 @@ export default async function PostPage({ params, searchParams }: PageProps<"/[lo
     .map((g) => ({ id: g.id, name: g.name }))
     .sort((a, b) => a.name.localeCompare(b.name));
   const defaultTeam = teams.some((g) => g.id === sp.team) ? (sp.team as string) : "";
+  const h = await getTranslations("Hospitals");
+  const defaultHospital = (hospitals ?? []).some((x) => x.id === sp.hospital) ? (sp.hospital as string) : "";
 
   // Earliest allowed start, as a Cairo local time for the date picker.
   const minStart = new Intl.DateTimeFormat("sv-SE", {
@@ -47,22 +49,27 @@ export default async function PostPage({ params, searchParams }: PageProps<"/[lo
   return (
     <>
       <PageTitle>{t("title")}</PageTitle>
-      {hospitals && hospitals.length > 0 ? (
-        <Card>
-          <PostShiftForm
-            minStart={minStart}
-            teams={teams}
-            defaultTeam={defaultTeam}
-            hospitals={hospitals.map((h) => ({
-              id: h.id,
-              name: h.name,
-              cityLabel: o(`city.${h.city as "cairo"}`),
-            }))}
-          />
-        </Card>
-      ) : (
-        <EmptyState>{t("noHospitals")}</EmptyState>
-      )}
+      <div className="flex flex-col gap-4">
+        {defaultHospital ? <Notice tone="success">{sp.existing === "1" ? h("existing") : h("added")}</Notice> : null}
+        {hospitals && hospitals.length > 0 ? (
+          <Card>
+            <PostShiftForm
+              minStart={minStart}
+              teams={teams}
+              defaultTeam={defaultTeam}
+              defaultHospital={defaultHospital}
+              hospitals={hospitals.map((x) => ({
+                id: x.id,
+                name: x.name,
+                cityLabel: o(`city.${x.city as "cairo"}`) + (x.verified ? "" : ` (${h("notVerified")})`),
+              }))}
+            />
+          </Card>
+        ) : (
+          <Notice>{t("noHospitals")}</Notice>
+        )}
+        <AddHospitalInline defaultCity={viewer.profile.city ?? undefined} open={!hospitals || hospitals.length === 0} />
+      </div>
     </>
   );
 }

@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import { SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
 import type { City, Grade } from "@/lib/constants";
+import { getHospitalTrust } from "@/lib/hospitals";
 import type { Locale } from "@/i18n/routing";
 
 export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[id]">) {
@@ -102,6 +103,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
   ]);
 
   const shifts = (shiftRows ?? []) as unknown as ShiftWithHospital[];
+  const trust = await getHospitalTrust(supabase, shifts.map((s) => s.hospital_id));
   const roleOrder: Record<string, number> = { owner: 0, moderator: 1, member: 2 };
   const sortedMembers = [...(members ?? [])].sort(
     (a, b) =>
@@ -164,7 +166,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
         </div>
         {shifts.length === 0 ? <EmptyState>{t("noTeamShifts")}</EmptyState> : null}
         {shifts.map((s) => (
-          <ShiftCard key={s.id} shift={s} mine={s.poster_id === viewer.userId} />
+          <ShiftCard key={s.id} shift={s} mine={s.poster_id === viewer.userId} trust={trust.get(s.hospital_id)?.level} />
         ))}
       </section>
 

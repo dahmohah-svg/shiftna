@@ -24,7 +24,9 @@ export type ErrorKey =
   | "uploadFailed"
   | "needsPremium"
   | "tooManyTeams"
-  | "invalidCode";
+  | "invalidCode"
+  | "tooManyHospitals"
+  | "hospitalExists";
 
 /** Result returned by every server action. */
 export type ActionState = {
@@ -45,6 +47,8 @@ const DB_MESSAGES: [RegExp, ErrorKey][] = [
   [/needs premium/i, "needsPremium"],
   [/does not allow more groups/i, "tooManyTeams"],
   [/invalid code/i, "invalidCode"],
+  [/too many hospitals/i, "tooManyHospitals"],
+  [/hospital name must be/i, "invalid"],
   [/not allowed/i, "notAllowed"],
 ];
 
@@ -59,6 +63,7 @@ export function toErrorKey(
   if (code === "23505") {
     if (/offers/.test(msg)) return "alreadyOffered";
     if (/ratings/.test(msg)) return "alreadyRated";
+    if (/hospitals/.test(msg)) return "hospitalExists";
   }
   if (code === "42501" || /row-level security/i.test(msg)) return "notAllowed";
   if (/invalid login credentials/i.test(msg)) return "invalidCredentials";

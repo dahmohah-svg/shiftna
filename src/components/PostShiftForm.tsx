@@ -21,12 +21,14 @@ export default function PostShiftForm({
   minStart,
   teams = [],
   defaultTeam = "",
+  defaultHospital = "",
 }: {
   hospitals: HospitalOption[];
   minStart: string;
   /** Teams the poster belongs to; a shift can be shown to one team only. */
   teams?: TeamOption[];
   defaultTeam?: string;
+  defaultHospital?: string;
 }) {
   const t = useTranslations("Post");
   const o = useTranslations("Options");
@@ -37,7 +39,7 @@ export default function PostShiftForm({
   return (
     <form action={action} className="flex flex-col gap-4">
       <Field label={t("hospital")} htmlFor="hospitalId">
-        <Select id="hospitalId" name="hospitalId" required defaultValue="">
+        <Select id="hospitalId" name="hospitalId" required defaultValue={defaultHospital}>
           <option value="" disabled>—</option>
           {hospitals.map((h) => (
             <option key={h.id} value={h.id}>
