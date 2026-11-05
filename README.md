@@ -78,6 +78,9 @@ npm run build      # full production build
   messages, approval, urgent shifts and document expiry; saved shift alerts
   that notify you when a matching shift is posted.
 
+- Install button: a dismissible banner, a Profile button and a welcome-page
+  button. One tap on Android; illustrated steps on iPhone and in-app
+  browsers. Hidden once installed.
 - Hospitals: any approved doctor can add one while posting; the admin
   verifies later. Each hospital shows a credibility level (Verified,
   Trusted, Active, New) based on shifts from different doctors and

@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import DetailsForm from "@/components/DetailsForm";
+import InstallApp from "@/components/InstallApp";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import StatsGrid from "@/components/StatsGrid";
 import TrustBadge from "@/components/TrustBadge";
@@ -131,6 +132,7 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
           <span className="text-sm font-semibold">{t("language")}</span>
           <LanguageSwitcher />
         </div>
+        <InstallApp variant="button" />
         {profile.is_admin ? (
           <Link href="/admin" className={buttonClass.secondary}>{t("adminPanel")}</Link>
         ) : null}

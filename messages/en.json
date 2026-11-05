@@ -625,5 +625,25 @@
     "mergeButton": "Merge",
     "mergeConfirm": "Merge \"{remove}\" into \"{keep}\"? \"{remove}\" will be deleted. This cannot be undone.",
     "noActivity": "No shifts yet"
+  },
+  "Install": {
+    "bannerTitle": "Install Shiftna",
+    "bannerText": "Opens from your home screen like a real app.",
+    "install": "Install",
+    "notNow": "Not now",
+    "button": "Install Shiftna on this phone",
+    "stepsTitle": "Add Shiftna to your home screen",
+    "iosStep1": "Tap the Share button <icon></icon> at the bottom of Safari.",
+    "iosStep2": "Scroll down and tap Add to Home Screen <icon></icon>.",
+    "iosStep3": "Tap Add in the top corner.",
+    "androidStep1": "Tap the menu <icon></icon> at the top of the browser.",
+    "androidStep2": "Tap Install app or Add to Home screen.",
+    "androidStep3": "Tap Install to confirm.",
+    "inAppIos": "This page is open inside another app (like WhatsApp or Facebook), which cannot install apps. Copy the link, open Safari, paste it, then tap Install again.",
+    "inAppAndroid": "This page is open inside another app (like WhatsApp or Facebook), which cannot install apps. Copy the link, open Chrome, paste it, then tap Install again.",
+    "copyLink": "Copy link",
+    "copied": "Link copied",
+    "afterInstall": "Shiftna then opens full screen from its icon, and updates by itself.",
+    "gotIt": "Got it"
   }
 }

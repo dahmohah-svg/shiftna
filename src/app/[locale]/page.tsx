@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
+import InstallApp from "@/components/InstallApp";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Logo from "@/components/Logo";
 import { buttonClass } from "@/components/ui";
@@ -52,6 +53,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <Link href="/sign-in" className={buttonClass.secondary}>
             {t("signIn")}
           </Link>
+          <InstallApp variant="button" />
         </div>
 
         <ul className="flex flex-col gap-3">

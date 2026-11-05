@@ -1,3 +1,4 @@
+import InstallApp from "@/components/InstallApp";
 import TabBar from "@/components/TabBar";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
@@ -20,6 +21,7 @@ export default async function AppLayout({
   return (
     <>
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-28">
+        <InstallApp variant="banner" />
         {children}
       </main>
       <TabBar userId={viewer.userId} initialUnread={count ?? 0} />

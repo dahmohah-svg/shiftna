@@ -56,6 +56,14 @@ export default async function LocaleLayout({
       className={`${cairo.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        {/* Android announces "this app can be installed" very early; keep that
+            event so the Install button can use it once the page is ready. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__shiftnaInstall=e;window.dispatchEvent(new Event('shiftna:installable'))});window.addEventListener('appinstalled',function(){window.__shiftnaInstall=null;window.dispatchEvent(new Event('shiftna:installed'))});",
+          }}
+        />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

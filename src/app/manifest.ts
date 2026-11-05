@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next";
 // Makes Shiftna installable on a phone ("Add to Home Screen").
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: "/",
     name: "Shiftna | شفتنا",
     short_name: "Shiftna",
     description:
