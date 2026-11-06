@@ -104,3 +104,25 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Printing (the team rota): only the page content, on white. */
+@media print {
+  nav[aria-label="Main"],
+  .no-print,
+  [aria-live="polite"] {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+}

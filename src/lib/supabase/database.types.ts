@@ -441,6 +441,7 @@ export type Database = {
       }
       group_members: {
         Row: {
+          supervisor: boolean
           decided_at: string | null
           decided_by: string | null
           group_id: string
@@ -451,6 +452,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          supervisor?: boolean
           decided_at?: string | null
           decided_by?: string | null
           group_id: string
@@ -461,6 +463,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          supervisor?: boolean
           decided_at?: string | null
           decided_by?: string | null
           group_id?: string
@@ -1318,6 +1321,80 @@ export type Database = {
           },
         ]
       }
+      rota_swaps: {
+        Row: {
+          answered_at: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          group_id: string
+          id: string
+          note: string | null
+          requester_duty_id: string
+          requester_id: string
+          status: string
+          target_duty_id: string | null
+          target_id: string
+        }
+        Insert: {
+          answered_at?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          group_id: string
+          id?: string
+          note?: string | null
+          requester_duty_id: string
+          requester_id: string
+          status?: string
+          target_duty_id?: string | null
+          target_id: string
+        }
+        Update: {
+          answered_at?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          group_id?: string
+          id?: string
+          note?: string | null
+          requester_duty_id?: string
+          requester_id?: string
+          status?: string
+          target_duty_id?: string | null
+          target_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rota_swaps_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rota_swaps_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rota_swaps_requester_duty_id_fkey"
+            columns: ["requester_duty_id"]
+            isOneToOne: false
+            referencedRelation: "team_duties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rota_swaps_target_duty_id_fkey"
+            columns: ["target_duty_id"]
+            isOneToOne: false
+            referencedRelation: "team_duties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_alerts: {
         Row: {
           city: string | null
@@ -1540,6 +1617,149 @@ export type Database = {
           },
         ]
       }
+      team_duties: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          doctor_id: string
+          duty_date: string
+          group_id: string
+          id: string
+          note: string | null
+          slot: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          doctor_id: string
+          duty_date: string
+          group_id: string
+          id?: string
+          note?: string | null
+          slot: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          doctor_id?: string
+          duty_date?: string
+          group_id?: string
+          id?: string
+          note?: string | null
+          slot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_duties_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_rota_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          detail: string | null
+          doctor_id: string | null
+          duty_date: string | null
+          group_id: string
+          id: number
+          other_doctor_id: string | null
+          slot: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          doctor_id?: string | null
+          duty_date?: string | null
+          group_id: string
+          id?: number
+          other_doctor_id?: string | null
+          slot?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          doctor_id?: string | null
+          duty_date?: string | null
+          group_id?: string
+          id?: number
+          other_doctor_id?: string | null
+          slot?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_rota_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_rota_log_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_rota_log_other_doctor_id_fkey"
+            columns: ["other_doctor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_rota_months: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          group_id: string
+          month: string
+          return_note: string | null
+          status: string
+          submitted_at: string | null
+          submitted_by: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          group_id: string
+          month: string
+          return_note?: string | null
+          status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          group_id?: string
+          month?: string
+          return_note?: string | null
+          status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_rota_months_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_history: {
         Row: {
           from_year: number | null
@@ -1623,6 +1843,19 @@ export type Database = {
       }
     }
     Functions: {
+      answer_swap: { Args: { p_accept: boolean; p_swap: string }; Returns: undefined }
+      can_edit_rota: { Args: { p_group: string }; Returns: boolean }
+      cancel_swap: { Args: { p_swap: string }; Returns: undefined }
+      decide_rota: { Args: { p_approve: boolean; p_group: string; p_month: string; p_note?: string | null }; Returns: undefined }
+      decide_swap: { Args: { p_approve: boolean; p_swap: string }; Returns: undefined }
+      is_team_supervisor: { Args: { p_group: string }; Returns: boolean }
+      request_swap: {
+        Args: { p_duty: string; p_note: string | null; p_target: string; p_target_duty: string | null }
+        Returns: string
+      }
+      set_team_supervisor: { Args: { p_group: string; p_on: boolean; p_user: string }; Returns: undefined }
+      submit_rota: { Args: { p_group: string; p_month: string }; Returns: string }
+      team_has_supervisor: { Args: { p_group: string }; Returns: boolean }
       admin_approve_hr: { Args: { p_hospital: string; p_user: string }; Returns: undefined }
       is_hr: { Args: never; Returns: boolean }
       respond_job_offer: { Args: { p_accept: boolean; p_offer: string }; Returns: string | null }

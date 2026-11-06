@@ -8,6 +8,8 @@ import ShiftCard from "@/components/ShiftCard";
 import { InviteBox } from "@/components/TeamForms";
 import { Badge, buttonClass, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { allowRejoin, decideMember, leaveTeam, readdMember, renewInviteCode } from "@/app/actions/teams";
+import { setSupervisor } from "@/app/actions/rota";
+import { CalendarDays } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import { SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
@@ -25,6 +27,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
   const t = await getTranslations("Teams");
   const o = await getTranslations("Options");
   const c = await getTranslations("Common");
+  const rt = await getTranslations("Rota");
   const back = (
     <Link href="/teams" className="text-sm font-semibold text-brand-700">
       <span aria-hidden className="inline-block rtl:rotate-180">←</span> {c("back")}
@@ -44,7 +47,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
       .maybeSingle(),
     supabase
       .from("group_members")
-      .select("role, status")
+      .select("role, status, supervisor")
       .eq("group_id", id)
       .eq("user_id", viewer.userId)
       .maybeSingle(),
@@ -75,7 +78,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
   const [{ data: members }, { data: requests }, { data: invite }, { data: shiftRows }, { data: former }] = await Promise.all([
     supabase
       .from("group_members")
-      .select("user_id, role, profile:profiles!group_members_user_id_fkey(full_name, grade, city)")
+      .select("user_id, role, supervisor, profile:profiles!group_members_user_id_fkey(full_name, grade, city)")
       .eq("group_id", id)
       .eq("status", "active"),
     manager
@@ -145,6 +148,20 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
         {team.description ? <p className="pt-2 text-sm leading-relaxed">{team.description}</p> : null}
       </div>
 
+      <Link
+        href={`/teams/${id}/rota`}
+        className="flex items-center gap-3 rounded-2xl border border-brand-200 bg-brand-50 p-4"
+      >
+        <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface text-brand-700">
+          <CalendarDays className="h-6 w-6" strokeWidth={2.25} />
+        </span>
+        <span className="flex min-w-0 flex-col">
+          <span className="font-bold text-ink">{rt("title")}</span>
+          <span className="text-sm text-ink-muted">{rt("teamLink")}</span>
+        </span>
+        <span aria-hidden className="ms-auto text-xl text-brand-700 rtl:rotate-180">›</span>
+      </Link>
+
       {manager && (requests ?? []).length > 0 ? (
         <Card className="flex flex-col gap-3">
           <SectionTitle>{t("requests", { count: requests!.length, n: formatNumber(requests!.length, locale) })}</SectionTitle>
@@ -210,6 +227,16 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
               </span>
               <span className="flex shrink-0 items-center gap-2">
                 {m.role !== "member" ? <Badge tone="brand">{t(`role.${m.role as "owner" | "moderator"}`)}</Badge> : null}
+                {m.supervisor ? <Badge tone="success">{rt("supervisor")}</Badge> : null}
+                {me!.role === "owner" ? (
+                  <ActionButton
+                    action={setSupervisor}
+                    fields={{ teamId: id, userId: m.user_id, on: m.supervisor ? "0" : "1" }}
+                    variant="ghost"
+                  >
+                    {m.supervisor ? rt("removeSupervisor") : rt("makeSupervisor")}
+                  </ActionButton>
+                ) : null}
                 {manager && m.role === "member" ? (
                   <ActionButton
                     action={decideMember}

@@ -22,7 +22,9 @@ export default async function AppLayout({
   return (
     <>
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-28">
-        <InstallApp variant="banner" />
+        <div className="no-print">
+          <InstallApp variant="banner" />
+        </div>
         {children}
       </main>
       <TabBar userId={viewer.userId} initialUnread={count ?? 0} hr={isHr(viewer.profile)} />

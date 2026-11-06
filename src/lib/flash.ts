@@ -43,6 +43,16 @@ export const FLASH_KEYS = [
   "jobOfferDeclined",
   "jobOfferWithdrawn",
   "hrApproved",
+  "dutiesAdded",
+  "rotaPublished",
+  "rotaSubmitted",
+  "rotaReturned",
+  "swapRequested",
+  "swapAccepted",
+  "swapDeclined",
+  "swapApproved",
+  "swapRejected",
+  "swapCancelled",
 ] as const;
 export type FlashKey = (typeof FLASH_KEYS)[number];
 

@@ -32,7 +32,12 @@ export type ErrorKey =
   | "jobOfferPending"
   | "hospitalHasHr"
   | "alreadyAnswered"
-  | "chooseYourShift";
+  | "chooseYourShift"
+  | "notPending"
+  | "dutyPassed"
+  | "chooseColleague"
+  | "alreadySwapping"
+  | "rotaChanged";
 
 /** Result returned by every server action. */
 export type ActionState = {
@@ -63,6 +68,11 @@ const DB_MESSAGES: [RegExp, ErrorKey][] = [
   [/already answered/i, "alreadyAnswered"],
   [/shift at your hospital/i, "chooseYourShift"],
   [/only hospital hr/i, "notAllowed"],
+  [/not waiting for approval/i, "notPending"],
+  [/already passed/i, "dutyPassed"],
+  [/choose a colleague|colleague's coming duties|not a team member/i, "chooseColleague"],
+  [/already asked to swap/i, "alreadySwapping"],
+  [/rota changed/i, "rotaChanged"],
   [/not allowed/i, "notAllowed"],
 ];
 

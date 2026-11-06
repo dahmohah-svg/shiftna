@@ -30,6 +30,16 @@ export const NOTIFICATION_KINDS = [
   "job_offer_declined",
   "job_offer_withdrawn",
   "job_message",
+  "team_supervisor",
+  "rota_pending",
+  "rota_published",
+  "rota_returned",
+  "rota_changed",
+  "swap_request",
+  "swap_declined",
+  "swap_needs_approval",
+  "swap_approved",
+  "swap_rejected",
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -47,6 +57,10 @@ type Payload = {
   reason?: string;
   job_id?: string;
   title?: string;
+  month?: string;
+  date?: string;
+  slot?: string;
+  change?: string;
 };
 
 export function readPayload(n: NotificationRow): Payload {
@@ -64,6 +78,10 @@ export function isKnownKind(kind: string): kind is NotificationKind {
 /** Where tapping a notification takes the doctor. */
 export function notificationHref(kind: NotificationKind, p: Payload): string {
   if (p.job_id) return `/jobs/${p.job_id}`;
+  if (p.team_id && (kind.startsWith("rota_") || kind.startsWith("swap_"))) {
+    const m = (p.month ?? p.date ?? "").slice(0, 7);
+    return `/teams/${p.team_id}/rota${m ? `?month=${m}` : ""}`;
+  }
   if (p.booking_id) return `/bookings/${p.booking_id}`;
   if (kind === "account_approved") return "/";
   if (kind === "document_expiring") return "/profile";

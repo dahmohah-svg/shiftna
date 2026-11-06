@@ -194,3 +194,10 @@ export const MAX_ALERTS = 10;
  * false, and restore is_premium() in the database, to start charging.
  */
 export const EVERYTHING_FREE = true;
+
+/** Team rota duty types (migration 023), with the hours each one counts for. */
+export const ROTA_SLOTS = ["day", "night", "full", "on_call"] as const;
+export type RotaSlot = (typeof ROTA_SLOTS)[number];
+export const SLOT_HOURS: Record<RotaSlot, number> = { day: 12, night: 12, full: 24, on_call: 0 };
+/** Weekly duty hours above which the rota shows a fatigue warning. */
+export const WEEKLY_HOURS_WARNING = 72;
