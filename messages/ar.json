@@ -58,7 +58,8 @@
     "dutyPassed": "هذه النبطشية انتهت بالفعل.",
     "chooseColleague": "اختر زميلًا وإحدى نبطشياته القادمة.",
     "alreadySwapping": "طلبت تبديل هذه النبطشية بالفعل.",
-    "rotaChanged": "تغيّر الجدول منذ إرسال الطلب. اطلب مرة أخرى."
+    "rotaChanged": "تغيّر الجدول منذ إرسال الطلب. اطلب مرة أخرى.",
+    "alreadyReceived": "استلم زميل هذا التسليم بالفعل."
   },
   "Home": {
     "tagline": "نبطشياتك الطبية، بثقة.",
@@ -638,7 +639,10 @@
       "swap_declined": "رفض {sender} طلب التبديل لـ{slot} يوم {date}.",
       "swap_needs_approval": "اتفق {doctor} و{sender} على تبديل يوم {date}. يحتاج اعتمادك.",
       "swap_approved": "تم اعتماد التبديل: {slot} يوم {date} ({team}). تم تحديث الجدول.",
-      "swap_rejected": "لم يُعتمد التبديل لـ{slot} يوم {date}."
+      "swap_rejected": "لم يُعتمد التبديل لـ{slot} يوم {date}.",
+      "handover_new": "سلّمك {doctor} حالة {title} ({team}).",
+      "handover_received": "استلم {doctor} تسليمك: {title}.",
+      "handover_comment": "علّق {sender} على تسليم {title}."
     },
     "alertsTitle": "تنبيهات النبطشيات",
     "alertsIntro": "يصلك تنبيه هنا عند نشر نبطشية جديدة تطابق اختياراتك.",
@@ -885,7 +889,11 @@
     "swapDeclined": "تم رفض الطلب.",
     "swapApproved": "تم اعتماد التبديل وتحديث الجدول.",
     "swapRejected": "تم رفض التبديل.",
-    "swapCancelled": "تم إلغاء الطلب."
+    "swapCancelled": "تم إلغاء الطلب.",
+    "handoverSent": "تم إرسال التسليم.",
+    "handoverReceived": "تم تأكيد الاستلام.",
+    "handoverClosed": "تم إغلاق الحالة.",
+    "handoverReopened": "تمت إعادة فتح الحالة."
   },
   "Welcome": {
     "previewTitle": "شكل التطبيق",
@@ -1102,5 +1110,44 @@
     "swapNote": "ملاحظة (اختياري)",
     "sendSwap": "إرسال الطلب",
     "swapFlow": "يوافق زميلك أولًا، ثم يعتمد المشرف (أو المدير). يتحدّث الجدول تلقائيًا."
+  },
+  "Handover": {
+    "title": "تسليم الحالات",
+    "teamLink": "سلّم حالاتك للطبيب التالي",
+    "notFound": "هذا الفريق غير متاح.",
+    "new": "تسليم جديد",
+    "patient": "المريض",
+    "age": "السن",
+    "years": "{n} سنة",
+    "bed": "السرير / الغرفة",
+    "condition": "الحالة",
+    "cond": {
+      "stable": "مستقر",
+      "watch": "تحت الملاحظة",
+      "critical": "حرج"
+    },
+    "diagnosis": "التشخيص",
+    "tasks": "مهام مطلوبة",
+    "tasksHint": "تحاليل للمتابعة، أدوية موعدها، مراجعات مطلوبة.",
+    "notes": "ملاحظات",
+    "to": "تسليم إلى",
+    "toHint": "افتراضيًا الزميل صاحب النبطشية التالية في الجدول.",
+    "toAnyone": "أي عضو في الفريق",
+    "send": "إرسال التسليم",
+    "open": "حالات مفتوحة",
+    "closed": "مغلقة",
+    "none": "لا توجد حالات مفتوحة. اكتب التسليم في نهاية نبطشيتك.",
+    "noClosed": "لا توجد حالات مغلقة بعد.",
+    "forYou": "{count, plural, one {يوجد تسليم في انتظارك} two {يوجد تسليمان في انتظارك} few {{n} تسليمات في انتظارك} many {{n} تسليمًا في انتظارك} other {{n} تسليم في انتظارك}}",
+    "from": "من {name} · {when}",
+    "toName": "إلى {name}",
+    "receivedBy": "استلمه {name} · {when}",
+    "closedBy": "أغلقه {name} · {when}",
+    "receive": "استلمت",
+    "close": "إغلاق الحالة",
+    "reopen": "إعادة فتح",
+    "comments": "{count, plural, zero {تعليق} one {تعليق واحد} two {تعليقان} few {{n} تعليقات} many {{n} تعليقًا} other {{n} تعليق}}",
+    "comment": "إضافة",
+    "commentPlaceholder": "اكتب تعليقًا…"
   }
 }

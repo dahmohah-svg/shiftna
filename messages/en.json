@@ -58,7 +58,8 @@
     "dutyPassed": "This duty has already passed.",
     "chooseColleague": "Choose a colleague and one of their coming duties.",
     "alreadySwapping": "You already asked to swap this duty.",
-    "rotaChanged": "The rota changed since this was asked. Ask again."
+    "rotaChanged": "The rota changed since this was asked. Ask again.",
+    "alreadyReceived": "A colleague already received this handover."
   },
   "Home": {
     "tagline": "Medical shifts, with trust.",
@@ -638,7 +639,10 @@
       "swap_declined": "{sender} declined your swap for {slot} on {date}.",
       "swap_needs_approval": "{doctor} and {sender} agreed a swap for {date}. It needs your approval.",
       "swap_approved": "Swap approved: {slot} on {date} ({team}). The rota is updated.",
-      "swap_rejected": "The swap for {slot} on {date} was not approved."
+      "swap_rejected": "The swap for {slot} on {date} was not approved.",
+      "handover_new": "{doctor} handed over {title} to you ({team}).",
+      "handover_received": "{doctor} received your handover: {title}.",
+      "handover_comment": "{sender} commented on the handover of {title}."
     },
     "alertsTitle": "Shift alerts",
     "alertsIntro": "Get an alert here when a new shift matching these choices is posted.",
@@ -885,7 +889,11 @@
     "swapDeclined": "Request declined.",
     "swapApproved": "Swap approved. The rota is updated.",
     "swapRejected": "Swap rejected.",
-    "swapCancelled": "Request cancelled."
+    "swapCancelled": "Request cancelled.",
+    "handoverSent": "Handover sent.",
+    "handoverReceived": "Marked as received.",
+    "handoverClosed": "Case closed.",
+    "handoverReopened": "Case reopened."
   },
   "Welcome": {
     "previewTitle": "How Shiftna looks",
@@ -1102,5 +1110,44 @@
     "swapNote": "Note (optional)",
     "sendSwap": "Send request",
     "swapFlow": "Your colleague agrees first, then a supervisor (or a manager) approves. The rota updates by itself."
+  },
+  "Handover": {
+    "title": "Case handover",
+    "teamLink": "Hand over patients to the next doctor",
+    "notFound": "This team isn't available.",
+    "new": "New handover",
+    "patient": "Patient",
+    "age": "Age",
+    "years": "{n} y",
+    "bed": "Bed / room",
+    "condition": "Condition",
+    "cond": {
+      "stable": "Stable",
+      "watch": "Under watch",
+      "critical": "Critical"
+    },
+    "diagnosis": "Diagnosis",
+    "tasks": "Pending tasks",
+    "tasksHint": "Labs to follow, drugs due, reviews needed.",
+    "notes": "Notes",
+    "to": "Hand over to",
+    "toHint": "Defaults to the colleague on the next duty in the rota.",
+    "toAnyone": "Anyone on the team",
+    "send": "Send handover",
+    "open": "Open cases",
+    "closed": "Closed",
+    "none": "No open cases. Write a handover at the end of your duty.",
+    "noClosed": "No closed cases yet.",
+    "forYou": "{count, plural, one {A handover is waiting for you} other {{n} handovers are waiting for you}}",
+    "from": "By {name} · {when}",
+    "toName": "to {name}",
+    "receivedBy": "Received by {name} · {when}",
+    "closedBy": "Closed by {name} · {when}",
+    "receive": "Received",
+    "close": "Close case",
+    "reopen": "Reopen",
+    "comments": "{count, plural, =0 {Comment} one {1 comment} other {{n} comments}}",
+    "comment": "Add",
+    "commentPlaceholder": "Write a comment…"
   }
 }

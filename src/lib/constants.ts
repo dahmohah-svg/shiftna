@@ -201,3 +201,7 @@ export type RotaSlot = (typeof ROTA_SLOTS)[number];
 export const SLOT_HOURS: Record<RotaSlot, number> = { day: 12, night: 12, full: 24, on_call: 0 };
 /** Weekly duty hours above which the rota shows a fatigue warning. */
 export const WEEKLY_HOURS_WARNING = 72;
+
+/** Patient condition on a case handover (migration 024). */
+export const HANDOVER_CONDITIONS = ["stable", "watch", "critical"] as const;
+export type HandoverCondition = (typeof HANDOVER_CONDITIONS)[number];

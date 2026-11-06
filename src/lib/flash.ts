@@ -53,6 +53,10 @@ export const FLASH_KEYS = [
   "swapApproved",
   "swapRejected",
   "swapCancelled",
+  "handoverSent",
+  "handoverReceived",
+  "handoverClosed",
+  "handoverReopened",
 ] as const;
 export type FlashKey = (typeof FLASH_KEYS)[number];
 

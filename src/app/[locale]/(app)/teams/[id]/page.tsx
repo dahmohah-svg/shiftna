@@ -9,7 +9,7 @@ import { InviteBox } from "@/components/TeamForms";
 import { Badge, buttonClass, Card, EmptyState, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { allowRejoin, decideMember, leaveTeam, readdMember, renewInviteCode } from "@/app/actions/teams";
 import { setSupervisor } from "@/app/actions/rota";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Stethoscope } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/viewer";
 import { SHIFT_WITH_HOSPITAL, type ShiftWithHospital } from "@/lib/shifts";
@@ -28,6 +28,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
   const o = await getTranslations("Options");
   const c = await getTranslations("Common");
   const rt = await getTranslations("Rota");
+  const ht = await getTranslations("Handover");
   const back = (
     <Link href="/teams" className="text-sm font-semibold text-brand-700">
       <span aria-hidden className="inline-block rtl:rotate-180">←</span> {c("back")}
@@ -158,6 +159,20 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
         <span className="flex min-w-0 flex-col">
           <span className="font-bold text-ink">{rt("title")}</span>
           <span className="text-sm text-ink-muted">{rt("teamLink")}</span>
+        </span>
+        <span aria-hidden className="ms-auto text-xl text-brand-700 rtl:rotate-180">›</span>
+      </Link>
+
+      <Link
+        href={`/teams/${id}/handover`}
+        className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4"
+      >
+        <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+          <Stethoscope className="h-6 w-6" strokeWidth={2.25} />
+        </span>
+        <span className="flex min-w-0 flex-col">
+          <span className="font-bold text-ink">{ht("title")}</span>
+          <span className="text-sm text-ink-muted">{ht("teamLink")}</span>
         </span>
         <span aria-hidden className="ms-auto text-xl text-brand-700 rtl:rotate-180">›</span>
       </Link>

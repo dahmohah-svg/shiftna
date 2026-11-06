@@ -574,6 +574,45 @@ export type Database = {
           },
         ]
       }
+      handover_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          handover_id: string
+          id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          handover_id: string
+          id?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          handover_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "handover_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "handover_comments_handover_id_fkey"
+            columns: ["handover_id"]
+            isOneToOne: false
+            referencedRelation: "team_handovers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hospital_staff: {
         Row: {
           hospital_id: string
@@ -1658,6 +1697,85 @@ export type Database = {
           },
         ]
       }
+      team_handovers: {
+        Row: {
+          age: number | null
+          author_id: string
+          bed: string | null
+          closed_at: string | null
+          closed_by: string | null
+          condition: string
+          created_at: string
+          diagnosis: string | null
+          group_id: string
+          id: string
+          notes: string | null
+          patient: string
+          received_at: string | null
+          received_by: string | null
+          tasks: string | null
+          to_doctor_id: string | null
+        }
+        Insert: {
+          age?: number | null
+          author_id: string
+          bed?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
+          condition?: string
+          created_at?: string
+          diagnosis?: string | null
+          group_id: string
+          id?: string
+          notes?: string | null
+          patient: string
+          received_at?: string | null
+          received_by?: string | null
+          tasks?: string | null
+          to_doctor_id?: string | null
+        }
+        Update: {
+          age?: number | null
+          author_id?: string
+          bed?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
+          condition?: string
+          created_at?: string
+          diagnosis?: string | null
+          group_id?: string
+          id?: string
+          notes?: string | null
+          patient?: string
+          received_at?: string | null
+          received_by?: string | null
+          tasks?: string | null
+          to_doctor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_handovers_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_handovers_to_doctor_id_fkey"
+            columns: ["to_doctor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_handovers_received_by_fkey"
+            columns: ["received_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_rota_log: {
         Row: {
           action: string
@@ -1843,6 +1961,8 @@ export type Database = {
       }
     }
     Functions: {
+      close_handover: { Args: { p_close: boolean; p_handover: string }; Returns: undefined }
+      receive_handover: { Args: { p_handover: string }; Returns: undefined }
       answer_swap: { Args: { p_accept: boolean; p_swap: string }; Returns: undefined }
       can_edit_rota: { Args: { p_group: string }; Returns: boolean }
       cancel_swap: { Args: { p_swap: string }; Returns: undefined }
