@@ -808,6 +808,13 @@ export type Database = {
       }
       logbook_entries: {
         Row: {
+          procedure: string | null
+          role: string | null
+          sign_note: string | null
+          sign_status: string
+          sign_team_id: string | null
+          signed_at: string | null
+          signed_by: string | null
           booking_id: string | null
           cases_count: number | null
           created_at: string
@@ -822,6 +829,13 @@ export type Database = {
           verified: boolean
         }
         Insert: {
+          procedure?: string | null
+          role?: string | null
+          sign_note?: string | null
+          sign_status?: string
+          sign_team_id?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
           booking_id?: string | null
           cases_count?: number | null
           created_at?: string
@@ -836,6 +850,13 @@ export type Database = {
           verified?: boolean
         }
         Update: {
+          procedure?: string | null
+          role?: string | null
+          sign_note?: string | null
+          sign_status?: string
+          sign_team_id?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
           booking_id?: string | null
           cases_count?: number | null
           created_at?: string
@@ -1961,6 +1982,8 @@ export type Database = {
       }
     }
     Functions: {
+      request_logbook_signoff: { Args: { p_entries: string[]; p_team: string }; Returns: number }
+      sign_logbook_entries: { Args: { p_entries: string[]; p_note?: string | null; p_sign: boolean }; Returns: number }
       close_handover: { Args: { p_close: boolean; p_handover: string }; Returns: undefined }
       receive_handover: { Args: { p_handover: string }; Returns: undefined }
       answer_swap: { Args: { p_accept: boolean; p_swap: string }; Returns: undefined }

@@ -38,7 +38,8 @@ export type ErrorKey =
   | "chooseColleague"
   | "alreadySwapping"
   | "rotaChanged"
-  | "alreadyReceived";
+  | "alreadyReceived"
+  | "noSupervisor";
 
 /** Result returned by every server action. */
 export type ActionState = {
@@ -75,6 +76,7 @@ const DB_MESSAGES: [RegExp, ErrorKey][] = [
   [/already asked to swap/i, "alreadySwapping"],
   [/rota changed/i, "rotaChanged"],
   [/already received/i, "alreadyReceived"],
+  [/has no supervisor/i, "noSupervisor"],
   [/not allowed/i, "notAllowed"],
 ];
 

@@ -57,6 +57,11 @@ export const FLASH_KEYS = [
   "handoverReceived",
   "handoverClosed",
   "handoverReopened",
+  "logbookAdded",
+  "logbookDeleted",
+  "logbookRequested",
+  "logbookSigned",
+  "logbookReturned",
 ] as const;
 export type FlashKey = (typeof FLASH_KEYS)[number];
 

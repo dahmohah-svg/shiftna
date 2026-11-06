@@ -205,3 +205,7 @@ export const WEEKLY_HOURS_WARNING = 72;
 /** Patient condition on a case handover (migration 024). */
 export const HANDOVER_CONDITIONS = ["stable", "watch", "critical"] as const;
 export type HandoverCondition = (typeof HANDOVER_CONDITIONS)[number];
+
+/** The doctor's role in a logbook entry (migration 025). */
+export const LOGBOOK_ROLES = ["observed", "assisted", "performed", "supervised"] as const;
+export type LogbookRole = (typeof LOGBOOK_ROLES)[number];

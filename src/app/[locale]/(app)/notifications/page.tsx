@@ -88,6 +88,7 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
               team: p.team ?? c("dash"),
               reason: p.reason ?? c("dash"),
               title: p.title ?? c("dash"),
+              count: p.count ? formatNumber(Number(p.count), locale) : c("dash"),
             });
             const unread = !n.read_at;
             return (

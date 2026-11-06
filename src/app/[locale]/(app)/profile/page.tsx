@@ -101,6 +101,19 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
       ) : null}
 
       {!hr ? (
+        <Link
+          href="/logbook"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4"
+        >
+          <span className="flex flex-col">
+            <span className="font-bold">{(await getTranslations("Logbook"))("title")}</span>
+            <span className="text-sm text-ink-muted">{(await getTranslations("Logbook"))("profileLink")}</span>
+          </span>
+          <span aria-hidden className="text-xl text-brand-700 rtl:rotate-180">›</span>
+        </Link>
+      ) : null}
+
+      {!hr ? (
       <Link
         href="/teams"
         className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4"

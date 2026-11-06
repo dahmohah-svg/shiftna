@@ -43,6 +43,9 @@ export const NOTIFICATION_KINDS = [
   "handover_new",
   "handover_received",
   "handover_comment",
+  "logbook_request",
+  "logbook_signed",
+  "logbook_returned",
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -65,6 +68,7 @@ type Payload = {
   slot?: string;
   change?: string;
   handover_id?: string;
+  count?: string;
 };
 
 export function readPayload(n: NotificationRow): Payload {
@@ -82,6 +86,8 @@ export function isKnownKind(kind: string): kind is NotificationKind {
 /** Where tapping a notification takes the doctor. */
 export function notificationHref(kind: NotificationKind, p: Payload): string {
   if (p.job_id) return `/jobs/${p.job_id}`;
+  if (kind === "logbook_request" && p.team_id) return `/teams/${p.team_id}/logbook`;
+  if (kind === "logbook_signed" || kind === "logbook_returned") return "/logbook";
   if (p.team_id && kind.startsWith("handover_")) return `/teams/${p.team_id}/handover${p.handover_id ? `#h-${p.handover_id}` : ""}`;
   if (p.team_id && (kind.startsWith("rota_") || kind.startsWith("swap_"))) {
     const m = (p.month ?? p.date ?? "").slice(0, 7);
