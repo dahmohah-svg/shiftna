@@ -115,7 +115,7 @@ export default async function RotaPage({ params, searchParams }: PageProps<"/[lo
   const dutyText = (d: { duty_date: string; slot: RotaSlot } | null) =>
     d ? `${dayLabel(d.duty_date, locale).weekday} ${formatDate(d.duty_date, locale)} · ${slotLabel(d.slot)}` : c("dash");
   // Weekday names for the fill form, 0 = Sunday (5 Jan 2025 was a Sunday).
-  const weekdayNames = Array.from({ length: 7 }, (_, i) => dayLabel(`2025-01-0${5 + i}`, locale).weekday);
+  const weekdayNames = Array.from({ length: 7 }, (_, i) => dayLabel(`2025-01-${String(5 + i).padStart(2, "0")}`, locale).weekday);
 
   const statusBadge =
     status === "published" ? <Badge tone="success">{t("statusPublished")}</Badge> : status === "pending" ? <Badge tone="warn">{t("statusPending")}</Badge> : <Badge>{t("statusDraft")}</Badge>;
@@ -135,11 +135,11 @@ export default async function RotaPage({ params, searchParams }: PageProps<"/[lo
 
       <nav className="flex items-center justify-between gap-2 rounded-2xl border border-line bg-surface p-2" aria-label={t("month")}>
         <Link href={`/teams/${id}/rota?month=${shiftMonth(month, -1)}`} className={`${buttonClass.ghost} min-h-10`} aria-label={t("prevMonth")}>
-          <ChevronRight className="h-5 w-5 ltr:rotate-180" aria-hidden />
+          {locale === "ar" ? <ChevronRight className="h-5 w-5" aria-hidden /> : <ChevronLeft className="h-5 w-5" aria-hidden />}
         </Link>
         <span className="font-bold">{monthLabel(month, locale)}</span>
         <Link href={`/teams/${id}/rota?month=${shiftMonth(month, 1)}`} className={`${buttonClass.ghost} min-h-10`} aria-label={t("nextMonth")}>
-          <ChevronLeft className="h-5 w-5 ltr:rotate-180" aria-hidden />
+          {locale === "ar" ? <ChevronLeft className="h-5 w-5" aria-hidden /> : <ChevronRight className="h-5 w-5" aria-hidden />}
         </Link>
       </nav>
 
@@ -259,9 +259,9 @@ export default async function RotaPage({ params, searchParams }: PageProps<"/[lo
                   key={date}
                   className={`flex gap-3 rounded-2xl border p-3 ${date === today ? "border-brand-400 bg-brand-50/50" : "border-line bg-surface"} ${past ? "opacity-60" : ""}`}
                 >
-                  <div className="flex w-14 shrink-0 flex-col items-center justify-center text-center">
+                  <div className="flex w-16 shrink-0 flex-col items-center justify-center text-center">
                     <span className="text-xs font-semibold text-ink-muted">{weekday}</span>
-                    <span className="text-sm font-bold">{day}</span>
+                    <span className="text-sm font-bold whitespace-nowrap">{day}</span>
                   </div>
                   <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
                     {list.length === 0 ? <span className="text-sm text-ink-muted">—</span> : null}
@@ -304,8 +304,8 @@ export default async function RotaPage({ params, searchParams }: PageProps<"/[lo
             <thead>
               <tr className="text-start text-xs text-ink-muted">
                 <th className="py-1 text-start font-semibold">{t("doctor")}</th>
-                <th className="py-1 text-center font-semibold">{t("duties")}</th>
-                <th className="py-1 text-center font-semibold">{t("hours")}</th>
+                <th className="w-20 px-1 py-1 text-center font-semibold">{t("duties")}</th>
+                <th className="w-16 px-1 py-1 text-center font-semibold">{t("hours")}</th>
               </tr>
             </thead>
             <tbody>
