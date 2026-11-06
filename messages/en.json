@@ -78,7 +78,20 @@
     "terms": "Terms",
     "hrTitle": "Hospital HR or recruitment?",
     "hrBody": "Join to find verified doctors, send job offers and post your hospital's shifts.",
-    "hrCta": "Create a hospital HR account"
+    "hrCta": "Create a hospital HR account",
+    "deptsKicker": "For departments",
+    "deptsTitle": "Run your department in one place, not in chat groups",
+    "deptsBody": "Create a team for your department and keep everything documented and supervised by your consultant. Free.",
+    "deptRotaTitle": "Monthly rota",
+    "deptRotaBody": "Published after the consultant approves. Print it for the notice board.",
+    "deptSwapsTitle": "Swaps",
+    "deptSwapsBody": "A colleague agrees, the consultant approves, the rota updates itself.",
+    "deptHandoverTitle": "Case handover",
+    "deptHandoverBody": "Every patient handed over, with proof of receipt and comments.",
+    "deptLogbookTitle": "Signed logbook",
+    "deptLogbookBody": "Procedures and cases signed by your consultant, ready to print.",
+    "deptsSupervised": "Every change is recorded, with hours per doctor.",
+    "deptsCta": "Create your department's team"
   },
   "LanguageSwitcher": {
     "label": "Language",

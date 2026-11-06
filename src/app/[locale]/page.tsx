@@ -1,4 +1,4 @@
-import { Building2, ClipboardList, ShieldCheck, Star } from "lucide-react";
+import { Building2, CalendarDays, ClipboardList, NotebookPen, Repeat, ShieldCheck, Star, Stethoscope, Users } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
 import InstallApp from "@/components/InstallApp";
@@ -8,6 +8,13 @@ import Logo from "@/components/Logo";
 import { buttonClass } from "@/components/ui";
 import { getViewer, homePath } from "@/lib/viewer";
 import type { Locale } from "@/i18n/routing";
+
+const deptFeatures = [
+  { key: "Rota", Icon: CalendarDays },
+  { key: "Swaps", Icon: Repeat },
+  { key: "Handover", Icon: Stethoscope },
+  { key: "Logbook", Icon: NotebookPen },
+] as const;
 
 const features = [
   { key: "Verified", Icon: ShieldCheck },
@@ -81,6 +88,33 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </li>
           ))}
         </ul>
+
+        {/* Departments run their rota, swaps, handover and logbooks in a team. */}
+        <section className="flex flex-col gap-4 rounded-3xl border border-line bg-surface p-5" aria-labelledby="depts-title">
+          <div className="flex items-start gap-3">
+            <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white">
+              <Users className="h-6 w-6" strokeWidth={2.25} />
+            </span>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-bold tracking-wide text-brand-700 uppercase">{t("deptsKicker")}</span>
+              <h2 id="depts-title" className="text-xl leading-snug font-extrabold text-ink">{t("deptsTitle")}</h2>
+            </div>
+          </div>
+          <p className="text-sm leading-relaxed text-ink-muted">{t("deptsBody")}</p>
+          <ul className="grid grid-cols-2 gap-2">
+            {deptFeatures.map(({ key, Icon }) => (
+              <li key={key} className="flex flex-col gap-1.5 rounded-2xl bg-page p-3">
+                <Icon className="h-5 w-5 text-brand-700" strokeWidth={2.25} aria-hidden />
+                <span className="font-bold text-ink">{t(`dept${key}Title`)}</span>
+                <span className="text-xs leading-relaxed text-ink-muted">{t(`dept${key}Body`)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="flex items-center gap-2 text-sm font-semibold text-brand-700">
+            <ShieldCheck className="h-4 w-4 shrink-0" aria-hidden /> {t("deptsSupervised")}
+          </p>
+          <Link href="/sign-up" className={buttonClass.primary}>{t("deptsCta")}</Link>
+        </section>
 
         {/* Hospital HR join too: they find doctors and post their hospital's shifts. */}
         <section className="flex flex-col gap-3 rounded-2xl border border-brand-200 bg-brand-50 p-4">
