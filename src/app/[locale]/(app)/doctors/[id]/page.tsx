@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import Avatar from "@/components/Avatar";
 import StatsGrid from "@/components/StatsGrid";
 import TrustBadge from "@/components/TrustBadge";
 import VerifiedBadge from "@/components/VerifiedBadge";
@@ -21,7 +22,7 @@ export default async function DoctorPage({ params }: PageProps<"/[locale]/doctor
 
   const { data: doctor } = await supabase
     .from("profiles")
-    .select("id, full_name, grade, city, specialty, account_type, job_title, open_to_offers, offer_note")
+    .select("id, full_name, grade, city, specialty, account_type, job_title, open_to_offers, offer_note, photo_url")
     .eq("id", id)
     .maybeSingle();
   if (!doctor) return <EmptyState>{c("none")}</EmptyState>;
@@ -47,7 +48,10 @@ export default async function DoctorPage({ params }: PageProps<"/[locale]/doctor
     <div className="flex flex-col gap-4">
       <PageTitle>{t("doctorTitle")}</PageTitle>
       <Card className="flex flex-col gap-2">
-        <span className="text-xl font-extrabold">{doctor.full_name}</span>
+        <div className="flex items-center gap-3">
+          <Avatar name={doctor.full_name} url={doctor.photo_url} size={64} />
+          <span className="text-xl font-extrabold">{doctor.full_name}</span>
+        </div>
         <span className="text-sm text-ink-muted">
           {doctor.account_type === "hr" ? (
             <>

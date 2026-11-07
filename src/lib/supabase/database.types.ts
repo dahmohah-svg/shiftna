@@ -1157,6 +1157,33 @@ export type Database = {
           },
         ]
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          locale: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          locale?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          locale?: string
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ratings: {
         Row: {
           booking_id: string
@@ -1982,6 +2009,7 @@ export type Database = {
       }
     }
     Functions: {
+      remove_push_subscriptions: { Args: { p_endpoints: string[]; p_secret: string }; Returns: number }
       request_logbook_signoff: { Args: { p_entries: string[]; p_team: string }; Returns: number }
       sign_logbook_entries: { Args: { p_entries: string[]; p_note?: string | null; p_sign: boolean }; Returns: number }
       close_handover: { Args: { p_close: boolean; p_handover: string }; Returns: undefined }

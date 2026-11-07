@@ -8,10 +8,10 @@ import { Card, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { deleteAlert } from "@/app/actions/notifications";
 import { createClient } from "@/lib/supabase/server";
 import { isHr, requireApproved } from "@/lib/viewer";
-import { DOC_TYPES, MAX_ALERTS, ROTA_SLOTS, type City, type DocType, type RotaSlot, type Specialty } from "@/lib/constants";
-import { monthLabel } from "@/lib/rota";
+import { MAX_ALERTS, type City, type DocType, type Specialty } from "@/lib/constants";
 import { isKnownKind, notificationHref, readPayload } from "@/lib/notifications";
-import { formatDate, formatDateTime, formatNumber } from "@/lib/time";
+import { notificationValues } from "@/lib/notification-text";
+import { formatDateTime, formatNumber } from "@/lib/time";
 import type { Locale } from "@/i18n/routing";
 
 export default async function NotificationsPage({ params }: PageProps<"/[locale]/notifications">) {
@@ -60,8 +60,6 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
 
   const hasUnread = items.some((n) => !n.read_at);
 
-  const docName = (type?: string) =>
-    type && (DOC_TYPES as readonly string[]).includes(type) ? d(type as DocType) : c("dash");
 
   return (
     <div className="flex flex-col gap-6">
@@ -77,20 +75,14 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
             const raw = readPayload(n);
             const extra = raw.shift_id ? shiftInfo.get(raw.shift_id) : undefined;
             const p = { ...raw, hospital: raw.hospital ?? extra?.hospital, start_at: raw.start_at ?? extra?.start_at };
-            const text = t(`kinds.${n.kind}`, {
-              hospital: p.hospital ?? c("dash"),
-              when: p.start_at ? formatDateTime(p.start_at, locale) : c("dash"),
-              doctor: p.doctor ?? c("dash"),
-              sender: p.sender ?? c("dash"),
-              document: docName(p.document),
-              date: p.expires_on ? formatDate(p.expires_on, locale) : p.date ? formatDate(p.date, locale) : c("dash"),
-              month: p.month ? monthLabel(p.month.slice(0, 7), locale) : c("dash"),
-              slot: p.slot && (ROTA_SLOTS as readonly string[]).includes(p.slot) ? o(`rotaSlot.${p.slot as RotaSlot}`) : c("dash"),
-              team: p.team ?? c("dash"),
-              reason: p.reason ?? c("dash"),
-              title: p.title ?? c("dash"),
-              count: p.count ? formatNumber(Number(p.count), locale) : c("dash"),
-            });
+            const text = t(
+              `kinds.${n.kind}`,
+              notificationValues(p, locale, {
+                option: (k) => o(k as "rotaSlot.day"),
+                doc: (k) => d(k as DocType),
+                dash: c("dash"),
+              }),
+            );
             const unread = !n.read_at;
             return (
               <Link

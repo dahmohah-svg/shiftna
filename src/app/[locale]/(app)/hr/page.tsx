@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import Avatar from "@/components/Avatar";
 import { Building2, Send, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import VerifiedBadge from "@/components/VerifiedBadge";
@@ -101,7 +102,9 @@ export default async function HrPage({ params, searchParams }: PageProps<"/[loca
             <li key={d.doctor_id}>
               <Card className="flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-2">
-                  <Link href={`/doctors/${d.doctor_id}`} className="flex min-w-0 flex-col">
+                  <Link href={`/doctors/${d.doctor_id}`} className="flex min-w-0 items-center gap-3">
+                    <Avatar name={d.full_name} url={d.photo_url} size={48} />
+                    <span className="flex min-w-0 flex-col">
                     <span className="flex items-center gap-1.5 font-bold text-ink">
                       <span className="truncate">{d.full_name}</span>
                       {d.verified ? <VerifiedBadge compact /> : null}
@@ -110,6 +113,7 @@ export default async function HrPage({ params, searchParams }: PageProps<"/[loca
                       {o(`specialty.${d.specialty as Specialty}`)}
                       {d.grade ? ` · ${o(`grade.${d.grade as "resident"}`)}` : null}
                       {d.city ? ` · ${o(`city.${d.city as "cairo"}`)}` : null}
+                    </span>
                     </span>
                   </Link>
                   {d.avg_rating != null ? (

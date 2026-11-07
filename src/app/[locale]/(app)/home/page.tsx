@@ -1,4 +1,6 @@
 import { headers } from "next/headers";
+import PushToggle from "@/components/PushToggle";
+import Avatar from "@/components/Avatar";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
   BellRing,
@@ -180,10 +182,17 @@ export default async function HomePage({ params }: PageProps<"/[locale]/home">) 
 
   return (
     <div className="flex flex-col gap-4">
-      <header className="flex flex-col gap-0.5 pb-1">
-        <span className="text-sm text-ink-muted">{greeting}</span>
-        <h1 className="text-2xl font-extrabold text-ink">{firstName}</h1>
+      <header className="flex items-center gap-3 pb-1">
+        <Link href="/profile" aria-label={t("profileLink")}>
+          <Avatar name={viewer.profile.full_name ?? ""} url={viewer.profile.photo_url} size={52} />
+        </Link>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm text-ink-muted">{greeting}</span>
+          <h1 className="text-2xl font-extrabold text-ink">{firstName}</h1>
+        </div>
       </header>
+
+      <PushToggle variant="card" />
 
       {attention.length > 0 ? (
         <Card className="flex flex-col">

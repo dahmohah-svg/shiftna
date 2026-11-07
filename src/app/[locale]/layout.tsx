@@ -78,6 +78,13 @@ export default async function LocaleLayout({
               "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__shiftnaInstall=e;window.dispatchEvent(new Event('shiftna:installable'))});window.addEventListener('appinstalled',function(){window.__shiftnaInstall=null;try{localStorage.setItem('shiftna-installed','1')}catch(e){}window.dispatchEvent(new Event('shiftna:installed'))});",
           }}
         />
+        {/* Service worker for phone notifications (it caches nothing). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}",
+          }}
+        />
         <NextIntlClientProvider>
           {children}
           <Toaster />

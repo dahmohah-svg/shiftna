@@ -46,6 +46,8 @@ export const NOTIFICATION_KINDS = [
   "logbook_request",
   "logbook_signed",
   "logbook_returned",
+  "duty_reminder",
+  "shift_reminder",
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -86,6 +88,7 @@ export function isKnownKind(kind: string): kind is NotificationKind {
 /** Where tapping a notification takes the doctor. */
 export function notificationHref(kind: NotificationKind, p: Payload): string {
   if (p.job_id) return `/jobs/${p.job_id}`;
+  if (kind === "duty_reminder" && p.team_id) return `/teams/${p.team_id}/rota${p.date ? `?month=${p.date.slice(0, 7)}` : ""}`;
   if (kind === "logbook_request" && p.team_id) return `/teams/${p.team_id}/logbook`;
   if (kind === "logbook_signed" || kind === "logbook_returned") return "/logbook";
   if (p.team_id && kind.startsWith("handover_")) return `/teams/${p.team_id}/handover${p.handover_id ? `#h-${p.handover_id}` : ""}`;

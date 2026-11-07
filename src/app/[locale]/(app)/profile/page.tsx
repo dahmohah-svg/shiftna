@@ -1,4 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import PushToggle from "@/components/PushToggle";
+import AvatarUpload from "@/components/AvatarUpload";
 import { getContactPhones } from "@/lib/contacts";
 import ActionButton from "@/components/ActionButton";
 import { setShowPhone } from "@/app/actions/profile";
@@ -11,7 +13,7 @@ import ThemeSwitcher from "@/components/ThemeSwitcher";
 import StatsGrid from "@/components/StatsGrid";
 import TrustBadge from "@/components/TrustBadge";
 import VerifiedBadge from "@/components/VerifiedBadge";
-import { Building2, ScanFace } from "lucide-react";
+import { ScanFace } from "lucide-react";
 import { Badge, buttonClass, Card, DetailRow, Notice, PageTitle, SectionTitle } from "@/components/ui";
 import { signOut } from "@/app/actions/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -52,10 +54,8 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
       <PageTitle>{t("title")}</PageTitle>
 
       {hr ? (
-        <Card className="flex items-start gap-3">
-          <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-            <Building2 className="h-6 w-6" strokeWidth={2.25} />
-          </span>
+        <Card className="flex flex-col gap-3">
+          <AvatarUpload userId={viewer.userId} name={profile.full_name ?? ""} url={profile.photo_url} />
           <div className="flex min-w-0 flex-col">
             <span className="text-xl font-extrabold">{profile.full_name}</span>
             <span className="text-sm text-ink-muted">{profile.job_title}</span>
@@ -65,6 +65,7 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
         </Card>
       ) : (
       <Card className="flex flex-col gap-2">
+        <AvatarUpload userId={viewer.userId} name={profile.full_name ?? ""} url={profile.photo_url} />
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-col">
             <span className="text-xl font-extrabold">{profile.full_name}</span>
@@ -195,6 +196,9 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold">{t("language")}</span>
           <LanguageSwitcher />
+        </div>
+        <div className="border-t border-line pt-3">
+          <PushToggle />
         </div>
         <div className="flex flex-col gap-2 border-t border-line pt-3">
           <div className="flex items-start justify-between gap-3">

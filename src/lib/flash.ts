@@ -62,6 +62,8 @@ export const FLASH_KEYS = [
   "logbookRequested",
   "logbookSigned",
   "logbookReturned",
+  "photoSaved",
+  "photoRemoved",
 ] as const;
 export type FlashKey = (typeof FLASH_KEYS)[number];
 

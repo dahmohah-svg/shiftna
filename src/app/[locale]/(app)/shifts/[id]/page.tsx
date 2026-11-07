@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import Avatar from "@/components/Avatar";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
 import OfferForm from "@/components/OfferForm";
@@ -74,7 +75,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
   } else if (isPoster) {
     const { data: offers } = await supabase
       .from("offers")
-      .select("id, status, message, created_at, doctor:profiles!offers_doctor_id_fkey(id, full_name, grade)")
+      .select("id, status, message, created_at, doctor:profiles!offers_doctor_id_fkey(id, full_name, grade, photo_url)")
       .eq("shift_id", shift.id)
       .order("created_at", { ascending: true });
     const pending = (offers ?? []).filter((x) => x.status === "pending");
@@ -100,7 +101,9 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
         {pending.map((x, i) => (
           <div key={x.id} className="flex flex-col gap-3 rounded-xl border border-line p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex flex-col">
+              <div className="flex items-center gap-3">
+                <Avatar name={x.doctor?.full_name ?? ""} url={x.doctor?.photo_url} size={44} />
+                <div className="flex flex-col">
                 <span className="flex items-center gap-1.5 font-bold">
                   {x.doctor?.full_name}
                   {stats[i].tr?.docs_verified ? <VerifiedBadge compact /> : null}
@@ -108,6 +111,7 @@ export default async function ShiftPage({ params }: PageProps<"/[locale]/shifts/
                 <span className="text-xs text-ink-muted">
                   {x.doctor?.grade ? o(`grade.${x.doctor.grade as "resident"}`) : null}
                 </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <TrustBadge badge={stats[i].tr?.badge} />

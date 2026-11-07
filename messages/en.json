@@ -666,7 +666,9 @@
       "handover_comment": "{sender} commented on the handover of {title}.",
       "logbook_request": "{doctor} sent {count} logbook entries for your signature ({team}).",
       "logbook_signed": "{doctor} signed {count} of your logbook entries.",
-      "logbook_returned": "{doctor} returned {count} logbook entries: {reason}"
+      "logbook_returned": "{doctor} returned {count} logbook entries: {reason}",
+      "duty_reminder": "Reminder: you're on {slot} duty tomorrow, {date} ({team}).",
+      "shift_reminder": "Reminder: your shift at {hospital} is tomorrow, {when}."
     },
     "alertsTitle": "Shift alerts",
     "alertsIntro": "Get an alert here when a new shift matching these choices is posted.",
@@ -923,7 +925,9 @@
     "logbookDeleted": "Entry deleted.",
     "logbookRequested": "Sent to the supervisor.",
     "logbookSigned": "Entries signed.",
-    "logbookReturned": "Entries returned with your note."
+    "logbookReturned": "Entries returned with your note.",
+    "photoSaved": "Photo saved.",
+    "photoRemoved": "Photo removed."
   },
   "Welcome": {
     "previewTitle": "How Shiftna looks",
@@ -1294,6 +1298,28 @@
     "inviteBody": "The more doctors from your department and city join, the more shifts and cover you'll find.",
     "whatsapp": "WhatsApp",
     "share": "Share",
-    "inviteMessage": "I'm using Shiftna for medical shifts, cover and our department rota. Verified doctors only, and free. Install it: {url}"
+    "inviteMessage": "I'm using Shiftna for medical shifts, cover and our department rota. Verified doctors only, and free. Install it: {url}",
+    "profileLink": "Your profile"
+  },
+  "Push": {
+    "title": "Phone notifications",
+    "onNote": "On for this phone: offers, bookings, handovers, swaps and duty reminders.",
+    "offNote": "Get offers, bookings, handovers and duty reminders even when Shiftna is closed.",
+    "turnOn": "Turn on",
+    "turnOff": "Turn off",
+    "cardTitle": "Don't miss an offer or a handover",
+    "cardBody": "Turn on notifications to hear about offers, bookings, handovers and tomorrow's duty, even when Shiftna is closed.",
+    "iosInstall": "On iPhone, first add Shiftna to your Home Screen (Share → Add to Home Screen), open it from there, then turn notifications on.",
+    "denied": "Notifications are blocked for Shiftna. Allow them in your phone's settings for this app or site, then come back.",
+    "unsupported": "This browser can't show notifications. Try Chrome on Android or the installed app on iPhone.",
+    "failed": "Couldn't turn notifications on. Try again."
+  },
+  "Photo": {
+    "add": "Add a photo",
+    "change": "Change photo",
+    "remove": "Remove photo",
+    "uploading": "Uploading…",
+    "failed": "Upload failed. Try another picture.",
+    "hint": "A clear face photo builds trust."
   }
 }

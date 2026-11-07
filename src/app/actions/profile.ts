@@ -144,3 +144,23 @@ export async function setJobOffers(
   revalidatePath("/", "layout");
   return { ok: true };
 }
+
+const photoSchema = z.string().url().max(500).or(z.literal(""));
+
+/** Saves (or removes, with "") the profile photo the browser just uploaded to the avatars bucket. */
+export async function setProfilePhoto(url: string): Promise<ActionState> {
+  const parsed = photoSchema.safeParse(url);
+  if (!parsed.success) return { error: "invalid" };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "notAllowed" };
+  const prefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${user.id}/`;
+  if (parsed.data && !parsed.data.startsWith(prefix)) return { error: "invalid" };
+  const { error } = await supabase.from("profiles").update({ photo_url: parsed.data || null }).eq("id", user.id);
+  if (error) return { error: toErrorKey(error) };
+  await flash(parsed.data ? "photoSaved" : "photoRemoved");
+  revalidatePath("/", "layout");
+  return { ok: true };
+}

@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import Avatar from "@/components/Avatar";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { formatNumber } from "@/lib/time";
 import { z } from "zod";
@@ -80,7 +81,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
   const [{ data: members }, { data: requests }, { data: invite }, { data: shiftRows }, { data: former }] = await Promise.all([
     supabase
       .from("group_members")
-      .select("user_id, role, supervisor, profile:profiles!group_members_user_id_fkey(full_name, grade, city)")
+      .select("user_id, role, supervisor, profile:profiles!group_members_user_id_fkey(full_name, grade, city, photo_url)")
       .eq("group_id", id)
       .eq("status", "active"),
     manager
@@ -255,6 +256,8 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
         <ul className="flex flex-col">
           {sortedMembers.map((m) => (
             <li key={m.user_id} className="flex items-center justify-between gap-3 border-b border-line py-2.5 last:border-b-0">
+              <span className="flex min-w-0 items-center gap-3">
+              <Avatar name={m.profile?.full_name ?? ""} url={m.profile?.photo_url} size={36} />
               <span className="flex min-w-0 flex-col">
                 <span className="flex min-w-0 items-center gap-1.5">
                   <Link href={`/doctors/${m.user_id}`} className="truncate font-semibold">
@@ -264,6 +267,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/teams/[i
                   {verified.has(m.user_id) ? <VerifiedBadge compact /> : null}
                 </span>
                 <span className="text-xs text-ink-muted">{doctorLine(m.profile)}</span>
+              </span>
               </span>
               <span className="flex shrink-0 items-center gap-2">
                 {m.role !== "member" ? <Badge tone="brand">{t(`role.${m.role as "owner" | "moderator"}`)}</Badge> : null}
