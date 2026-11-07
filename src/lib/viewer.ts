@@ -67,9 +67,9 @@ export function isHr(profile: Pick<Profile, "account_type">): boolean {
   return profile.account_type === "hr";
 }
 
-/** Where an approved user starts: doctors on the shifts feed, HR on doctor search. */
-export function homePath(profile: Pick<Profile, "account_type">): "/hr" | "/shifts" {
-  return isHr(profile) ? "/hr" : "/shifts";
+/** Where an approved user starts: doctors on their home page, HR on doctor search. */
+export function homePath(profile: Pick<Profile, "account_type">): "/hr" | "/home" {
+  return isHr(profile) ? "/hr" : "/home";
 }
 
 /** Must be an approved doctor or HR account, otherwise go to the account status page. */
@@ -88,10 +88,10 @@ export async function requireDoctor(locale: string): Promise<Viewer> {
   return viewer;
 }
 
-/** Must be an approved hospital HR account; doctors go to the shifts feed. */
+/** Must be an approved hospital HR account; doctors go to their home page. */
 export async function requireHr(locale: string): Promise<Viewer> {
   const viewer = await requireApproved(locale);
-  if (!isHr(viewer.profile)) redirect({ href: "/shifts", locale: locale as Locale });
+  if (!isHr(viewer.profile)) redirect({ href: "/home", locale: locale as Locale });
   return viewer;
 }
 

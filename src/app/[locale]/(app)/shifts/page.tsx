@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { CalendarSearch } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import ShiftCard from "@/components/ShiftCard";
 import { buttonClass, Checkbox, EmptyState, PageTitle, Select } from "@/components/ui";
@@ -139,9 +140,21 @@ export default async function ShiftsPage({
 
       {shifts.length === 0 ? (
         <EmptyState
-          action={<Link href="/post" className={buttonClass.secondary}>{t("emptyCta")}</Link>}
+          icon={<CalendarSearch className="h-6 w-6" strokeWidth={2.25} />}
+          title={t("emptyTitle")}
+          action={
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-wrap justify-center gap-2">
+                <Link href="/post" className={buttonClass.primary}>{t("emptyCta")}</Link>
+                <Link href="/notifications" className={buttonClass.secondary}>{t("emptyAlert")}</Link>
+              </div>
+              {spec !== "all" ? (
+                <Link href="/shifts?spec=all" className="text-sm font-semibold text-brand-700 underline">{t("emptyAll")}</Link>
+              ) : null}
+            </div>
+          }
         >
-          {t("empty")}
+          {filtered ? t("emptyFiltered") : t("empty")}
         </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">

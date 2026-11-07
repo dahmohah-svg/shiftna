@@ -75,7 +75,7 @@ export default async function LocaleLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__shiftnaInstall=e;window.dispatchEvent(new Event('shiftna:installable'))});window.addEventListener('appinstalled',function(){window.__shiftnaInstall=null;window.dispatchEvent(new Event('shiftna:installed'))});",
+              "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__shiftnaInstall=e;window.dispatchEvent(new Event('shiftna:installable'))});window.addEventListener('appinstalled',function(){window.__shiftnaInstall=null;try{localStorage.setItem('shiftna-installed','1')}catch(e){}window.dispatchEvent(new Event('shiftna:installed'))});",
           }}
         />
         <NextIntlClientProvider>

@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/time";
-import { Bell, ClipboardList, Handshake, SquarePlus, UserRound, UserSearch } from "lucide-react";
+import { Bell, House, Handshake, SquarePlus, UserRound, UserSearch } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { subscribeAsUser } from "@/lib/supabase/realtime";
 
 const doctorTabs = [
-  { href: "/shifts", key: "shifts", Icon: ClipboardList },
+  { href: "/home", key: "home", Icon: House },
   { href: "/post", key: "post", Icon: SquarePlus },
   { href: "/activity", key: "activity", Icon: Handshake },
   { href: "/notifications", key: "alerts", Icon: Bell },
@@ -25,7 +25,7 @@ const hrTabs = [
 /** Sent by the notifications page once it has marked everything read. */
 export const NOTIFICATIONS_READ_EVENT = "shiftna:notifications-read";
 
-/** Bottom tab bar: Shifts (or Doctors for HR), Post, Offers, Alerts, Profile. */
+/** Bottom tab bar: Home (or Doctors for HR), Post, Offers, Alerts, Profile. */
 export default function TabBar({
   userId,
   initialUnread,
@@ -86,6 +86,7 @@ export default function TabBar({
             pathname.startsWith(tab.href + "/") ||
             (tab.href === "/activity" && (pathname.startsWith("/bookings") || pathname.startsWith("/jobs"))) ||
             (tab.href === "/hr" && pathname.startsWith("/doctors")) ||
+            (tab.href === "/home" && pathname.startsWith("/shifts")) ||
             (tab.href === "/profile" && [...(hr ? [] : ["/doctors"]), "/admin", "/teams"].some((p) => pathname.startsWith(p)));
           const badge = tab.key === "alerts" && unread > 0 ? unread : 0;
           return (
@@ -103,7 +104,7 @@ export default function TabBar({
                       aria-hidden
                       className="absolute -top-1.5 -end-2.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[11px] leading-none font-bold text-white"
                     >
-                      {badge > 99 ? "99+" : badge}
+                      {badge > 99 ? formatNumber(99, locale) + "+" : formatNumber(badge, locale)}
                     </span>
                   ) : null}
                 </span>

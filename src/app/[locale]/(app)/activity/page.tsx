@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import JobOfferList from "@/components/JobOfferList";
 import ShiftCard from "@/components/ShiftCard";
-import { Badge, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
+import { Badge, buttonClass, EmptyState, PageTitle, SectionTitle } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { isHr, requireApproved } from "@/lib/viewer";
 import { getMyJobOffers } from "@/lib/jobs";
@@ -81,7 +81,7 @@ export default async function ActivityPage({ params }: PageProps<"/[locale]/acti
 
       <section className="flex flex-col gap-3">
         <SectionTitle>{t("bookings")} · {t("upcoming")}</SectionTitle>
-        {upcoming.length === 0 ? <EmptyState>{t("noBookings")}</EmptyState> : upcoming.map(bookingRow)}
+        {upcoming.length === 0 ? <EmptyState action={!hr ? <Link href="/shifts" className={buttonClass.secondary}>{t("browseShifts")}</Link> : undefined}>{t("noBookings")}</EmptyState> : upcoming.map(bookingRow)}
       </section>
 
       {/* Doctors only see this once a hospital has sent them an offer. */}
@@ -95,7 +95,7 @@ export default async function ActivityPage({ params }: PageProps<"/[locale]/acti
       <section className="flex flex-col gap-3">
         <SectionTitle>{t("myShifts")}</SectionTitle>
         {(myShifts ?? []).length === 0 ? (
-          <EmptyState>{t("noShifts")}</EmptyState>
+          <EmptyState action={<Link href="/post" className={buttonClass.secondary}>{t("postShift")}</Link>}>{t("noShifts")}</EmptyState>
         ) : (
           (myShifts ?? []).map((x) => {
             const pending = (x.offers ?? []).filter((y) => y.status === "pending").length;
@@ -113,7 +113,7 @@ export default async function ActivityPage({ params }: PageProps<"/[locale]/acti
         <section className="flex flex-col gap-3">
           <SectionTitle>{t("myOffers")}</SectionTitle>
           {(myOffers ?? []).length === 0 ? (
-            <EmptyState>{t("noOffers")}</EmptyState>
+            <EmptyState action={<Link href="/shifts" className={buttonClass.secondary}>{t("browseShifts")}</Link>}>{t("noOffers")}</EmptyState>
           ) : (
             (myOffers ?? []).map((x) =>
               x.shift ? <ShiftCard key={x.id} shift={x.shift as unknown as ShiftWithHospital} /> : null,

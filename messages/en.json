@@ -182,7 +182,8 @@
     "profile": "Profile",
     "admin": "Admin",
     "alertsUnread": "{count, plural, one {Alerts, {n} new} other {Alerts, {n} new}}",
-    "doctors": "Doctors"
+    "doctors": "Doctors",
+    "home": "Home"
   },
   "Options": {
     "grade": {
@@ -348,7 +349,7 @@
     "urgentOnly": "Urgent only",
     "apply": "Show shifts",
     "clear": "Clear",
-    "empty": "No open shifts match these filters right now.",
+    "empty": "Shiftna is new: be the first to post a shift, or get an alert the moment one matching you is posted.",
     "emptyCta": "Post a shift",
     "urgent": "Urgent",
     "minGrade": "{grade}+",
@@ -359,7 +360,11 @@
     "teamShiftsOnly": "My teams' shifts only",
     "specialty": "Specialty",
     "allSpecialties": "All specialties",
-    "byHospital": "From the hospital"
+    "byHospital": "From the hospital",
+    "emptyTitle": "No open shifts here yet",
+    "emptyFiltered": "No shifts match these filters right now. Clear a filter, or save an alert for them.",
+    "emptyAlert": "Set an alert",
+    "emptyAll": "See all specialties"
   },
   "Shift": {
     "when": "When",
@@ -443,7 +448,9 @@
     "asDoctor": "You cover",
     "asPoster": "You posted",
     "upcoming": "Upcoming",
-    "past": "Past"
+    "past": "Past",
+    "browseShifts": "Browse shifts",
+    "postShift": "Post a shift"
   },
   "Booking": {
     "title": "Booking",
@@ -678,7 +685,8 @@
     "tooManyAlerts": "You can keep up to {max} alerts. Delete one to add another.",
     "duplicateAlert": "You already have this alert.",
     "specialty": "Specialty",
-    "anySpecialty": "Any specialty"
+    "anySpecialty": "Any specialty",
+    "emptyTitle": "You're all caught up"
   },
   "Teams": {
     "title": "Teams",
@@ -1234,5 +1242,58 @@
     "sign": "Sign ticked",
     "return": "Return ticked",
     "recentlySigned": "Recently signed"
+  },
+  "Dashboard": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "today": "Today",
+    "attentionTitle": "Needs you",
+    "attention": {
+      "handovers": "{count, plural, one {A handover waits for you} other {{n} handovers wait for you}}",
+      "swapsAsked": "{count, plural, one {A colleague asked you to swap} other {{n} swap requests for you}}",
+      "swapsApprove": "{count, plural, one {A swap to approve} other {{n} swaps to approve}}",
+      "rotaApprove": "{count, plural, one {A rota waits for your approval} other {{n} rotas wait for your approval}}",
+      "logbookSign": "{count, plural, one {A logbook entry to sign} other {{n} logbook entries to sign}}",
+      "jobOffers": "{count, plural, one {A job offer from a hospital} other {{n} job offers from hospitals}}",
+      "shiftOffers": "{count, plural, one {A doctor offered to cover your shift} other {{n} offers on your shifts}}"
+    },
+    "nextTitle": "Coming up",
+    "startTitle": "Get started",
+    "progress": "{done} of {total}",
+    "done": "Done",
+    "todo": "Not done yet",
+    "step": {
+      "install": "Install Shiftna on your phone",
+      "team": "Join or create your department's team",
+      "post": "Post your first shift",
+      "alert": "Set a shift alert",
+      "invite": "Invite your colleagues"
+    },
+    "stepHint": {
+      "install": "One tap, then it opens like any app.",
+      "team": "Rota, swaps, handover and logbook in one place.",
+      "post": "Need cover? Verified doctors see it at once.",
+      "alert": "Get told when a shift that suits you is posted.",
+      "invite": "Shiftna gets better with every colleague who joins."
+    },
+    "latestTitle": "Latest shifts",
+    "seeAll": "See all",
+    "otherSpecialties": "No open {specialty} shifts right now. Here are shifts in other specialties.",
+    "noShiftsTitle": "No open shifts yet",
+    "noShiftsBody": "Shiftna is new. Post the first shift you need covered, or set an alert.",
+    "postFirst": "Post a shift",
+    "setAlert": "Set an alert",
+    "teamsTitle": "Your teams",
+    "noTeams": "Run your department here: monthly rota, approved swaps, case handover and a signed logbook. Free.",
+    "createTeam": "Create a team",
+    "joinTeam": "Join with a code",
+    "youSupervise": "You supervise this team",
+    "youOwn": "You manage this team",
+    "inviteTitle": "Invite your colleagues",
+    "inviteBody": "The more doctors from your department and city join, the more shifts and cover you'll find.",
+    "whatsapp": "WhatsApp",
+    "share": "Share",
+    "inviteMessage": "I'm using Shiftna for medical shifts, cover and our department rota. Verified doctors only, and free. Install it: {url}"
   }
 }

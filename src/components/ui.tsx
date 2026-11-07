@@ -155,13 +155,24 @@ export function Notice({
 export function EmptyState({
   children,
   action,
+  title,
+  icon,
 }: {
   children: ReactNode;
   action?: ReactNode;
+  /** A short bold line above the explanation. */
+  title?: ReactNode;
+  icon?: ReactNode;
 }) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line px-4 py-8 text-center text-sm text-ink-muted">
-      <p>{children}</p>
+      {icon ? (
+        <span aria-hidden className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-700">
+          {icon}
+        </span>
+      ) : null}
+      {title ? <p className="text-base font-bold text-ink">{title}</p> : null}
+      <p className="max-w-xs leading-relaxed">{children}</p>
       {action}
     </div>
   );

@@ -198,7 +198,7 @@ export function InstallPanel({ desktop }: { desktop: ReactNode }) {
     return (
       <div className="flex flex-col gap-3">
         <Notice tone="success">{t("alreadyInstalled")}</Notice>
-        <Link href="/shifts" className={buttonClass.primary}>
+        <Link href="/" className={buttonClass.primary}>
           {t("openApp")}
         </Link>
       </div>

@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { BellRing } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import ActionButton from "@/components/ActionButton";
 import AlertForm from "@/components/AlertForm";
@@ -69,7 +70,7 @@ export default async function NotificationsPage({ params }: PageProps<"/[locale]
 
       <section className="flex flex-col gap-2" aria-label={t("title")}>
         {items.length === 0 ? (
-          <EmptyState>{t("empty")}</EmptyState>
+          <EmptyState icon={<BellRing className="h-6 w-6" strokeWidth={2.25} />} title={t("emptyTitle")}>{t("empty")}</EmptyState>
         ) : (
           items.map((n) => {
             if (!isKnownKind(n.kind)) return null;
